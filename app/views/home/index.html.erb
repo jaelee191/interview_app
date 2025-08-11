@@ -1,0 +1,125 @@
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] flex items-center justify-center bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <div class="text-center">
+      <!-- Main Heading -->
+      <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+        기업 정보를
+        <span class="text-black">한눈에</span>
+      </h1>
+      
+      <!-- Subheading -->
+      <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+        실시간 뉴스 크롤링으로 기업 정보를 빠르게 파악하고
+        <br class="hidden sm:block">
+        AI가 분석하는 자기소개서로 취업 준비를 완성하세요
+      </p>
+      
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <%= link_to companies_path, class: "inline-flex items-center px-8 py-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-all text-lg font-medium" do %>
+          기업 검색 시작하기
+          <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          </svg>
+        <% end %>
+        
+        <%= link_to cover_letters_path, class: "inline-flex items-center px-8 py-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all text-lg font-medium" do %>
+          AI 자소서 분석
+          <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+          </svg>
+        <% end %>
+      </div>
+      
+      <!-- Stats -->
+      <div class="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+        <div>
+          <div class="text-3xl font-bold text-gray-900">20+</div>
+          <div class="text-sm text-gray-600">뉴스 소스</div>
+        </div>
+        <div>
+          <div class="text-3xl font-bold text-gray-900">실시간</div>
+          <div class="text-sm text-gray-600">업데이트</div>
+        </div>
+        <div>
+          <div class="text-3xl font-bold text-gray-900">AI</div>
+          <div class="text-sm text-gray-600">자소서 분석</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-24 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        주요 기능
+      </h2>
+      <p class="text-lg text-gray-600">
+        취업 준비에 필요한 모든 정보를 한 곳에서
+      </p>
+    </div>
+    
+    <div class="grid md:grid-cols-3 gap-8">
+      <!-- Feature 1 -->
+      <div class="bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition-shadow">
+        <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center mb-6">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">기업 검색</h3>
+        <p class="text-gray-600">
+          관심 기업의 최신 뉴스와 정보를 실시간으로 수집하여 제공합니다
+        </p>
+      </div>
+      
+      <!-- Feature 2 -->
+      <div class="bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition-shadow">
+        <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center mb-6">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">뉴스 크롤링</h3>
+        <p class="text-gray-600">
+          다양한 언론사의 기업 관련 뉴스를 자동으로 수집하고 정리합니다
+        </p>
+      </div>
+      
+      <!-- Feature 3 -->
+      <div class="bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition-shadow">
+        <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center mb-6">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">AI 자소서 분석</h3>
+        <p class="text-gray-600">
+          GPT-4.1 기반 AI가 자기소개서를 분석하고 개선점을 제안합니다
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-24 bg-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+      지금 시작하세요
+    </h2>
+    <p class="text-lg text-gray-600 mb-8">
+      스마트한 취업 준비의 첫걸음
+    </p>
+    <%= link_to companies_path, class: "inline-flex items-center px-8 py-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-all text-lg font-medium" do %>
+      무료로 시작하기
+      <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+      </svg>
+    <% end %>
+  </div>
+</section>

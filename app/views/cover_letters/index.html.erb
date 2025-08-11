@@ -1,0 +1,102 @@
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+  <!-- Page Header -->
+  <div class="border-b border-gray-100 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">자기소개서 분석</h1>
+          <p class="text-gray-600 mt-2">AI가 당신의 자기소개서를 분석하고 개선점을 제안합니다</p>
+        </div>
+        <div class="flex gap-3">
+          <a href="/cover_letters/interactive" class="inline-flex items-center px-6 py-3 bg-black text-white rounded-xl hover:bg-gray-800 transition-all font-medium">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+            </svg>
+            AI와 대화하며 작성
+          </a>
+          <%= link_to new_cover_letter_path, class: "inline-flex items-center px-6 py-3 bg-black text-white rounded-xl hover:bg-gray-800 transition-all font-medium" do %>
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            직접 작성
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <% if @cover_letters&.any? %>
+      <!-- 분석 내역 목록 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% @cover_letters.each do |cover_letter| %>
+          <div class="group bg-white rounded-xl border border-gray-100 p-6 hover:border-gray-200 hover:shadow-lg transition-all">
+            <div class="flex justify-between items-start mb-4">
+              <div class="flex-1">
+                <h3 class="text-xl font-semibold text-gray-900 group-hover:text-black transition-colors">
+                  <%= cover_letter.title.presence || "제목 없음" %>
+                </h3>
+                <div class="mt-2 space-y-1">
+                  <% if cover_letter.company_name.present? %>
+                    <p class="text-sm text-gray-600">
+                      <span class="font-medium">기업:</span> <%= cover_letter.company_name %>
+                    </p>
+                  <% end %>
+                  <% if cover_letter.position.present? %>
+                    <p class="text-sm text-gray-600">
+                      <span class="font-medium">직무:</span> <%= cover_letter.position %>
+                    </p>
+                  <% end %>
+                  <p class="text-xs text-gray-500 mt-2">
+                    <%= time_ago_in_words(cover_letter.created_at) %> 전 분석
+                  </p>
+                </div>
+              </div>
+              <% if cover_letter.analysis_result.present? %>
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+              <% else %>
+                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                  <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+              <% end %>
+            </div>
+            
+            <div class="flex gap-2">
+              <%= link_to cover_letter_path(cover_letter), class: "flex-1 text-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-sm font-medium" do %>
+                분석 결과 보기
+              <% end %>
+              <%= button_to cover_letter_path(cover_letter), method: :delete, 
+                  data: { confirm: "정말 삭제하시겠습니까?" },
+                  class: "px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-all text-sm font-medium" do %>
+                삭제
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <!-- Empty State -->
+      <div class="bg-white rounded-2xl border border-gray-100 p-16 text-center">
+        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">아직 분석한 자기소개서가 없습니다</h3>
+        <p class="text-gray-600 mb-8">AI 분석을 통해 더 나은 자기소개서를 작성해보세요</p>
+        <%= link_to new_cover_letter_path, class: "inline-flex items-center px-6 py-3 bg-black text-white rounded-xl hover:bg-gray-800 transition-all font-medium" do %>
+          첫 자기소개서 분석하기
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          </svg>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+:concurrency: 5
+:queues:
+  - default
+  - crawling
+  - mailers
+  
+production:
+  :concurrency: 10
+  
+development:
+  :concurrency: 3

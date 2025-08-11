@@ -1,0 +1,2 @@
+class CoverLetter < ApplicationRecord
+end

@@ -1,0 +1,87 @@
+<div class="min-h-screen bg-white">
+  <div class="max-w-6xl mx-auto px-4 py-16">
+    <!-- 헤더 -->
+    <div class="mb-12">
+      <%= link_to "← Back", companies_path, class: "text-gray-400 hover:text-gray-600 text-sm mb-4 inline-block" %>
+      <div class="flex justify-between items-start">
+        <div>
+          <h1 class="text-3xl font-light text-gray-900 mb-2"><%= @company.name %></h1>
+          <div class="flex gap-6 text-sm text-gray-400">
+            <% if @company.ticker.present? %>
+              <span><%= @company.ticker %></span>
+            <% end %>
+            <% if @company.industry.present? %>
+              <span><%= @company.industry %></span>
+            <% end %>
+            <% if @company.website.present? %>
+              <%= link_to "Website →", @company.website, target: "_blank", 
+                  class: "hover:text-gray-900" %>
+            <% end %>
+          </div>
+        </div>
+        <%= button_to "Start Crawling", crawl_company_path(@company), 
+            method: :post,
+            class: "px-6 py-2 bg-gray-900 text-white hover:bg-gray-800 transition cursor-pointer" %>
+      </div>
+    </div>
+    
+    <!-- 통계 -->
+    <div class="grid grid-cols-3 gap-8 mb-12 text-center">
+      <div>
+        <div class="text-3xl font-light text-gray-900"><%= @positive_count %></div>
+        <div class="text-sm text-gray-400">Positive</div>
+      </div>
+      <div>
+        <div class="text-3xl font-light text-gray-900"><%= @neutral_count %></div>
+        <div class="text-sm text-gray-400">Neutral</div>
+      </div>
+      <div>
+        <div class="text-3xl font-light text-gray-900"><%= @negative_count %></div>
+        <div class="text-sm text-gray-400">Negative</div>
+      </div>
+    </div>
+    
+    <!-- 뉴스 목록 -->
+    <div>
+      <h2 class="text-sm text-gray-500 mb-6">Recent Articles</h2>
+      
+      <% if @recent_news.any? %>
+        <div class="space-y-6">
+          <% @recent_news.each do |news| %>
+            <div class="border-b border-gray-100 pb-6">
+              <h3 class="text-lg mb-2">
+                <%= link_to news.title, news.url, target: "_blank", 
+                    class: "text-gray-900 hover:text-gray-600" %>
+              </h3>
+              
+              <% if news.summary.present? %>
+                <p class="text-gray-500 text-sm mb-3"><%= truncate(news.summary, length: 200) %></p>
+              <% end %>
+              
+              <div class="flex gap-6 text-xs text-gray-400">
+                <span><%= news.source %></span>
+                <% if news.published_at %>
+                  <span><%= news.published_at.strftime("%Y.%m.%d") %></span>
+                <% end %>
+                
+                <% sentiment_label = case news.sentiment
+                     when 'positive' then '↑'
+                     when 'negative' then '↓'
+                     else '―'
+                   end %>
+                <span><%= sentiment_label %></span>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="py-24 text-center">
+          <p class="text-gray-400 mb-6">No articles yet</p>
+          <%= button_to "Start Crawling", crawl_company_path(@company), 
+              method: :post,
+              class: "px-6 py-2 bg-gray-900 text-white hover:bg-gray-800 transition cursor-pointer inline-block" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

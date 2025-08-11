@@ -1,0 +1,372 @@
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+  <!-- Page Header -->
+  <div class="border-b border-gray-100 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">AI와 함께하는 자기소개서 작성</h1>
+          <p class="text-gray-600 mt-2">단계별 질문에 답하면서 완벽한 자기소개서를 만들어보세요</p>
+        </div>
+        <%= link_to cover_letters_path, class: "inline-flex items-center text-sm font-medium text-gray-700 hover:text-black transition-colors" do %>
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          목록으로
+        <% end %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- 시작 화면 -->
+    <div id="startScreen" class="bg-white rounded-xl border border-gray-100 p-8">
+      <div class="text-center mb-8">
+        <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">AI 코치와 함께 시작하기</h2>
+        <p class="text-gray-600">7단계의 대화를 통해 맞춤형 자기소개서를 완성합니다</p>
+      </div>
+      
+      <div class="space-y-4 mb-8">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">지원 기업 <span class="text-red-500">*</span></label>
+          <input type="text" 
+                 id="companyName" 
+                 placeholder="예: 삼성전자"
+                 class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-black focus:outline-none focus:ring-1 focus:ring-black transition-all">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">지원 직무 <span class="text-red-500">*</span></label>
+          <input type="text" 
+                 id="position" 
+                 placeholder="예: 소프트웨어 개발자"
+                 class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-black focus:outline-none focus:ring-1 focus:ring-black transition-all">
+        </div>
+      </div>
+      
+      <div class="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 mb-6">
+        <h3 class="font-semibold text-gray-900 mb-3">📝 7단계 작성 프로세스</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          <div class="flex items-center"><span class="mr-2">1️⃣</span> 기업 조사 및 이해</div>
+          <div class="flex items-center"><span class="mr-2">2️⃣</span> 자기소개 구성</div>
+          <div class="flex items-center"><span class="mr-2">3️⃣</span> 지원동기 명확화</div>
+          <div class="flex items-center"><span class="mr-2">4️⃣</span> 핵심 경험 정리</div>
+          <div class="flex items-center"><span class="mr-2">5️⃣</span> 강점 및 역량 도출</div>
+          <div class="flex items-center"><span class="mr-2">6️⃣</span> 입사 후 포부 설정</div>
+          <div class="flex items-center"><span class="mr-2">7️⃣</span> 최종 검토 및 완성</div>
+        </div>
+      </div>
+      
+      <button onclick="startInteractive()" 
+              class="w-full py-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-all font-medium text-lg">
+        🚀 AI 코치와 대화 시작하기
+      </button>
+    </div>
+    
+    <!-- 대화 화면 -->
+    <div id="chatScreen" class="hidden">
+      <!-- 진행률 표시 -->
+      <div class="bg-white rounded-xl border border-gray-100 p-6 mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-medium text-gray-700">진행 상황</span>
+          <span id="progressText" class="text-sm text-gray-600">1/7 단계</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div id="progressBar" class="bg-gradient-to-r from-purple-600 to-blue-600 h-2 rounded-full transition-all duration-500" style="width: 14%"></div>
+        </div>
+        
+        <!-- 단계 아이콘 -->
+        <div class="flex justify-between mt-4">
+          <div class="step-icon" data-step="1">🏢</div>
+          <div class="step-icon" data-step="2">👤</div>
+          <div class="step-icon" data-step="3">🎯</div>
+          <div class="step-icon" data-step="4">💼</div>
+          <div class="step-icon" data-step="5">💪</div>
+          <div class="step-icon" data-step="6">🚀</div>
+          <div class="step-icon" data-step="7">✅</div>
+        </div>
+      </div>
+      
+      <!-- 채팅 영역 -->
+      <div class="bg-white rounded-xl border border-gray-100 p-6">
+        <div id="chatMessages" class="space-y-4 mb-6 max-h-96 overflow-y-auto">
+          <!-- 메시지가 여기에 추가됩니다 -->
+        </div>
+        
+        <!-- 입력 영역 -->
+        <div id="inputArea" class="flex gap-3">
+          <textarea id="userMessage" 
+                    placeholder="답변을 입력하세요..."
+                    rows="3"
+                    class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:border-black focus:outline-none focus:ring-1 focus:ring-black transition-all resize-none"></textarea>
+          <button onclick="sendMessage()" 
+                  id="sendButton"
+                  class="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-all font-medium self-end">
+            전송
+          </button>
+        </div>
+        
+        <!-- 로딩 표시 -->
+        <div id="loadingIndicator" class="hidden mt-4">
+          <div class="flex items-center justify-center space-x-2">
+            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+            <span class="text-sm text-gray-600 ml-2">AI가 생각 중...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 완성 화면 -->
+    <div id="completeScreen" class="hidden">
+      <div class="bg-white rounded-xl border border-gray-100 p-8">
+        <div class="text-center mb-6">
+          <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">자기소개서가 완성되었습니다!</h2>
+          <p class="text-gray-600">AI가 작성한 자기소개서를 검토하고 저장하세요</p>
+        </div>
+        
+        <div class="bg-gray-50 rounded-lg p-6 mb-6">
+          <h3 class="font-semibold text-gray-900 mb-3">📝 완성된 자기소개서</h3>
+          <div id="finalContent" class="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap"></div>
+        </div>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">제목</label>
+            <input type="text" 
+                   id="coverLetterTitle" 
+                   placeholder="예: 삼성전자 SW개발 자기소개서"
+                   class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-black focus:outline-none focus:ring-1 focus:ring-black transition-all">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">이름</label>
+            <input type="text" 
+                   id="userName" 
+                   placeholder="예: 홍길동"
+                   class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-black focus:outline-none focus:ring-1 focus:ring-black transition-all">
+          </div>
+        </div>
+        
+        <div class="flex gap-3 mt-6">
+          <button onclick="saveInteractive()" 
+                  class="flex-1 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-all font-medium">
+            💾 저장하고 AI 분석 받기
+          </button>
+          <button onclick="restartInteractive()" 
+                  class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium">
+            🔄 다시 작성하기
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .step-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    border-radius: 50%;
+    font-size: 18px;
+    transition: all 0.3s;
+  }
+  
+  .step-icon.active {
+    background: linear-gradient(135deg, #9333ea, #2563eb);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
+  }
+  
+  .step-icon.completed {
+    background: #10b981;
+  }
+  
+  .message-user {
+    background: linear-gradient(135deg, #9333ea, #2563eb);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 16px 16px 4px 16px;
+    max-width: 80%;
+    margin-left: auto;
+  }
+  
+  .message-assistant {
+    background: #f3f4f6;
+    color: #1f2937;
+    padding: 12px 16px;
+    border-radius: 16px 16px 16px 4px;
+    max-width: 80%;
+  }
+</style>
+
+<script>
+  let currentSession = null;
+  
+  function startInteractive() {
+    const companyName = document.getElementById('companyName').value;
+    const position = document.getElementById('position').value;
+    
+    if (!companyName || !position) {
+      alert('기업명과 직무를 모두 입력해주세요.');
+      return;
+    }
+    
+    // 화면 전환
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('chatScreen').classList.remove('hidden');
+    
+    // 세션 시작
+    fetch('/cover_letters/start_interactive', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ company_name: companyName, position: position })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        addMessage('assistant', data.message);
+        updateProgress(data.progress);
+      }
+    });
+  }
+  
+  function sendMessage() {
+    const messageInput = document.getElementById('userMessage');
+    const message = messageInput.value.trim();
+    
+    if (!message) return;
+    
+    // 사용자 메시지 추가
+    addMessage('user', message);
+    messageInput.value = '';
+    
+    // 로딩 표시
+    showLoading(true);
+    
+    // 메시지 전송
+    fetch('/cover_letters/send_message', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+      showLoading(false);
+      
+      if (data.success) {
+        addMessage('assistant', data.message);
+        updateProgress(data.progress);
+        
+        // 최종 단계 확인
+        if (data.final_content) {
+          showCompleteScreen(data.final_content);
+        }
+      }
+    });
+  }
+  
+  function addMessage(role, content) {
+    const messagesDiv = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = role === 'user' ? 'message-user' : 'message-assistant';
+    messageDiv.innerHTML = content.replace(/\n/g, '<br>');
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+  
+  function updateProgress(progress) {
+    document.getElementById('progressBar').style.width = progress + '%';
+    const step = Math.ceil(progress / 14.3);
+    document.getElementById('progressText').textContent = `${step}/7 단계`;
+    
+    // 단계 아이콘 업데이트
+    document.querySelectorAll('.step-icon').forEach((icon, index) => {
+      if (index < step - 1) {
+        icon.classList.add('completed');
+        icon.classList.remove('active');
+      } else if (index === step - 1) {
+        icon.classList.add('active');
+        icon.classList.remove('completed');
+      } else {
+        icon.classList.remove('active', 'completed');
+      }
+    });
+  }
+  
+  function showLoading(show) {
+    document.getElementById('loadingIndicator').classList.toggle('hidden', !show);
+    document.getElementById('sendButton').disabled = show;
+  }
+  
+  function showCompleteScreen(content) {
+    document.getElementById('chatScreen').classList.add('hidden');
+    document.getElementById('completeScreen').classList.remove('hidden');
+    document.getElementById('finalContent').textContent = content;
+  }
+  
+  function saveInteractive() {
+    const title = document.getElementById('coverLetterTitle').value;
+    const userName = document.getElementById('userName').value;
+    const content = document.getElementById('finalContent').textContent;
+    
+    if (!title) {
+      alert('제목을 입력해주세요.');
+      return;
+    }
+    
+    fetch('/cover_letters/save_interactive', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ 
+        title: title, 
+        user_name: userName,
+        content: content 
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        window.location.href = data.redirect_url;
+      } else {
+        alert('저장 중 오류가 발생했습니다.');
+      }
+    });
+  }
+  
+  function restartInteractive() {
+    if (confirm('다시 작성하시겠습니까? 현재 내용은 저장되지 않습니다.')) {
+      location.reload();
+    }
+  }
+  
+  // Enter 키로 전송
+  document.getElementById('userMessage')?.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+</script>
