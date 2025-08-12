@@ -119,12 +119,6 @@ GEM
     erubi (1.13.1)
     et-orbi (1.2.11)
       tzinfo
-    ferrum (0.17.1)
-      addressable (~> 2.5)
-      base64 (~> 0.2)
-      concurrent-ruby (~> 1.1)
-      webrick (~> 1.7)
-      websocket-driver (~> 0.7)
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
@@ -256,6 +250,9 @@ GEM
     pg (1.6.1-arm64-darwin)
     pg (1.6.1-x86_64-linux)
     pg (1.6.1-x86_64-linux-musl)
+    playwright-ruby-client (1.54.1)
+      concurrent-ruby (>= 1.1.6)
+      mime-types (>= 3.0)
     pmap (1.1.1)
     poltergeist (1.18.1)
       capybara (>= 2.1, < 4)
@@ -462,7 +459,6 @@ DEPENDENCIES
   capybara
   debug
   dotenv-rails
-  ferrum
   httparty
   importmap-rails
   jbuilder
@@ -470,6 +466,7 @@ DEPENDENCIES
   kimurai
   nokogiri
   pg (~> 1.1)
+  playwright-ruby-client
   propshaft
   puma (>= 5.0)
   rails (~> 8.0.2)

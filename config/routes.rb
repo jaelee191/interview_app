@@ -32,6 +32,13 @@ Rails.application.routes.draw do
       post 'start_interactive'
       post 'send_message'
       post 'save_interactive'
+      get 'advanced'
+      post 'analyze_advanced'
+      get 'job_posting'
+      post 'analyze_job_posting'
+      get 'job_posting_text'
+      post 'analyze_job_text'
+      get 'bookmarklet'
     end
   end
 end

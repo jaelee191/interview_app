@@ -1,125 +1,400 @@
 <!-- Hero Section -->
-<section class="relative min-h-[90vh] flex items-center justify-center bg-white">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-    <div class="text-center">
-      <!-- Main Heading -->
-      <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-        기업 정보를
-        <span class="text-black">한눈에</span>
-      </h1>
-      
-      <!-- Subheading -->
-      <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
-        실시간 뉴스 크롤링으로 기업 정보를 빠르게 파악하고
-        <br class="hidden sm:block">
-        AI가 분석하는 자기소개서로 취업 준비를 완성하세요
-      </p>
-      
-      <!-- CTA Buttons -->
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <%= link_to companies_path, class: "inline-flex items-center px-8 py-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-all text-lg font-medium" do %>
-          기업 검색 시작하기
-          <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-          </svg>
-        <% end %>
+<section class="relative min-h-[85vh] flex items-center bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+    <div class="grid md:grid-cols-[1fr_400px] lg:grid-cols-[1fr_480px] gap-8 items-center">
+      <!-- Left Content - Main Text -->
+      <div>
+        <!-- Main Heading - Two lines with proper wrapping -->
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-gray-900 leading-tight">
+          AI로 <span class="text-blue-600">완성하는</span> 자소서,<br>
+          경험으로 <span class="text-blue-600">차별화되는</span> 합격
+        </h1>
         
-        <%= link_to cover_letters_path, class: "inline-flex items-center px-8 py-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all text-lg font-medium" do %>
-          AI 자소서 분석
-          <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-          </svg>
-        <% end %>
+        <!-- Subheading -->
+        <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+          나만의 이야기를 완벽한 자기소개서로 바꿔드립니다.
+          <br>
+          JACHUI는 당신의 경험을 기업이 원하는 인재상으로 변환하는 AI 솔루션입니다.
+        </p>
+        
+        <!-- CTA Buttons -->
+        <div class="flex gap-3 mb-8">
+          <%= link_to job_posting_cover_letters_path, class: "px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium text-sm shadow-sm hover:shadow-md" do %>
+            3분만에 자소서 완성하기
+          <% end %>
+          
+          <%= link_to cover_letters_path, class: "px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium text-sm" do %>
+            서비스 살펴보기
+          <% end %>
+        </div>
+        
+        <!-- Stats -->
+        <div class="flex gap-8">
+          <div>
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 bg-blue-600 rounded-full"></div>
+              <span class="text-sm text-gray-600">현재 작성 중인 자소서:</span>
+              <span class="font-bold text-gray-900">15개</span>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 bg-green-600 rounded-full"></div>
+              <span class="text-sm text-gray-600">지난 달 평균 합격률:</span>
+              <span class="font-bold text-gray-900">85%</span>
+            </div>
+          </div>
+        </div>
       </div>
       
-      <!-- Stats -->
-      <div class="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
-        <div>
-          <div class="text-3xl font-bold text-gray-900">20+</div>
-          <div class="text-sm text-gray-600">뉴스 소스</div>
-        </div>
-        <div>
-          <div class="text-3xl font-bold text-gray-900">실시간</div>
-          <div class="text-sm text-gray-600">업데이트</div>
-        </div>
-        <div>
-          <div class="text-3xl font-bold text-gray-900">AI</div>
-          <div class="text-sm text-gray-600">자소서 분석</div>
+      <!-- Right Content - AI Writing Demo -->
+      <div class="relative max-w-md lg:max-w-lg ml-auto">
+        <div class="bg-gray-50 rounded-2xl p-1 shadow-2xl">
+          <!-- Browser Window -->
+          <div class="bg-white rounded-xl">
+            <!-- Browser Header -->
+            <div class="flex items-center gap-2 px-4 py-3 border-b border-gray-200">
+              <div class="flex gap-2">
+                <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+              </div>
+              <div class="flex-1 flex justify-center">
+                <div class="bg-gray-100 rounded-md px-4 py-1 text-sm text-gray-600">
+                  jachui.com/dashboard
+                </div>
+              </div>
+            </div>
+            
+            <!-- AI Writing Dashboard -->
+            <div class="p-6">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-gray-900">AI 자소서 분석 대시보드</h3>
+                <div class="flex gap-2">
+                  <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md">실시간</button>
+                  <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded-md">작성중</button>
+                </div>
+              </div>
+              
+              <!-- Writing Progress -->
+              <div class="space-y-4">
+                <div class="flex justify-between items-center mb-4">
+                  <span class="text-sm font-semibold text-gray-900">삼성전자 - SW개발 직무</span>
+                  <span class="text-xs text-gray-500">3분 전 시작</span>
+                </div>
+                
+                <!-- AI Writing Animation -->
+                <div class="bg-gray-50 rounded-lg p-4 font-mono text-sm">
+                  <div class="space-y-2" id="aiWritingText">
+                    <p class="text-gray-700">
+                      저는 컴퓨터공학을 전공하며 <span class="inline-block bg-blue-100 text-blue-700 px-1 rounded">알고리즘 문제해결</span>에 
+                      깊은 관심을 가지고 꾸준히 역량을 키워왔습니다.
+                    </p>
+                    <p class="text-gray-700 typing-animation">
+                      특히 <span class="inline-block bg-green-100 text-green-700 px-1 rounded">오픈소스 프로젝트</span> 기여 경험을 통해 
+                      협업의 중요성을 배웠으며<span class="typing-cursor">|</span>
+                    </p>
+                  </div>
+                  <div class="flex items-center gap-2 mt-3">
+                    <div class="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                    <span class="text-xs text-blue-600">AI가 작성 중...</span>
+                  </div>
+                </div>
+                
+                <!-- Progress Indicators -->
+                <div class="grid grid-cols-3 gap-3 mt-4">
+                  <div class="text-center p-3 bg-green-50 rounded-lg">
+                    <div class="text-lg font-bold text-green-600">✓</div>
+                    <div class="text-xs text-gray-600 mt-1">경험 분석</div>
+                  </div>
+                  <div class="text-center p-3 bg-blue-50 rounded-lg border-2 border-blue-500">
+                    <div class="text-lg font-bold text-blue-600 animate-pulse">···</div>
+                    <div class="text-xs text-gray-600 mt-1">키워드 매칭</div>
+                  </div>
+                  <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <div class="text-lg font-bold text-gray-400">-</div>
+                    <div class="text-xs text-gray-400 mt-1">최종 검토</div>
+                  </div>
+                </div>
+                
+                <!-- Completion Rate -->
+                <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm text-gray-600">작성 진행률</span>
+                    <span class="text-sm font-bold text-blue-600" id="progressPercent">67%</span>
+                  </div>
+                  <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-500 progress-bar-animation" id="progressBar" style="width: 67%"></div>
+                  </div>
+                  <div class="mt-2 text-xs text-gray-500">예상 완료 시간: <span id="timeRemaining">1분 30초</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
+<style>
+  @keyframes typing {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+  
+  .typing-animation {
+    animation: typing 0.5s ease-in-out;
+  }
+  
+  .typing-cursor {
+    animation: blink 1s infinite;
+    font-weight: normal;
+  }
+  
+  .progress-bar-animation {
+    animation: progressGrow 3s ease-in-out infinite;
+  }
+  
+  @keyframes progressGrow {
+    0% { width: 45%; }
+    50% { width: 75%; }
+    100% { width: 45%; }
+  }
+</style>
+
+<script>
+  // AI Writing Animation
+  (function() {
+    const textSamples = [
+      "저는 컴퓨터공학을 전공하며 <span class='inline-block bg-blue-100 text-blue-700 px-1 rounded'>알고리즘 문제해결</span>에 깊은 관심을 가지고 꾸준히 역량을 키워왔습니다.",
+      "대학 시절 <span class='inline-block bg-green-100 text-green-700 px-1 rounded'>오픈소스 프로젝트</span> 참여를 통해 실무 개발 프로세스를 경험했습니다.",
+      "특히 <span class='inline-block bg-purple-100 text-purple-700 px-1 rounded'>React Native</span>를 활용한 모바일 앱 개발 프로젝트에서 팀 리더로 활동하며...",
+      "<span class='inline-block bg-yellow-100 text-yellow-700 px-1 rounded'>사용자 중심 설계</span>를 바탕으로 UI/UX를 개선하여 사용성을 30% 향상시켰습니다.",
+      "삼성전자의 <span class='inline-block bg-red-100 text-red-700 px-1 rounded'>혁신적인 기술력</span>과 함께 성장하고 싶습니다."
+    ];
+    
+    let currentIndex = 0;
+    let currentText = "";
+    let charIndex = 0;
+    let isDeleting = false;
+    let progressValue = 45;
+    let timeValue = 120; // seconds
+    
+    function typeWriter() {
+      const element = document.getElementById('aiWritingText');
+      if (!element) return;
+      
+      const p2 = element.querySelector('.typing-animation');
+      if (!p2) return;
+      
+      const fullText = textSamples[currentIndex];
+      const textWithoutTags = fullText.replace(/<[^>]*>/g, '');
+      
+      if (!isDeleting) {
+        if (charIndex < textWithoutTags.length) {
+          // Typing
+          currentText = textWithoutTags.substring(0, charIndex + 1);
+          let displayText = currentText;
+          
+          // Add highlight tags if present in original
+          if (fullText.includes('<span')) {
+            const matches = fullText.match(/<span[^>]*>([^<]*)<\/span>/g);
+            if (matches) {
+              matches.forEach(match => {
+                const innerText = match.replace(/<[^>]*>/g, '');
+                if (currentText.includes(innerText)) {
+                  displayText = displayText.replace(innerText, match);
+                }
+              });
+            }
+          }
+          
+          p2.innerHTML = displayText + '<span class="typing-cursor">|</span>';
+          charIndex++;
+          setTimeout(typeWriter, 50);
+        } else {
+          // Pause before deleting
+          setTimeout(() => {
+            isDeleting = true;
+            typeWriter();
+          }, 2000);
+        }
+      } else {
+        if (charIndex > 0) {
+          // Deleting
+          currentText = textWithoutTags.substring(0, charIndex - 1);
+          p2.innerHTML = currentText + '<span class="typing-cursor">|</span>';
+          charIndex--;
+          setTimeout(typeWriter, 30);
+        } else {
+          // Move to next text
+          isDeleting = false;
+          currentIndex = (currentIndex + 1) % textSamples.length;
+          setTimeout(typeWriter, 500);
+        }
+      }
+    }
+    
+    // Progress animation
+    function animateProgress() {
+      const progressBar = document.getElementById('progressBar');
+      const progressPercent = document.getElementById('progressPercent');
+      const timeRemaining = document.getElementById('timeRemaining');
+      
+      if (!progressBar || !progressPercent || !timeRemaining) return;
+      
+      setInterval(() => {
+        progressValue = progressValue + (Math.random() * 3 - 1);
+        progressValue = Math.max(45, Math.min(85, progressValue));
+        
+        progressBar.style.width = progressValue + '%';
+        progressPercent.textContent = Math.round(progressValue) + '%';
+        
+        // Update time
+        timeValue = Math.max(0, timeValue - 1);
+        const minutes = Math.floor(timeValue / 60);
+        const seconds = timeValue % 60;
+        timeRemaining.textContent = minutes + '분 ' + seconds + '초';
+        
+        if (timeValue === 0) {
+          timeValue = 120; // Reset
+        }
+      }, 1000);
+    }
+    
+    // Start animations when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(typeWriter, 1000);
+      animateProgress();
+    });
+  })();
+</script>
+
 <!-- Features Section -->
-<section class="py-24 bg-gray-50">
+<section class="py-20 bg-white">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-16">
+    <div class="text-center mb-12">
       <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-        주요 기능
+        자취가 특별한 이유
+      </h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        당신의 경험을 바탕으로 AI가 완벽하게 다듬어드려요
+      </p>
+    </div>
+    
+    <div class="grid md:grid-cols-4 gap-6">
+      <!-- Feature Cards -->
+      <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+        <div class="mb-4">
+          <span class="text-3xl">✨</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">개인 경험 기반 맞춤 작성</h3>
+        <p class="text-gray-600 text-sm">
+          당신의 경험을 입력하면 AI가 기업 맞춤형 자소서로 변환해드려요
+        </p>
+      </div>
+      
+      <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+        <div class="mb-4">
+          <span class="text-3xl">🚀</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">평균 3분 내 초안 완성</h3>
+        <p class="text-gray-600 text-sm">
+          채용공고 URL만 입력하면 3분 만에 맞춤형 자소서 초안을 받아보세요
+        </p>
+      </div>
+      
+      <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+        <div class="mb-4">
+          <span class="text-3xl">💼</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">업계별 맞춤 템플릿 제공</h3>
+        <p class="text-gray-600 text-sm">
+          IT, 금융, 제조 등 업계별 검증된 자소서 템플릿을 제공합니다
+        </p>
+      </div>
+      
+      <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+        <div class="mb-4">
+          <span class="text-3xl">🎯</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">합격률 85% 실제 검증</h3>
+        <p class="text-gray-600 text-sm">
+          실제 합격자 데이터를 기반으로 검증된 작성 방식을 적용합니다
+        </p>
+      </div>
+    </div>
+    
+  </div>
+</section>
+
+<!-- Process Section -->
+<section class="py-20 bg-gradient-to-br from-blue-50 to-purple-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        간단한 3단계로 합격까지
       </h2>
       <p class="text-lg text-gray-600">
-        취업 준비에 필요한 모든 정보를 한 곳에서
+        당신의 이야기를 완벽한 자소서로 만드는 과정
       </p>
     </div>
     
     <div class="grid md:grid-cols-3 gap-8">
-      <!-- Feature 1 -->
-      <div class="bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition-shadow">
-        <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center mb-6">
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
+      <div class="text-center">
+        <div class="w-20 h-20 mx-auto mb-6 bg-white rounded-full shadow-lg flex items-center justify-center">
+          <span class="text-3xl">📝</span>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">기업 검색</h3>
-        <p class="text-gray-600">
-          관심 기업의 최신 뉴스와 정보를 실시간으로 수집하여 제공합니다
-        </p>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">1. 당신의 경험을 입력하세요</h3>
+        <p class="text-gray-600">개인 맞춤형 시작 - 경력, 프로젝트, 활동 등 당신만의 스토리를 들려주세요</p>
       </div>
       
-      <!-- Feature 2 -->
-      <div class="bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition-shadow">
-        <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center mb-6">
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
-          </svg>
+      <div class="text-center">
+        <div class="w-20 h-20 mx-auto mb-6 bg-white rounded-full shadow-lg flex items-center justify-center">
+          <span class="text-3xl">✨</span>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">뉴스 크롤링</h3>
-        <p class="text-gray-600">
-          다양한 언론사의 기업 관련 뉴스를 자동으로 수집하고 정리합니다
-        </p>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">2. AI가 완벽하게 다듬어드려요</h3>
+        <p class="text-gray-600">기술력 강조 - 기업 맞춤형 키워드와 구조로 전문적인 자소서 완성</p>
       </div>
       
-      <!-- Feature 3 -->
-      <div class="bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition-shadow">
-        <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center mb-6">
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-          </svg>
+      <div class="text-center">
+        <div class="w-20 h-20 mx-auto mb-6 bg-white rounded-full shadow-lg flex items-center justify-center">
+          <span class="text-3xl">🎯</span>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">AI 자소서 분석</h3>
-        <p class="text-gray-600">
-          GPT-4.1 기반 AI가 자기소개서를 분석하고 개선점을 제안합니다
-        </p>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">3. 합격까지 함께 달려가요</h3>
+        <p class="text-gray-600">결과 지향성 - 면접 예상 질문까지 준비하여 최종 합격을 도와드려요</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- CTA Section -->
-<section class="py-24 bg-white">
+<section class="py-20 bg-white">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
     <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-      지금 시작하세요
+      지금 시작하면 <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">3분 후</span> 자소서 완성
     </h2>
-    <p class="text-lg text-gray-600 mb-8">
-      스마트한 취업 준비의 첫걸음
+    
+    <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+      더 이상 자소서 때문에 고민하지 마세요.<br>
+      자취가 당신의 합격을 도와드립니다.
     </p>
-    <%= link_to companies_path, class: "inline-flex items-center px-8 py-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-all text-lg font-medium" do %>
-      무료로 시작하기
-      <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-      </svg>
-    <% end %>
+    
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <%= link_to job_posting_cover_letters_path, class: "px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium shadow-sm hover:shadow-md" do %>
+        3분만에 자소서 완성하기
+      <% end %>
+      
+      <%= link_to cover_letters_path, class: "px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium" do %>
+        합격 사례 먼저 보기
+      <% end %>
+    </div>
+    
   </div>
 </section>

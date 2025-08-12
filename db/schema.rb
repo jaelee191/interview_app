@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_09_020327) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_11_142602) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -75,6 +75,28 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_09_020327) do
     t.string "user_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "job_analyses", force: :cascade do |t|
+    t.string "url"
+    t.string "company_name"
+    t.string "position"
+    t.text "analysis_result"
+    t.text "keywords"
+    t.text "required_skills"
+    t.text "company_values"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "job_posting_caches", force: :cascade do |t|
+    t.string "url", null: false
+    t.text "content"
+    t.datetime "cached_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cached_at"], name: "index_job_posting_caches_on_cached_at"
+    t.index ["url"], name: "index_job_posting_caches_on_url", unique: true
   end
 
   add_foreign_key "company_news", "companies"

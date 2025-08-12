@@ -1,0 +1,160 @@
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12">
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full mb-4">
+        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+        </svg>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        🔖 AI 채용공고 분석 북마크릿
+      </h1>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        채용 사이트에서 클릭 한 번으로 AI 분석을 실행하세요!
+      </p>
+    </div>
+
+    <!-- 설치 방법 -->
+    <div class="bg-white shadow-2xl rounded-2xl p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">📚 설치 방법</h2>
+      
+      <div class="space-y-6">
+        <!-- Step 1 -->
+        <div class="flex items-start">
+          <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+            <span class="text-indigo-600 font-bold">1</span>
+          </div>
+          <div class="ml-4">
+            <h3 class="font-semibold text-gray-900 mb-2">아래 버튼을 북마크바로 드래그</h3>
+            <p class="text-gray-600">아래의 "AI 채용공고 분석" 버튼을 마우스로 클릭한 채 북마크바로 끌어다 놓으세요.</p>
+          </div>
+        </div>
+        
+        <!-- Step 2 -->
+        <div class="flex items-start">
+          <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+            <span class="text-indigo-600 font-bold">2</span>
+          </div>
+          <div class="ml-4">
+            <h3 class="font-semibold text-gray-900 mb-2">채용공고 페이지로 이동</h3>
+            <p class="text-gray-600">사람인, 잡코리아, 원티드 등 원하는 채용공고 페이지를 엽니다.</p>
+          </div>
+        </div>
+        
+        <!-- Step 3 -->
+        <div class="flex items-start">
+          <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+            <span class="text-indigo-600 font-bold">3</span>
+          </div>
+          <div class="ml-4">
+            <h3 class="font-semibold text-gray-900 mb-2">북마크 클릭</h3>
+            <p class="text-gray-600">북마크바에 추가된 "AI 채용공고 분석"을 클릭하면 자동으로 분석이 시작됩니다.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 북마크릿 버튼 -->
+      <div class="mt-8 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl text-center">
+        <p class="text-sm text-gray-600 mb-4">👇 이 버튼을 북마크바로 드래그하세요</p>
+        <a href="javascript:(function(){
+          var currentUrl = window.location.href;
+          var serverUrl = '<%= request.base_url %>';
+          var analysisUrl = serverUrl + '/cover_letters/job_posting?url=' + encodeURIComponent(currentUrl) + '&auto_analyze=true';
+          
+          /* 새 창으로 열기 */
+          var win = window.open(analysisUrl, '_blank', 'width=1200,height=800');
+          
+          /* 또는 현재 창에서 이동 */
+          /* window.location.href = analysisUrl; */
+        })();" 
+        class="inline-block px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg no-underline">
+          🎯 AI 채용공고 분석
+        </a>
+        <p class="text-xs text-gray-500 mt-4">* 북마크바가 안 보이면 Ctrl+Shift+B (Windows) 또는 Cmd+Shift+B (Mac)를 누르세요</p>
+      </div>
+    </div>
+
+    <!-- 지원 사이트 -->
+    <div class="bg-white shadow-xl rounded-2xl p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">✅ 지원 채용 사이트</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span>사람인</span>
+        </div>
+        <div class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span>잡코리아</span>
+        </div>
+        <div class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span>원티드</span>
+        </div>
+        <div class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span>인크루트</span>
+        </div>
+        <div class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span>잡플래닛</span>
+        </div>
+        <div class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span>삼성커리어스</span>
+        </div>
+      </div>
+      <p class="text-sm text-gray-600 mt-4">* 기타 채용 사이트도 대부분 지원됩니다</p>
+    </div>
+
+    <!-- 장점 -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8">
+      <h3 class="text-lg font-bold text-gray-900 mb-4">💎 북마크릿의 장점</h3>
+      <ul class="space-y-3 text-gray-700">
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span><strong>원클릭 분석:</strong> URL 복사-붙여넣기 없이 바로 분석</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span><strong>실시간 크롤링:</strong> JavaScript 렌더링 페이지도 정확하게 분석</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span><strong>캐싱 지원:</strong> 24시간 동안 동일한 공고는 빠르게 로드</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span><strong>설치 불필요:</strong> 확장 프로그램 설치 없이 브라우저에서 바로 사용</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Back Link -->
+    <div class="text-center mt-8">
+      <a href="/cover_letters/job_posting" class="text-indigo-600 hover:text-indigo-800 font-medium">
+        ← 일반 분석 페이지로 돌아가기
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,521 @@
+<div class="min-h-screen bg-gray-50 py-12">
+  <div class="max-w-5xl mx-auto px-4">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-3xl font-bold text-gray-900 mb-4">
+        채용공고 AI 분석기
+      </h1>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        채용공고 URL을 입력하면 AI가 핵심 키워드와 요구 역량을 자동으로 분석해드립니다
+      </p>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="grid md:grid-cols-3 gap-4 mb-8">
+      <div class="bg-white rounded-lg border border-gray-200 p-4">
+        <div class="flex items-center mb-2">
+          <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+          <h3 class="font-semibold text-gray-900">핵심 키워드 추출</h3>
+        </div>
+        <p class="text-sm text-gray-600">채용공고에서 가장 중요한 키워드를 자동으로 파악합니다</p>
+      </div>
+      <div class="bg-white rounded-lg border border-gray-200 p-4">
+        <div class="flex items-center mb-2">
+          <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+          <h3 class="font-semibold text-gray-900">요구 역량 분석</h3>
+        </div>
+        <p class="text-sm text-gray-600">필수 역량과 우대사항을 체계적으로 정리합니다</p>
+      </div>
+      <div class="bg-white rounded-lg border border-gray-200 p-4">
+        <div class="flex items-center mb-2">
+          <div class="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
+          <h3 class="font-semibold text-gray-900">인재상 도출</h3>
+        </div>
+        <p class="text-sm text-gray-600">기업이 원하는 인재상과 핵심 가치를 분석합니다</p>
+      </div>
+    </div>
+
+    <!-- URL Input Form -->
+    <div class="bg-white rounded-xl border border-gray-200 p-6 mb-8">
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">채용공고 URL 입력</label>
+        <div class="relative">
+          <input 
+            type="url" 
+            id="job-url" 
+            placeholder="https://www.saramin.co.kr/zf_user/jobs/relay/view?isMypage=no&rec_idx=..." 
+            class="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+          />
+          <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+            </svg>
+          </div>
+        </div>
+        <p class="mt-2 text-sm text-gray-500">지원 사이트: 사람인, 잡코리아, 원티드, 인크루트, 잡플래닛 등</p>
+      </div>
+      
+      <!-- Optional: Add job details for Samsung careers -->
+      <div class="p-4 bg-blue-50 rounded-lg mb-6">
+        <p class="text-sm text-blue-800 mb-2">
+          <strong>💡 더 편한 방법을 원하시나요?</strong>
+        </p>
+        <div class="space-y-2">
+          <p class="text-sm text-blue-700">
+            🔖 <a href="/cover_letters/bookmarklet" class="underline font-semibold">북마크릿 설치</a> - 채용 사이트에서 원클릭 분석
+          </p>
+          <p class="text-sm text-blue-700">
+            📝 <a href="/cover_letters/job_posting_text" class="underline font-semibold">텍스트 직접 입력</a> - URL 분석이 안 될 때
+          </p>
+        </div>
+      </div>
+      
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">추가 정보 (선택)</label>
+        <input 
+          type="text" 
+          id="job-title" 
+          placeholder="예: 삼성물산 패션부문 경력사원 채용(퍼포먼스마케팅, CRM, 브랜드마케팅)" 
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+        />
+      </div>
+
+      <button 
+        id="analyze-btn" 
+        type="button"
+        class="w-full px-5 py-2.5 bg-blue-600 text-white font-medium text-sm rounded-lg hover:bg-blue-700 transition-all shadow-sm hover:shadow-md"
+      >
+        채용공고 분석 시작
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-state" class="hidden">
+      <div class="bg-white rounded-2xl p-8 shadow-xl">
+        <div class="flex flex-col items-center">
+          <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mb-4"></div>
+          <p class="text-lg font-medium text-gray-700">채용공고를 분석하고 있습니다...</p>
+          <p class="text-sm text-gray-500 mt-2">잠시만 기다려주세요 (약 10-30초 소요)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analysis Result -->
+    <div id="analysis-result" class="hidden">
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
+          <h2 class="text-2xl font-bold text-white">📊 채용공고 분석 결과</h2>
+        </div>
+        <div class="p-8">
+          <div id="result-content" class="prose max-w-none">
+            <!-- Analysis content will be inserted here -->
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="mt-8 pt-8 border-t border-gray-200">
+            <div class="flex flex-col sm:flex-row gap-4">
+              <button 
+                id="use-for-cover-letter" 
+                class="flex-1 px-5 py-2.5 bg-blue-600 text-white font-medium text-sm rounded-lg hover:bg-blue-700 transition-all shadow-sm hover:shadow-md"
+              >
+                이 분석 결과로 자소서 작성하기
+              </button>
+              <button 
+                id="analyze-another" 
+                class="flex-1 px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium text-sm rounded-lg hover:bg-gray-50 transition-all"
+              >
+                다른 채용공고 분석하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tips Section -->
+    <div class="mt-8 bg-gray-50 rounded-xl p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">활용 팁</h3>
+      <ul class="space-y-3 text-gray-700">
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span>분석된 핵심 키워드를 자소서에 자연스럽게 포함시키세요</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span>요구 역량과 매칭되는 본인의 경험을 구체적으로 작성하세요</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span>기업이 원하는 인재상과 본인의 가치관을 연결지어 표현하세요</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span>분석 결과를 바탕으로 면접 예상 질문도 미리 준비하세요</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  
+  // Wait for DOM to be ready
+  function ready(fn) {
+    if (document.readyState !== 'loading') {
+      fn();
+    } else {
+      document.addEventListener('DOMContentLoaded', fn);
+    }
+  }
+  
+  ready(function() {
+    console.log('Page ready, initializing job posting analyzer...');
+    
+    // 자동 분석 체크 (북마크릿에서 온 경우)
+    <% if @auto_analyze && @auto_url %>
+    console.log('Auto-analyze detected from bookmarklet');
+    setTimeout(function() {
+      document.getElementById('job-url').value = '<%= @auto_url %>';
+      document.getElementById('analyze-btn').click();
+    }, 500);
+    <% end %>
+    
+    const analyzeBtn = document.getElementById('analyze-btn');
+    const urlInput = document.getElementById('job-url');
+    const jobTitleInput = document.getElementById('job-title');
+    const loadingState = document.getElementById('loading-state');
+    const resultDiv = document.getElementById('analysis-result');
+    const resultContent = document.getElementById('result-content');
+    
+    if (!analyzeBtn) {
+      console.error('Analyze button not found!');
+      return;
+    }
+    
+    console.log('Button found, adding click listener...');
+    
+    // Main analyze function
+    analyzeBtn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      console.log('Button clicked!');
+      
+      const url = urlInput.value.trim();
+      const jobTitle = jobTitleInput ? jobTitleInput.value.trim() : '';
+      console.log('URL:', url);
+      console.log('Job Title:', jobTitle);
+      
+      if (!url) {
+        alert('채용공고 URL을 입력해주세요.');
+        return;
+      }
+      
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        alert('올바른 URL 형식으로 입력해주세요. (http:// 또는 https://로 시작)');
+        return;
+      }
+      
+      // Show loading
+      console.log('Showing loading state...');
+      loadingState.classList.remove('hidden');
+      resultDiv.classList.add('hidden');
+      analyzeBtn.disabled = true;
+      analyzeBtn.style.opacity = '0.5';
+      
+      try {
+        console.log('Sending request...');
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        const token = csrfToken ? csrfToken.content : '';
+        
+        const response = await fetch('/cover_letters/analyze_job_posting', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': token,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ url: url, job_title: jobTitle })
+        });
+        
+        console.log('Response received:', response.status);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Data received:', data);
+        
+        if (data.success) {
+          // Display results
+          displayResults(data.analysis);
+          loadingState.classList.add('hidden');
+          resultDiv.classList.remove('hidden');
+          resultDiv.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          throw new Error(data.error || '분석 실패');
+        }
+        
+      } catch (error) {
+        console.error('Error:', error);
+        alert('오류가 발생했습니다: ' + error.message);
+        loadingState.classList.add('hidden');
+      } finally {
+        analyzeBtn.disabled = false;
+        analyzeBtn.style.opacity = '1';
+      }
+    });
+    
+    // Display results function with modern design
+    function displayResults(analysis) {
+      if (!analysis) return;
+      
+      // Add custom CSS
+      if (!document.querySelector('link[href="/analysis_styles.css"]')) {
+        const cssLink = document.createElement('link');
+        cssLink.rel = 'stylesheet';
+        cssLink.href = '/analysis_styles.css';
+        document.head.appendChild(cssLink);
+      }
+      
+      // Transform the analysis into a modern card-based layout
+      let html = '<div style="max-width: 1200px; margin: 0 auto;">';
+      
+      // Parse sections
+      const sections = analysis.split(/(?=##\s)/);
+      
+      sections.forEach(section => {
+        if (!section.trim()) return;
+        
+        // Extract title and content
+        const lines = section.split('\n');
+        const titleMatch = lines[0].match(/##\s*([🏢💼🎯💪⭐🏆📝💡🎨📊💬]?)\s*(.*)/);
+        
+        if (titleMatch) {
+          const icon = titleMatch[1] || '📌';
+          const title = titleMatch[2];
+          const content = lines.slice(1).join('\n');
+          
+          // Create modern card section
+          html += createModernSection(icon, title, content);
+        } else {
+          // Handle content without section header
+          html += formatContent(section);
+        }
+      });
+      
+      html += '</div>';
+      
+      // Apply the formatted HTML
+      resultContent.innerHTML = html;
+      
+      // Add animations
+      setTimeout(() => {
+        document.querySelectorAll('.modern-section').forEach((section, index) => {
+          setTimeout(() => {
+            section.style.opacity = '1';
+            section.style.transform = 'translateY(0)';
+          }, index * 100);
+        });
+      }, 100);
+    }
+    
+    // Create modern section card
+    function createModernSection(icon, title, content) {
+      let sectionClass = 'modern-section';
+      let headerBg = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+      
+      // Customize based on section type
+      if (title.includes('기업 정보')) {
+        headerBg = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+      } else if (title.includes('직무 정보')) {
+        headerBg = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+      } else if (title.includes('핵심 키워드')) {
+        headerBg = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+      } else if (title.includes('필수 역량')) {
+        headerBg = 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)';
+      } else if (title.includes('자소서')) {
+        headerBg = 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)';
+      } else if (title.includes('면접')) {
+        headerBg = 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)';
+      } else if (title.includes('경쟁력')) {
+        headerBg = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+      } else if (title.includes('AI 인사이트')) {
+        headerBg = 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)';
+      }
+      
+      let html = `
+        <div class="${sectionClass}" style="
+          background: white;
+          border-radius: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+          margin-bottom: 24px;
+          overflow: hidden;
+          opacity: 0;
+          transform: translateY(20px);
+          transition: all 0.5s ease;
+        ">
+          <div style="
+            background: ${headerBg};
+            padding: 16px 24px;
+            color: white;
+            display: flex;
+            align-items: center;
+          ">
+            <span style="font-size: 24px; margin-right: 12px;">${icon}</span>
+            <h3 style="margin: 0; font-size: 18px; font-weight: 600;">${title}</h3>
+          </div>
+          <div style="padding: 24px;">
+            ${formatSectionContent(title, content)}
+          </div>
+        </div>
+      `;
+      
+      return html;
+    }
+    
+    // Format section content based on type
+    function formatSectionContent(title, content) {
+      let html = '';
+      
+      if (title.includes('핵심 키워드')) {
+        // Create keyword tags
+        html += '<div style="display: flex; flex-wrap: wrap; gap: 12px;">';
+        const keywords = content.match(/\d+\.\s*\*?\*?([^:]+):?\*?\*?\s*([^\n]+)/g) || [];
+        keywords.forEach((keyword, index) => {
+          const match = keyword.match(/\d+\.\s*\*?\*?([^:]+):?\*?\*?\s*(.+)/);
+          if (match) {
+            const colors = [
+              'linear-gradient(135deg, #667eea, #764ba2)',
+              'linear-gradient(135deg, #f093fb, #f5576c)',
+              'linear-gradient(135deg, #4facfe, #00f2fe)',
+              'linear-gradient(135deg, #43e97b, #38f9d7)',
+              'linear-gradient(135deg, #fa709a, #fee140)'
+            ];
+            html += `
+              <div style="
+                background: ${colors[index % colors.length]};
+                color: white;
+                padding: 10px 20px;
+                border-radius: 25px;
+                font-weight: 500;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                transition: transform 0.2s;
+                cursor: pointer;
+              " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <span style="font-weight: bold; margin-right: 8px;">${index + 1}</span>
+                ${match[1].trim()}
+              </div>
+            `;
+          }
+        });
+        html += '</div>';
+        
+        // Add descriptions
+        keywords.forEach(keyword => {
+          const match = keyword.match(/\d+\.\s*\*?\*?([^:]+):?\*?\*?\s*(.+)/);
+          if (match && match[2]) {
+            html += `<p style="margin-top: 8px; color: #64748b; font-size: 14px;">• ${match[2]}</p>`;
+          }
+        });
+        
+      } else if (title.includes('경쟁력 평가')) {
+        // Create evaluation cards
+        html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">';
+        
+        // Parse difficulty
+        const difficultyMatch = content.match(/지원 난이도:\s*(★+)/);
+        if (difficultyMatch) {
+          const stars = difficultyMatch[1].length;
+          html += `
+            <div style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 12px;">
+              <div style="color: #64748b; font-size: 14px; margin-bottom: 8px;">지원 난이도</div>
+              <div style="font-size: 24px; color: #fbbf24;">
+                ${'★'.repeat(stars)}${'☆'.repeat(5 - stars)}
+              </div>
+            </div>
+          `;
+        }
+        
+        // Parse competition
+        const competitionMatch = content.match(/경쟁률 예상:\s*(\S+)/);
+        if (competitionMatch) {
+          const level = competitionMatch[1];
+          const color = level === '높음' ? '#ef4444' : level === '중간' ? '#f59e0b' : '#10b981';
+          html += `
+            <div style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 12px;">
+              <div style="color: #64748b; font-size: 14px; margin-bottom: 8px;">경쟁률</div>
+              <div style="font-size: 20px; font-weight: bold; color: ${color};">${level}</div>
+            </div>
+          `;
+        }
+        
+        // Parse timing
+        const timingMatch = content.match(/추천 지원 시기:\s*(.+)/);
+        if (timingMatch) {
+          html += `
+            <div style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 12px;">
+              <div style="color: #64748b; font-size: 14px; margin-bottom: 8px;">추천 시기</div>
+              <div style="font-size: 16px; font-weight: 600; color: #1e293b;">${timingMatch[1]}</div>
+            </div>
+          `;
+        }
+        
+        html += '</div>';
+        
+      } else {
+        // Default formatting
+        html = content
+          .replace(/### (.*?)$/gm, '<h4 style="font-weight: 600; color: #1e293b; margin: 16px 0 8px 0;">$1</h4>')
+          .replace(/\*\*([^*]+)\*\*/g, '<strong style="color: #475569;">$1</strong>')
+          .replace(/^[•\-]\s*(.*?)$/gm, '<li style="margin-left: 20px; margin-bottom: 8px; color: #475569;">$1</li>')
+          .replace(/^(\d+)\.\s*(.*?)$/gm, '<div style="margin-left: 20px; margin-bottom: 8px; color: #475569;"><strong>$1.</strong> $2</div>')
+          .replace(/\n\n/g, '</p><p style="margin-bottom: 12px; color: #475569; line-height: 1.6;">');
+        
+        if (!html.startsWith('<')) {
+          html = '<p style="margin-bottom: 12px; color: #475569; line-height: 1.6;">' + html + '</p>';
+        }
+      }
+      
+      return html;
+    }
+    
+    // Format general content
+    function formatContent(content) {
+      return content
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/^[•\-]\s*(.*?)$/gm, '<li>$1</li>')
+        .replace(/\n\n/g, '</p><p>');
+    }
+    
+    // Setup other buttons
+    const useForCoverLetterBtn = document.getElementById('use-for-cover-letter');
+    const analyzeAnotherBtn = document.getElementById('analyze-another');
+    
+    if (useForCoverLetterBtn) {
+      useForCoverLetterBtn.addEventListener('click', function() {
+        window.location.href = '/cover_letters/new?from_job_analysis=true';
+      });
+    }
+    
+    if (analyzeAnotherBtn) {
+      analyzeAnotherBtn.addEventListener('click', function() {
+        urlInput.value = '';
+        resultDiv.classList.add('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+  });
+})();
+</script>

@@ -1,0 +1,326 @@
+/* 채용공고 분석 결과 스타일 */
+.analysis-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+  color: #2d3748;
+}
+
+/* 섹션 카드 */
+.analysis-section {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.analysis-section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* 섹션 헤더 */
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 2px solid #f7fafc;
+}
+
+.section-icon {
+  font-size: 1.5rem;
+  margin-right: 0.8rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+}
+
+/* 정보 그리드 */
+.info-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+}
+
+.info-label {
+  font-weight: 500;
+  color: #4a5568;
+  min-width: 120px;
+  margin-right: 1rem;
+}
+
+.info-value {
+  color: #2d3748;
+  flex: 1;
+}
+
+/* 키워드 태그 */
+.keyword-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.keyword-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: transform 0.2s;
+}
+
+.keyword-tag:hover {
+  transform: scale(1.05);
+}
+
+.keyword-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  font-size: 0.8rem;
+}
+
+/* 스킬 박스 */
+.skills-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.skill-box {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 1.2rem;
+  border-left: 4px solid #4299e1;
+}
+
+.skill-box h4 {
+  color: #2b6cb0;
+  margin: 0 0 0.8rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.skill-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.skill-list li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #4a5568;
+}
+
+.skill-list li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #48bb78;
+  font-weight: bold;
+}
+
+/* 평가 미터 */
+.evaluation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.evaluation-item {
+  text-align: center;
+  padding: 1.2rem;
+  background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.evaluation-label {
+  font-size: 0.9rem;
+  color: #718096;
+  margin-bottom: 0.5rem;
+}
+
+.evaluation-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2d3748;
+}
+
+.difficulty-stars {
+  color: #fbbf24;
+  font-size: 1.2rem;
+}
+
+/* 팁 카드 */
+.tip-card {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+  border-left: 4px solid #f59e0b;
+}
+
+.tip-card h4 {
+  color: #92400e;
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.tip-card ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+  color: #78350f;
+}
+
+/* AI 인사이트 */
+.ai-insight {
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  border: 1px solid #a5b4fc;
+}
+
+.ai-insight-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.ai-insight-icon {
+  font-size: 1.5rem;
+  margin-right: 0.8rem;
+}
+
+.ai-insight-title {
+  font-weight: 600;
+  color: #4c1d95;
+}
+
+.ai-insight-content {
+  color: #5b21b6;
+  line-height: 1.8;
+}
+
+/* 리스트 스타일 */
+.clean-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+}
+
+.clean-list li {
+  padding: 0.4rem 0;
+  position: relative;
+  padding-left: 1.2rem;
+}
+
+.clean-list li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #4299e1;
+  font-weight: bold;
+}
+
+/* 버튼 그룹 */
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid #f7fafc;
+}
+
+.btn-primary {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  background: white;
+  color: #4a5568;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: #f7fafc;
+  border-color: #cbd5e0;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .analysis-container {
+    padding: 1rem;
+  }
+  
+  .skills-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .evaluation-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+  
+  .info-label {
+    min-width: auto;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  
+  .info-item {
+    flex-direction: column;
+  }
+}

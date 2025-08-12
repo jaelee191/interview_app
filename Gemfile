@@ -45,7 +45,7 @@ gem "thruster", require: false
 # 뉴스 크롤링을 위한 gem
 gem "nokogiri"      # HTML/XML 파싱
 gem "httparty"      # HTTP 요청
-gem "ferrum"        # 동적 콘텐츠용 헤드리스 Chrome
+gem "playwright-ruby-client"  # 동적 콘텐츠용 헤드리스 브라우저 (Playwright)
 gem "sidekiq"       # 백그라운드 작업
 gem "redis"         # Sidekiq용
 gem "kimurai"       # 크롤링 프레임워크 (선택사항)

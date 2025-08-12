@@ -1,0 +1,328 @@
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12">
+  <div class="max-w-5xl mx-auto px-4">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full mb-4">
+        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        📝 채용공고 텍스트 분석
+      </h1>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        채용공고 내용을 직접 붙여넣으면 AI가 즉시 분석해드립니다
+      </p>
+    </div>
+
+    <!-- Input Form -->
+    <div class="bg-white shadow-2xl rounded-2xl p-8">
+      <!-- Company & Position Info -->
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">회사명 *</label>
+          <input 
+            type="text" 
+            id="company-name" 
+            placeholder="예: 삼성전자" 
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            required
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">지원 직무 *</label>
+          <input 
+            type="text" 
+            id="position" 
+            placeholder="예: 소프트웨어 개발" 
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            required
+          />
+        </div>
+      </div>
+
+      <!-- Job Posting Content -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          채용공고 내용 *
+          <span class="text-xs text-gray-500 ml-2">(채용 사이트에서 복사-붙여넣기)</span>
+        </label>
+        <textarea 
+          id="job-content" 
+          rows="15"
+          placeholder="채용공고 전체 내용을 복사해서 붙여넣어주세요.
+
+예시:
+[모집부문]
+• 소프트웨어 개발
+
+[담당업무]
+• 웹/모바일 애플리케이션 개발
+• 시스템 설계 및 구현
+
+[자격요건]
+• 컴퓨터공학 관련 학과 졸업
+• Java, Python 등 프로그래밍 언어 활용 가능
+
+[우대사항]
+• 관련 프로젝트 경험
+• 오픈소스 기여 경험
+
+[근무조건]
+• 근무지: 서울
+• 고용형태: 정규직"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none font-mono text-sm"
+          required
+        ></textarea>
+        <div class="mt-2 flex justify-between items-center">
+          <p class="text-sm text-gray-500">최소 100자 이상 입력해주세요</p>
+          <span id="char-count" class="text-sm text-gray-500">0자</span>
+        </div>
+      </div>
+
+      <!-- Source URL (Optional) -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">출처 URL (선택)</label>
+        <input 
+          type="url" 
+          id="source-url" 
+          placeholder="https://www.saramin.co.kr/..." 
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        />
+      </div>
+
+      <!-- Analyze Button -->
+      <button 
+        id="analyze-text-btn" 
+        type="button"
+        class="w-full px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg"
+      >
+        <span class="flex items-center justify-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+          </svg>
+          채용공고 분석 시작
+        </span>
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-state" class="hidden mt-8">
+      <div class="bg-white rounded-2xl p-8 shadow-xl">
+        <div class="flex flex-col items-center">
+          <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mb-4"></div>
+          <p class="text-lg font-medium text-gray-700">채용공고를 분석하고 있습니다...</p>
+          <p class="text-sm text-gray-500 mt-2">잠시만 기다려주세요 (약 10-20초 소요)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analysis Result -->
+    <div id="analysis-result" class="hidden mt-8">
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
+          <h2 class="text-2xl font-bold text-white">📊 채용공고 분석 결과</h2>
+        </div>
+        <div class="p-8">
+          <div id="result-content" class="prose max-w-none">
+            <!-- Analysis content will be inserted here -->
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="mt-8 pt-8 border-t border-gray-200">
+            <div class="flex flex-col sm:flex-row gap-4">
+              <button 
+                id="use-for-cover-letter" 
+                class="flex-1 px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                이 분석 결과로 자소서 작성하기
+              </button>
+              <button 
+                id="analyze-another" 
+                class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                다른 채용공고 분석하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tips -->
+    <div class="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8">
+      <h3 class="text-lg font-bold text-gray-900 mb-4">💡 복사-붙여넣기 팁</h3>
+      <ul class="space-y-3 text-gray-700">
+        <li class="flex items-start">
+          <span class="text-indigo-600 mr-2">1.</span>
+          <span>채용 사이트에서 채용공고 전체를 드래그하여 선택</span>
+        </li>
+        <li class="flex items-start">
+          <span class="text-indigo-600 mr-2">2.</span>
+          <span>Ctrl+C (Windows) 또는 Cmd+C (Mac)로 복사</span>
+        </li>
+        <li class="flex items-start">
+          <span class="text-indigo-600 mr-2">3.</span>
+          <span>위 텍스트 입력란에 Ctrl+V (Windows) 또는 Cmd+V (Mac)로 붙여넣기</span>
+        </li>
+        <li class="flex items-start">
+          <span class="text-indigo-600 mr-2">4.</span>
+          <span>회사명과 지원 직무를 정확히 입력하면 더 정확한 분석 가능</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  
+  function ready(fn) {
+    if (document.readyState !== 'loading') {
+      fn();
+    } else {
+      document.addEventListener('DOMContentLoaded', fn);
+    }
+  }
+  
+  ready(function() {
+    const analyzeBtn = document.getElementById('analyze-text-btn');
+    const companyInput = document.getElementById('company-name');
+    const positionInput = document.getElementById('position');
+    const contentInput = document.getElementById('job-content');
+    const urlInput = document.getElementById('source-url');
+    const charCount = document.getElementById('char-count');
+    const loadingState = document.getElementById('loading-state');
+    const resultDiv = document.getElementById('analysis-result');
+    const resultContent = document.getElementById('result-content');
+    
+    // Character count
+    if (contentInput && charCount) {
+      contentInput.addEventListener('input', function() {
+        charCount.textContent = contentInput.value.length + '자';
+      });
+    }
+    
+    if (!analyzeBtn) return;
+    
+    analyzeBtn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      
+      const company = companyInput.value.trim();
+      const position = positionInput.value.trim();
+      const content = contentInput.value.trim();
+      const sourceUrl = urlInput.value.trim();
+      
+      // Validation
+      if (!company) {
+        alert('회사명을 입력해주세요.');
+        companyInput.focus();
+        return;
+      }
+      
+      if (!position) {
+        alert('지원 직무를 입력해주세요.');
+        positionInput.focus();
+        return;
+      }
+      
+      if (!content || content.length < 100) {
+        alert('채용공고 내용을 100자 이상 입력해주세요.');
+        contentInput.focus();
+        return;
+      }
+      
+      // Show loading
+      loadingState.classList.remove('hidden');
+      resultDiv.classList.add('hidden');
+      analyzeBtn.disabled = true;
+      analyzeBtn.style.opacity = '0.5';
+      
+      try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        const token = csrfToken ? csrfToken.content : '';
+        
+        const response = await fetch('/cover_letters/analyze_job_text', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': token,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            company_name: company,
+            position: position,
+            content: content,
+            source_url: sourceUrl
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          displayResults(data.analysis);
+          loadingState.classList.add('hidden');
+          resultDiv.classList.remove('hidden');
+          resultDiv.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          throw new Error(data.error || '분석 실패');
+        }
+        
+      } catch (error) {
+        console.error('Error:', error);
+        alert('오류가 발생했습니다: ' + error.message);
+        loadingState.classList.add('hidden');
+      } finally {
+        analyzeBtn.disabled = false;
+        analyzeBtn.style.opacity = '1';
+      }
+    });
+    
+    function displayResults(analysis) {
+      if (!analysis) return;
+      
+      let html = analysis
+        .replace(/### (.*?)$/gm, '<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">$1</h3>')
+        .replace(/## (.*?)$/gm, '<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4 pb-2 border-b">$1</h2>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>')
+        .replace(/^\* (.*?)$/gm, '<li class="ml-6 mb-1">• $1</li>')
+        .replace(/^- (.*?)$/gm, '<li class="ml-6 mb-1">• $1</li>')
+        .replace(/^(\d+)\. (.*?)$/gm, '<div class="ml-6 mb-2"><strong>$1.</strong> $2</div>')
+        .replace(/\n\n/g, '</p><p class="mb-4 text-gray-700 leading-relaxed">');
+      
+      if (!html.startsWith('<')) {
+        html = '<p class="mb-4 text-gray-700 leading-relaxed">' + html + '</p>';
+      }
+      
+      resultContent.innerHTML = html;
+    }
+    
+    // Other buttons
+    const useForCoverLetterBtn = document.getElementById('use-for-cover-letter');
+    const analyzeAnotherBtn = document.getElementById('analyze-another');
+    
+    if (useForCoverLetterBtn) {
+      useForCoverLetterBtn.addEventListener('click', function() {
+        window.location.href = '/cover_letters/new?from_job_analysis=true';
+      });
+    }
+    
+    if (analyzeAnotherBtn) {
+      analyzeAnotherBtn.addEventListener('click', function() {
+        companyInput.value = '';
+        positionInput.value = '';
+        contentInput.value = '';
+        urlInput.value = '';
+        charCount.textContent = '0자';
+        resultDiv.classList.add('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+  });
+})();
+</script>

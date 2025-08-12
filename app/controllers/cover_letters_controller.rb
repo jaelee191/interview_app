@@ -1,6 +1,6 @@
 class CoverLettersController < ApplicationController
   before_action :set_cover_letter, only: [:show, :destroy]
-  skip_before_action :verify_authenticity_token, only: [:start_interactive, :send_message, :save_interactive]
+  skip_before_action :verify_authenticity_token, only: [:start_interactive, :send_message, :save_interactive, :analyze_job_posting]
   
   def index
     @cover_letters = CoverLetter.order(created_at: :desc)
@@ -12,6 +12,131 @@ class CoverLettersController < ApplicationController
   
   def interactive
     # 대화형 자소서 작성 페이지
+  end
+  
+  def advanced
+    # 3단계 심층 분석 페이지
+    @cover_letter = CoverLetter.new
+  end
+  
+  def job_posting
+    # 채용공고 URL 분석 페이지
+    # 북마크릿에서 자동 실행 지원
+    if params[:url].present? && params[:auto_analyze] == 'true'
+      @auto_url = params[:url]
+      @auto_analyze = true
+    end
+  end
+  
+  def bookmarklet
+    # 북마크릿 설치 페이지
+  end
+  
+  def job_posting_text
+    # 채용공고 텍스트 직접 입력 페이지
+  end
+  
+  def analyze_job_text
+    service = JobPostingAnalyzerService.new
+    result = service.analyze_job_text(
+      params[:company_name],
+      params[:position],
+      params[:content],
+      params[:source_url]
+    )
+    
+    if result[:success]
+      # 분석 결과를 데이터베이스에 저장
+      job_analysis = JobAnalysis.create!(
+        url: params[:source_url] || "text_input",
+        company_name: params[:company_name],
+        position: params[:position],
+        analysis_result: result[:analysis]
+      )
+      
+      # 키 정보 추출
+      job_analysis.extract_key_info
+      job_analysis.save
+      
+      # 세션에는 ID만 저장
+      session[:job_analysis_id] = job_analysis.id
+      
+      render json: {
+        success: true,
+        analysis: result[:analysis],
+        analysis_id: job_analysis.id
+      }
+    else
+      render json: {
+        success: false,
+        error: result[:error]
+      }, status: :unprocessable_entity
+    end
+  end
+  
+  def analyze_job_posting
+    begin
+      service = JobPostingAnalyzerService.new
+      result = service.analyze_job_posting(params[:url], params[:job_title])
+      
+      if result[:success]
+        # 분석 결과를 데이터베이스에 저장
+        job_analysis = JobAnalysis.create!(
+          url: result[:url],
+          analysis_result: result[:analysis]
+        )
+        
+        # 키 정보 추출
+        job_analysis.extract_key_info
+        job_analysis.save
+        
+        # 세션에는 ID만 저장 (쿠키 오버플로우 방지)
+        session[:job_analysis_id] = job_analysis.id
+        
+        render json: {
+          success: true,
+          analysis: result[:analysis],
+          analysis_id: job_analysis.id
+        }
+      else
+        render json: {
+          success: false,
+          error: result[:error]
+        }, status: :unprocessable_entity
+      end
+    rescue => e
+      Rails.logger.error "채용공고 분석 컨트롤러 오류: #{e.message}"
+      Rails.logger.error e.backtrace.first(10).join("\n") if e.backtrace
+      
+      render json: {
+        success: false,
+        error: "분석 중 오류가 발생했습니다: #{e.message}"
+      }, status: :unprocessable_entity
+    end
+  end
+  
+  def analyze_advanced
+    @cover_letter = CoverLetter.new(cover_letter_params)
+    
+    if @cover_letter.save
+      # 3단계 고급 분석
+      service = AdvancedCoverLetterService.new
+      result = service.analyze_complete(
+        @cover_letter.content,
+        @cover_letter.company_name,
+        @cover_letter.position
+      )
+      
+      if result[:success]
+        @cover_letter.update(analysis_result: result[:full_analysis])
+        redirect_to @cover_letter, notice: '3단계 심층 분석이 완료되었습니다.'
+      else
+        @cover_letter.update(analysis_result: "분석 실패: #{result[:error]}")
+        redirect_to @cover_letter, alert: "분석 중 오류가 발생했습니다: #{result[:error]}"
+      end
+    else
+      render :advanced
+    end
   end
   
   def start_interactive
