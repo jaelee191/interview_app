@@ -91,10 +91,10 @@
 
     <!-- Loading State -->
     <div id="loading-state" class="hidden">
-      <div class="bg-white rounded-2xl p-8 shadow-xl">
+      <div class="bg-white rounded-xl border border-gray-200 p-8">
         <div class="flex flex-col items-center">
-          <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mb-4"></div>
-          <p class="text-lg font-medium text-gray-700">채용공고를 분석하고 있습니다...</p>
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+          <p class="text-base font-medium text-gray-900">채용공고를 분석하고 있습니다...</p>
           <p class="text-sm text-gray-500 mt-2">잠시만 기다려주세요 (약 10-30초 소요)</p>
         </div>
       </div>
@@ -102,21 +102,21 @@
 
     <!-- Analysis Result -->
     <div id="analysis-result" class="hidden">
-      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
-          <h2 class="text-2xl font-bold text-white">📊 채용공고 분석 결과</h2>
+      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="border-b border-gray-200 px-6 py-4">
+          <h2 class="text-xl font-bold text-gray-900">채용공고 분석 결과</h2>
         </div>
-        <div class="p-8">
-          <div id="result-content" class="prose max-w-none">
+        <div class="p-6">
+          <div id="result-content" class="space-y-6">
             <!-- Analysis content will be inserted here -->
           </div>
           
           <!-- Action Buttons -->
-          <div class="mt-8 pt-8 border-t border-gray-200">
-            <div class="flex flex-col sm:flex-row gap-4">
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <div class="flex flex-col sm:flex-row gap-3">
               <button 
                 id="use-for-cover-letter" 
-                class="flex-1 px-5 py-2.5 bg-blue-600 text-white font-medium text-sm rounded-lg hover:bg-blue-700 transition-all shadow-sm hover:shadow-md"
+                class="flex-1 px-5 py-2.5 bg-blue-600 text-white font-medium text-sm rounded-lg hover:bg-blue-700 transition-all"
               >
                 이 분석 결과로 자소서 작성하기
               </button>
@@ -277,20 +277,11 @@
       }
     });
     
-    // Display results function with modern design
+    // Display results function - simplified design
     function displayResults(analysis) {
       if (!analysis) return;
       
-      // Add custom CSS
-      if (!document.querySelector('link[href="/analysis_styles.css"]')) {
-        const cssLink = document.createElement('link');
-        cssLink.rel = 'stylesheet';
-        cssLink.href = '/analysis_styles.css';
-        document.head.appendChild(cssLink);
-      }
-      
-      // Transform the analysis into a modern card-based layout
-      let html = '<div style="max-width: 1200px; margin: 0 auto;">';
+      let html = '<div class="space-y-4">';
       
       // Parse sections
       const sections = analysis.split(/(?=##\s)/);
@@ -303,12 +294,12 @@
         const titleMatch = lines[0].match(/##\s*([🏢💼🎯💪⭐🏆📝💡🎨📊💬]?)\s*(.*)/);
         
         if (titleMatch) {
-          const icon = titleMatch[1] || '📌';
+          const icon = titleMatch[1] || '';
           const title = titleMatch[2];
           const content = lines.slice(1).join('\n');
           
-          // Create modern card section
-          html += createModernSection(icon, title, content);
+          // Create simplified section
+          html += createSimpleSection(icon, title, content);
         } else {
           // Handle content without section header
           html += formatContent(section);
@@ -319,64 +310,42 @@
       
       // Apply the formatted HTML
       resultContent.innerHTML = html;
-      
-      // Add animations
-      setTimeout(() => {
-        document.querySelectorAll('.modern-section').forEach((section, index) => {
-          setTimeout(() => {
-            section.style.opacity = '1';
-            section.style.transform = 'translateY(0)';
-          }, index * 100);
-        });
-      }, 100);
     }
     
-    // Create modern section card
-    function createModernSection(icon, title, content) {
-      let sectionClass = 'modern-section';
-      let headerBg = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    // Create simplified section
+    function createSimpleSection(icon, title, content) {
+      let sectionIcon = '';
       
-      // Customize based on section type
+      // Assign simple icons
       if (title.includes('기업 정보')) {
-        headerBg = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        sectionIcon = '🏢';
       } else if (title.includes('직무 정보')) {
-        headerBg = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+        sectionIcon = '💼';
       } else if (title.includes('핵심 키워드')) {
-        headerBg = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+        sectionIcon = '🎯';
       } else if (title.includes('필수 역량')) {
-        headerBg = 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)';
+        sectionIcon = '💪';
       } else if (title.includes('자소서')) {
-        headerBg = 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)';
+        sectionIcon = '📝';
       } else if (title.includes('면접')) {
-        headerBg = 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)';
+        sectionIcon = '💡';
       } else if (title.includes('경쟁력')) {
-        headerBg = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+        sectionIcon = '📊';
       } else if (title.includes('AI 인사이트')) {
-        headerBg = 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)';
+        sectionIcon = '✨';
+      } else {
+        sectionIcon = icon || '📄';
       }
       
       let html = `
-        <div class="${sectionClass}" style="
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-          margin-bottom: 24px;
-          overflow: hidden;
-          opacity: 0;
-          transform: translateY(20px);
-          transition: all 0.5s ease;
-        ">
-          <div style="
-            background: ${headerBg};
-            padding: 16px 24px;
-            color: white;
-            display: flex;
-            align-items: center;
-          ">
-            <span style="font-size: 24px; margin-right: 12px;">${icon}</span>
-            <h3 style="margin: 0; font-size: 18px; font-weight: 600;">${title}</h3>
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+            <h3 class="text-base font-semibold text-gray-900 flex items-center gap-2">
+              <span>${sectionIcon}</span>
+              ${title}
+            </h3>
           </div>
-          <div style="padding: 24px;">
+          <div class="p-4">
             ${formatSectionContent(title, content)}
           </div>
         </div>
@@ -390,58 +359,44 @@
       let html = '';
       
       if (title.includes('핵심 키워드')) {
-        // Create keyword tags
-        html += '<div style="display: flex; flex-wrap: wrap; gap: 12px;">';
+        // Create keyword tags - simplified
+        html += '<div class="flex flex-wrap gap-2 mb-3">';
         const keywords = content.match(/\d+\.\s*\*?\*?([^:]+):?\*?\*?\s*([^\n]+)/g) || [];
         keywords.forEach((keyword, index) => {
           const match = keyword.match(/\d+\.\s*\*?\*?([^:]+):?\*?\*?\s*(.+)/);
           if (match) {
-            const colors = [
-              'linear-gradient(135deg, #667eea, #764ba2)',
-              'linear-gradient(135deg, #f093fb, #f5576c)',
-              'linear-gradient(135deg, #4facfe, #00f2fe)',
-              'linear-gradient(135deg, #43e97b, #38f9d7)',
-              'linear-gradient(135deg, #fa709a, #fee140)'
-            ];
             html += `
-              <div style="
-                background: ${colors[index % colors.length]};
-                color: white;
-                padding: 10px 20px;
-                border-radius: 25px;
-                font-weight: 500;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                transition: transform 0.2s;
-                cursor: pointer;
-              " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                <span style="font-weight: bold; margin-right: 8px;">${index + 1}</span>
+              <span class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                <span class="mr-1 font-bold">${index + 1}</span>
                 ${match[1].trim()}
-              </div>
+              </span>
             `;
           }
         });
         html += '</div>';
         
         // Add descriptions
+        html += '<div class="space-y-1">';
         keywords.forEach(keyword => {
           const match = keyword.match(/\d+\.\s*\*?\*?([^:]+):?\*?\*?\s*(.+)/);
           if (match && match[2]) {
-            html += `<p style="margin-top: 8px; color: #64748b; font-size: 14px;">• ${match[2]}</p>`;
+            html += `<p class="text-sm text-gray-600">• ${match[2]}</p>`;
           }
         });
+        html += '</div>';
         
       } else if (title.includes('경쟁력 평가')) {
-        // Create evaluation cards
-        html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">';
+        // Create evaluation cards - simplified
+        html += '<div class="grid grid-cols-3 gap-3">';
         
         // Parse difficulty
         const difficultyMatch = content.match(/지원 난이도:\s*(★+)/);
         if (difficultyMatch) {
           const stars = difficultyMatch[1].length;
           html += `
-            <div style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 12px;">
-              <div style="color: #64748b; font-size: 14px; margin-bottom: 8px;">지원 난이도</div>
-              <div style="font-size: 24px; color: #fbbf24;">
+            <div class="text-center p-3 bg-gray-50 rounded-lg">
+              <div class="text-xs text-gray-600 mb-1">지원 난이도</div>
+              <div class="text-lg text-yellow-500">
                 ${'★'.repeat(stars)}${'☆'.repeat(5 - stars)}
               </div>
             </div>
@@ -452,11 +407,11 @@
         const competitionMatch = content.match(/경쟁률 예상:\s*(\S+)/);
         if (competitionMatch) {
           const level = competitionMatch[1];
-          const color = level === '높음' ? '#ef4444' : level === '중간' ? '#f59e0b' : '#10b981';
+          const colorClass = level === '높음' ? 'text-red-600' : level === '중간' ? 'text-yellow-600' : 'text-green-600';
           html += `
-            <div style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 12px;">
-              <div style="color: #64748b; font-size: 14px; margin-bottom: 8px;">경쟁률</div>
-              <div style="font-size: 20px; font-weight: bold; color: ${color};">${level}</div>
+            <div class="text-center p-3 bg-gray-50 rounded-lg">
+              <div class="text-xs text-gray-600 mb-1">경쟁률</div>
+              <div class="text-base font-semibold ${colorClass}">${level}</div>
             </div>
           `;
         }
@@ -465,9 +420,9 @@
         const timingMatch = content.match(/추천 지원 시기:\s*(.+)/);
         if (timingMatch) {
           html += `
-            <div style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 12px;">
-              <div style="color: #64748b; font-size: 14px; margin-bottom: 8px;">추천 시기</div>
-              <div style="font-size: 16px; font-weight: 600; color: #1e293b;">${timingMatch[1]}</div>
+            <div class="text-center p-3 bg-gray-50 rounded-lg">
+              <div class="text-xs text-gray-600 mb-1">추천 시기</div>
+              <div class="text-sm font-medium text-gray-900">${timingMatch[1]}</div>
             </div>
           `;
         }
@@ -475,17 +430,19 @@
         html += '</div>';
         
       } else {
-        // Default formatting
-        html = content
-          .replace(/### (.*?)$/gm, '<h4 style="font-weight: 600; color: #1e293b; margin: 16px 0 8px 0;">$1</h4>')
-          .replace(/\*\*([^*]+)\*\*/g, '<strong style="color: #475569;">$1</strong>')
-          .replace(/^[•\-]\s*(.*?)$/gm, '<li style="margin-left: 20px; margin-bottom: 8px; color: #475569;">$1</li>')
-          .replace(/^(\d+)\.\s*(.*?)$/gm, '<div style="margin-left: 20px; margin-bottom: 8px; color: #475569;"><strong>$1.</strong> $2</div>')
-          .replace(/\n\n/g, '</p><p style="margin-bottom: 12px; color: #475569; line-height: 1.6;">');
+        // Default formatting - simplified
+        html = '<div class="prose prose-sm max-w-none text-gray-700">';
+        html += content
+          .replace(/### (.*?)$/gm, '<h4 class="font-semibold text-gray-900 mt-3 mb-2">$1</h4>')
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          .replace(/^[•\-]\s*(.*?)$/gm, '<li class="ml-4">$1</li>')
+          .replace(/^(\d+)\.\s*(.*?)$/gm, '<div class="ml-4 mb-1"><strong>$1.</strong> $2</div>')
+          .replace(/\n\n/g, '</p><p class="mb-2">');
         
-        if (!html.startsWith('<')) {
-          html = '<p style="margin-bottom: 12px; color: #475569; line-height: 1.6;">' + html + '</p>';
+        if (!html.includes('<p')) {
+          html = '<p class="mb-2">' + html + '</p>';
         }
+        html += '</div>';
       }
       
       return html;
