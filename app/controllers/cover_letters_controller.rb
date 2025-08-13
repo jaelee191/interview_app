@@ -76,33 +76,83 @@ class CoverLettersController < ApplicationController
   
   def analyze_job_posting
     begin
-      service = JobPostingAnalyzerService.new
-      result = service.analyze_job_posting(params[:url], params[:job_title])
+      url = params[:url]
+      job_title = params[:job_title]
+      use_advanced = params[:use_advanced] == 'true'
       
-      if result[:success]
-        # 분석 결과를 데이터베이스에 저장
-        job_analysis = JobAnalysis.create!(
-          url: result[:url],
-          analysis_result: result[:analysis]
-        )
+      Rails.logger.info "URL: #{url}, Job Title: #{job_title}, Advanced: #{use_advanced}"
+      
+      if use_advanced
+        # 차별화된 맥락 기반 분석 사용
+        service = ContextAwareAnalyzerService.new
         
-        # 키 정보 추출
-        job_analysis.extract_key_info
-        job_analysis.save
+        # URL에서 회사명 추출 시도
+        company_name = extract_company_from_url(url) || params[:company_name]
         
-        # 세션에는 ID만 저장 (쿠키 오버플로우 방지)
-        session[:job_analysis_id] = job_analysis.id
+        result = service.analyze_with_context(url, company_name)
         
-        render json: {
-          success: true,
-          analysis: result[:analysis],
-          analysis_id: job_analysis.id
-        }
+        if result[:success]
+          # 분석 결과를 데이터베이스에 저장
+          job_analysis = JobAnalysis.create!(
+            url: url,
+            company_name: company_name,
+            analysis_result: result[:analysis],
+            context_data: result[:context],
+            recommendations: result[:recommendations]
+          )
+          
+          # 키 정보 추출
+          job_analysis.extract_key_info
+          job_analysis.save
+          
+          # 세션에는 ID만 저장
+          session[:job_analysis_id] = job_analysis.id
+          
+          render json: {
+            success: true,
+            analysis: result[:analysis],
+            context: result[:context],
+            recommendations: result[:recommendations],
+            analysis_id: job_analysis.id,
+            is_advanced: true
+          }
+        else
+          render json: {
+            success: false,
+            error: result[:error]
+          }, status: :unprocessable_entity
+        end
       else
-        render json: {
-          success: false,
-          error: result[:error]
-        }, status: :unprocessable_entity
+        # 기존 분석 서비스 사용
+        service = JobPostingAnalyzerService.new
+        result = service.analyze_job_posting(url, job_title)
+        
+        if result[:success]
+          # 분석 결과를 데이터베이스에 저장
+          job_analysis = JobAnalysis.create!(
+            url: result[:url],
+            analysis_result: result[:analysis]
+          )
+          
+          # 키 정보 추출
+          job_analysis.extract_key_info
+          job_analysis.save
+          
+          # 세션에는 ID만 저장 (쿠키 오버플로우 방지)
+          session[:job_analysis_id] = job_analysis.id
+          
+          render json: {
+            success: true,
+            analysis: result[:analysis],
+            analysis_id: job_analysis.id,
+            is_advanced: false
+          }
+        else
+          render json: {
+            success: false,
+            error: result[:error]
+          }, status: :unprocessable_entity
+        end
       end
     rescue => e
       Rails.logger.error "채용공고 분석 컨트롤러 오류: #{e.message}"
@@ -345,5 +395,20 @@ class CoverLettersController < ApplicationController
     return [] unless keyword_section
     
     keyword_section[1].scan(/[가-힣]+/).uniq
+  end
+  
+  def extract_company_from_url(url)
+    case url
+    when /samsungcareers/
+      "삼성"
+    when /saramin.*company_nm=([^&]+)/
+      URI.decode_www_form_component($1) rescue nil
+    when /jobkorea.*Co_Name=([^&]+)/
+      URI.decode_www_form_component($1) rescue nil
+    when /wanted.*company\/([^\/?]+)/
+      $1
+    else
+      nil
+    end
   end
 end
