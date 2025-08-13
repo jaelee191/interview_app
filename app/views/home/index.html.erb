@@ -11,20 +11,30 @@
         </h1>
         
         <!-- Subheading -->
-        <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+        <p class="text-lg text-gray-600 mb-6 leading-relaxed">
           나만의 이야기를 완벽한 자기소개서로 바꿔드립니다.
           <br>
           JACHUI는 당신의 경험을 기업이 원하는 인재상으로 변환하는 AI 솔루션입니다.
         </p>
         
+        <!-- Alert Banner -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-lg mb-6">
+          <svg class="w-5 h-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+          </svg>
+          <span class="text-sm text-yellow-800">
+            <strong>처음 방문하셨나요?</strong> 서비스 소개를 먼저 확인하시면 더 효과적으로 사용하실 수 있습니다.
+          </span>
+        </div>
+        
         <!-- CTA Buttons -->
         <div class="flex gap-3 mb-8">
-          <%= link_to job_posting_cover_letters_path, class: "px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium text-sm shadow-sm hover:shadow-md" do %>
-            3분만에 자소서 완성하기
+          <%= link_to about_path, class: "px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium text-sm shadow-sm hover:shadow-md" do %>
+            서비스가 궁금하신가요? →
           <% end %>
           
-          <%= link_to cover_letters_path, class: "px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium text-sm" do %>
-            서비스 살펴보기
+          <%= link_to job_posting_cover_letters_path, class: "px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium text-sm" do %>
+            바로 시작하기
           <% end %>
         </div>
         
@@ -387,12 +397,12 @@
     </p>
     
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <%= link_to job_posting_cover_letters_path, class: "px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium shadow-sm hover:shadow-md" do %>
-        3분만에 자소서 완성하기
+      <%= link_to about_path, class: "px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium shadow-sm hover:shadow-md" do %>
+        왜 JACHUI인지 알아보기 →
       <% end %>
       
-      <%= link_to cover_letters_path, class: "px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium" do %>
-        합격 사례 먼저 보기
+      <%= link_to job_posting_cover_letters_path, class: "px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium" do %>
+        지금 바로 시작하기
       <% end %>
     </div>
     

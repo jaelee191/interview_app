@@ -52,6 +52,7 @@
           
           <!-- Navigation Links -->
           <div class="hidden md:flex items-center space-x-6">
+            <%= link_to "서비스 소개", about_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium" %>
             <%= link_to "채용공고 분석", job_posting_cover_letters_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium" %>
             <%= link_to "AI 자소서 작성", interactive_cover_letters_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium" %>
             <%= link_to "심층 분석", advanced_cover_letters_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium" %>
@@ -102,6 +103,7 @@
           <div>
             <h4 class="text-sm font-semibold text-gray-900 mb-4">리소스</h4>
             <ul class="space-y-2">
+              <li><a href="/about" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">회사 소개</a></li>
               <li><a href="#" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">가이드</a></li>
               <li><a href="#" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">템플릿</a></li>
               <li><a href="#" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">합격 사례</a></li>
