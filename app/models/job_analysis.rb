@@ -49,7 +49,7 @@ class JobAnalysis < ApplicationRecord
   end
   
   # Get summary for display
-  def summary
+  def summary_hash
     {
       company: company_name || "분석 중",
       position: position || "분석 중",
@@ -57,5 +57,40 @@ class JobAnalysis < ApplicationRecord
       skills_count: required_skills&.size || 0,
       values_count: company_values&.size || 0
     }
+  end
+  
+  # Get summary text for display
+  def summary
+    return nil unless analysis_result.present?
+    
+    # Try to extract summary from enhanced analysis first
+    if analysis_result.include?('"executive_summary"')
+      begin
+        data = JSON.parse(analysis_result)
+        return data["executive_summary"] if data["executive_summary"]
+      rescue JSON::ParserError
+        # Continue to try other methods
+      end
+    end
+    
+    # Try to extract from markdown format
+    if match = analysis_result.match(/## 📊 분석 요약.*?\n(.*?)(?:##|###|\z)/m)
+      return match[1].strip.gsub(/\*\*/, '').gsub(/\n+/, ' ')
+    end
+    
+    # Try to extract from company context
+    if match = analysis_result.match(/회사 소개.*?:\s*(.*?)(?:\n|$)/i)
+      intro = match[1].strip[0..200]
+      return "#{company_name} - #{position}: #{intro}..."
+    end
+    
+    # Fallback: Create summary from available data
+    parts = []
+    parts << "#{company_name}" if company_name
+    parts << "#{position} 채용" if position
+    parts << "핵심 키워드 #{keywords&.size || 0}개" if keywords&.any?
+    parts << "필수 역량 #{required_skills&.size || 0}개" if required_skills&.any?
+    
+    parts.any? ? parts.join(' | ') : nil
   end
 end

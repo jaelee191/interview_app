@@ -1,0 +1,693 @@
+<% 
+  # 강화 분석인지 확인 (enhanced_professional 또는 job_seeker_focused)
+  is_enhanced = ['enhanced_professional', 'job_seeker_focused'].include?(@company_analysis.metadata&.dig('analysis_type'))
+%>
+
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100">
+  <!-- Professional Header -->
+  <% if is_enhanced %>
+    <div class="bg-gradient-to-r from-indigo-900 to-purple-800 text-white">
+      <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <div class="text-sm text-gray-300 mb-2">Enterprise Analysis Report</div>
+            <h1 class="text-4xl font-bold mb-2"><%= @company_analysis.company_name %></h1>
+            <div class="flex items-center gap-4 text-sm text-gray-300">
+              <span>📅 <%= @company_analysis.analysis_date.strftime("%Y년 %m월 %d일") %></span>
+              <span>📊 <%= @company_analysis.metadata&.dig('methodology') || 'McKinsey/BCG Framework' %></span>
+              <span class="px-2 py-1 bg-yellow-500/20 text-yellow-300 rounded">
+                Professional Edition
+              </span>
+            </div>
+          </div>
+          <div class="text-right">
+            <% if @company_analysis.cached_until.present? %>
+              <div class="text-xs text-gray-400">유효기간</div>
+              <div class="text-sm font-medium"><%= @company_analysis.cached_until.strftime("%Y-%m-%d") %></div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <% if is_enhanced %>
+      <!-- Executive Summary for Professional Analysis -->
+      <% if @company_analysis.metadata&.dig('executive_summary').present? %>
+        <div class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden">
+          <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-4">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+              <span>📋</span> Executive Summary
+            </h2>
+          </div>
+          <div class="p-6 content-area max-w-none text-gray-700">
+            <%= markdown_to_html(@company_analysis.metadata['executive_summary']) %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Job Seeker Analysis Tabs -->
+      <div class="bg-white rounded-xl shadow-lg mb-8">
+        <div class="border-b">
+          <nav class="flex -mb-px flex-wrap" id="analysis-tabs">
+            <button class="tab-btn active px-4 py-3 text-sm font-medium border-b-2 border-indigo-600 text-indigo-600" 
+                    data-tab="overview">
+              🏢 기업 개요
+            </button>
+            <button class="tab-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800" 
+                    data-tab="market">
+              📊 산업 분석
+            </button>
+            <button class="tab-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800" 
+                    data-tab="hiring">
+              🎯 채용 전략
+            </button>
+            <button class="tab-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800" 
+                    data-tab="preparation">
+              📝 자소서/면접
+            </button>
+            <button class="tab-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800" 
+                    data-tab="competitor">
+              🔍 경쟁사 비교
+            </button>
+            <button class="tab-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800" 
+                    data-tab="advice">
+              💡 취업 전략
+            </button>
+          </nav>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="p-6">
+          <!-- Company Overview Tab -->
+          <div class="tab-content" id="overview-tab">
+            <% if @company_analysis.metadata&.dig('company_overview').present? %>
+              <div class="content-area max-w-none text-gray-700">
+                <%= markdown_to_html(@company_analysis.metadata['company_overview']) %>
+              </div>
+            <% elsif @company_analysis.hiring_patterns.present? %>
+              <div class="content-area max-w-none text-gray-700">
+                <% begin %>
+                  <%= markdown_to_html(JSON.parse(@company_analysis.hiring_patterns)) %>
+                <% rescue => e %>
+                  <%= simple_format(@company_analysis.hiring_patterns) %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Industry Market Tab -->
+          <div class="tab-content hidden" id="market-tab">
+            <% if @company_analysis.recent_issues.present? %>
+              <div class="content-area max-w-none text-gray-700">
+                <% begin %>
+                  <%= markdown_to_html(JSON.parse(@company_analysis.recent_issues)) %>
+                <% rescue => e %>
+                  <%= simple_format(@company_analysis.recent_issues) %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Hiring Strategy Tab -->
+          <div class="tab-content hidden" id="hiring-tab">
+            <% if @company_analysis.metadata&.dig('hiring_strategy').present? %>
+              <div class="content-area max-w-none text-gray-700">
+                <%= markdown_to_html(@company_analysis.metadata['hiring_strategy']) %>
+              </div>
+            <% elsif @company_analysis.business_context.present? %>
+              <div class="content-area max-w-none text-gray-700">
+                <% begin %>
+                  <%= markdown_to_html(JSON.parse(@company_analysis.business_context)) %>
+                <% rescue => e %>
+                  <%= simple_format(@company_analysis.business_context) %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Job Preparation Tab -->
+          <div class="tab-content hidden" id="preparation-tab">
+            <% if @company_analysis.metadata&.dig('job_preparation').present? %>
+              <div class="content-area max-w-none text-gray-700">
+                <%= markdown_to_html(@company_analysis.metadata['job_preparation']) %>
+              </div>
+            <% elsif @company_analysis.hiring_patterns.present? %>
+              <div class="content-area max-w-none text-gray-700">
+                <% begin %>
+                  <%= markdown_to_html(JSON.parse(@company_analysis.hiring_patterns)) %>
+                <% rescue => e %>
+                  <%= simple_format(@company_analysis.hiring_patterns) %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Competitor Comparison Tab -->
+          <div class="tab-content hidden" id="competitor-tab">
+            <% if @company_analysis.competitor_info.present? %>
+              <div class="content-area max-w-none text-gray-700">
+                <% begin %>
+                  <%= markdown_to_html(JSON.parse(@company_analysis.competitor_info)) %>
+                <% rescue => e %>
+                  <%= simple_format(@company_analysis.competitor_info) %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Consultant Advice Tab (no longer outlook) -->
+          <div class="tab-content hidden" id="advice-tab">
+            <% if @company_analysis.metadata&.dig('consultant_advice').present? %>
+              <div class="content-area max-w-none text-gray-700">
+                <%= markdown_to_html(@company_analysis.metadata['consultant_advice']) %>
+              </div>
+            <% elsif @company_analysis.industry_trends.present? %>
+              <div class="content-area max-w-none text-gray-700">
+                <% begin %>
+                  <%= markdown_to_html(JSON.parse(@company_analysis.industry_trends)) %>
+                <% rescue => e %>
+                  <%= simple_format(@company_analysis.industry_trends) %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+        </div>
+      </div>
+
+    <% else %>
+      <!-- Back Button for Basic Analysis -->
+      <div class="mb-6">
+        <a href="/cover_letters/company_analysis" class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          새로운 기업 분석
+        </a>
+      </div>
+    <% end %>
+
+    <% unless is_enhanced %>
+      <!-- Company Header for Basic Analysis -->
+      <div class="bg-white rounded-xl shadow-lg p-8 mb-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">
+              <%= @structured_data[:company_info][:name] %>
+              <% if @is_basic_analysis %>
+              <span class="ml-3 text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-normal">기본 분석</span>
+            <% else %>
+              <span class="ml-3 text-sm bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-normal">강화 분석</span>
+            <% end %>
+          </h1>
+          <div class="flex items-center gap-4 text-sm">
+            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+              <%= @structured_data[:company_info][:industry] || '산업 미분류' %>
+            </span>
+            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">
+              <%= @structured_data[:company_info][:size] || '규모 미상' %>
+            </span>
+            <% if @structured_data[:metadata][:urgency_level] %>
+              <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full">
+                긴급도: <%= @structured_data[:metadata][:urgency_level] %>
+              </span>
+            <% end %>
+          </div>
+        </div>
+        <div class="text-right text-sm text-gray-500">
+          <p>분석일: <%= @structured_data[:analyzed_at]&.strftime("%Y년 %m월 %d일") %></p>
+          <% if @structured_data[:expires_at] %>
+            <p>유효기간: <%= @structured_data[:expires_at]&.strftime("%Y년 %m월 %d일까지") %></p>
+          <% elsif @is_basic_analysis %>
+            <p class="text-orange-600">※ 기본 분석은 저장되지 않습니다</p>
+          <% end %>
+        </div>
+        </div>
+      </div>
+
+      <!-- Analysis Grid for Basic Analysis -->
+    <div class="grid lg:grid-cols-2 gap-6">
+      <!-- Recent Issues -->
+      <% if @structured_data[:analysis] && @structured_data[:analysis][:recent_issues] %>
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span class="text-2xl">📰</span> 최신 이슈 및 동향
+          </h2>
+          <div class="space-y-3">
+            <% if @structured_data[:analysis][:recent_issues].is_a?(Hash) %>
+              <% @structured_data[:analysis][:recent_issues].each do |category, items| %>
+                <div class="border-l-4 border-blue-500 pl-4">
+                  <h3 class="font-semibold text-gray-800 mb-2"><%= category.to_s.humanize %></h3>
+                  <% if items.is_a?(Array) %>
+                    <ul class="list-disc list-inside text-sm text-gray-600 space-y-1">
+                      <% items.each do |item| %>
+                        <li><%= item %></li>
+                      <% end %>
+                    </ul>
+                  <% else %>
+                    <p class="text-sm text-gray-600"><%= items %></p>
+                  <% end %>
+                </div>
+              <% end %>
+            <% else %>
+              <p class="text-gray-600"><%= @structured_data[:analysis][:recent_issues] %></p>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Business Context -->
+      <% if @structured_data[:analysis][:business_context] %>
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span class="text-2xl">💼</span> 비즈니스 맥락
+          </h2>
+          <div class="space-y-3">
+            <% if @structured_data[:analysis][:business_context].is_a?(Hash) %>
+              <% @structured_data[:analysis][:business_context].each do |key, value| %>
+                <div class="bg-gray-50 rounded-lg p-3">
+                  <h3 class="font-medium text-gray-800 mb-1"><%= key.to_s.humanize %></h3>
+                  <p class="text-sm text-gray-600"><%= value %></p>
+                </div>
+              <% end %>
+            <% else %>
+              <p class="text-gray-600"><%= @structured_data[:analysis][:business_context] %></p>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Hiring Patterns -->
+      <% if @structured_data[:analysis][:hiring_patterns] %>
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span class="text-2xl">👥</span> 채용 패턴 분석
+          </h2>
+          <div class="space-y-3">
+            <% if @structured_data[:analysis][:hiring_patterns].is_a?(Hash) %>
+              <% @structured_data[:analysis][:hiring_patterns].each do |key, value| %>
+                <div class="flex items-start gap-3">
+                  <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                  <div>
+                    <h3 class="font-medium text-gray-800"><%= key.to_s.humanize %></h3>
+                    <p class="text-sm text-gray-600 mt-1"><%= value %></p>
+                  </div>
+                </div>
+              <% end %>
+            <% else %>
+              <p class="text-gray-600"><%= @structured_data[:analysis][:hiring_patterns] %></p>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Industry Trends -->
+      <% if @structured_data[:analysis][:industry_trends] %>
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span class="text-2xl">📈</span> 산업 동향
+          </h2>
+          <div class="space-y-3">
+            <% if @structured_data[:analysis][:industry_trends].is_a?(Hash) %>
+              <% @structured_data[:analysis][:industry_trends].each do |key, value| %>
+                <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-3">
+                  <h3 class="font-medium text-gray-800 mb-1"><%= key.to_s.humanize %></h3>
+                  <% if value.is_a?(Array) %>
+                    <ul class="list-disc list-inside text-sm text-gray-600">
+                      <% value.each do |item| %>
+                        <li><%= item %></li>
+                      <% end %>
+                    </ul>
+                  <% else %>
+                    <p class="text-sm text-gray-600"><%= value %></p>
+                  <% end %>
+                </div>
+              <% end %>
+            <% else %>
+              <p class="text-gray-600"><%= @structured_data[:analysis][:industry_trends] %></p>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Competitor Info (if exists) -->
+      <% if @structured_data[:analysis][:competitor_info] %>
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span class="text-2xl">🏆</span> 경쟁사 정보
+          </h2>
+          <div class="space-y-3">
+            <% if @structured_data[:analysis][:competitor_info].is_a?(Hash) && @structured_data[:analysis][:competitor_info]['competitors'] %>
+              <div class="flex flex-wrap gap-2">
+                <% @structured_data[:analysis][:competitor_info]['competitors'].each do |competitor| %>
+                  <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm font-medium">
+                    <%= competitor %>
+                  </span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+      </div>
+
+      <!-- Upgrade Banner for Basic Analysis -->
+    <% if @is_basic_analysis %>
+      <div class="mt-8 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl shadow-md p-6 border border-purple-200">
+        <div class="flex items-start gap-4">
+          <div class="flex-shrink-0">
+            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-bold text-gray-900 mb-2">🚀 강화 분석으로 업그레이드하세요!</h3>
+            <p class="text-sm text-gray-600 mb-3">
+              강화 분석을 통해 더 깊이 있는 인사이트를 얻을 수 있습니다:
+            </p>
+            <ul class="text-sm text-gray-600 space-y-1 mb-4">
+              <li>• 실시간 뉴스 크롤링을 통한 최신 이슈 파악</li>
+              <li>• 산업 동향과 경쟁사 분석 (대기업)</li>
+              <li>• 채용 전략 및 지원 팁 제공</li>
+              <li>• 7일간 데이터 캐시로 빠른 재접근</li>
+            </ul>
+            <a href="/cover_letters/company_analysis?company=<%= CGI.escape(@structured_data[:company_info][:name]) %>&type=enhanced" 
+               class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors">
+              강화 분석 시작하기
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </a>
+          </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+
+    <!-- Action Buttons -->
+    <div class="mt-8 bg-white rounded-xl shadow-md p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">이 분석 활용하기</h2>
+      <div class="flex flex-wrap gap-4">
+        <% if @company_analysis.persisted? && !@is_basic_analysis %>
+          <% if !@company_analysis.saved %>
+            <button onclick="saveAnalysis(<%= @company_analysis.id %>)" 
+                    id="save-btn-<%= @company_analysis.id %>"
+                    class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors shadow-md hover:shadow-lg">
+              💾 분석 저장하기
+            </button>
+          <% else %>
+            <button disabled 
+                    class="px-6 py-3 bg-gray-400 text-white font-medium rounded-lg cursor-not-allowed">
+              ✅ 저장됨
+            </button>
+          <% end %>
+        <% end %>
+        <a href="/cover_letters/job_posting?company=<%= CGI.escape(@structured_data[:company_info][:name]) %>" 
+           class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors shadow-md hover:shadow-lg">
+          이 기업 채용공고 분석하기
+        </a>
+        <a href="/cover_letters/ontology_input?company=<%= CGI.escape(@structured_data[:company_info][:name]) %>" 
+           class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors shadow-md hover:shadow-lg">
+          이 기업으로 자소서 작성하기
+        </a>
+        <button onclick="copyAnalysisData()" 
+                class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg transition-colors">
+          분석 데이터 복사
+        </button>
+        <a href="<%= saved_company_analyses_cover_letters_path %>" 
+           class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors shadow-md hover:shadow-lg">
+          📚 저장된 분석 보기
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function copyAnalysisData() {
+  const data = <%= @structured_data.to_json.html_safe %>;
+  const text = JSON.stringify(data, null, 2);
+  
+  navigator.clipboard.writeText(text).then(() => {
+    alert('분석 데이터가 클립보드에 복사되었습니다!');
+  }).catch(err => {
+    console.error('복사 실패:', err);
+  });
+}
+
+function saveAnalysis(id) {
+  const saveBtn = document.getElementById(`save-btn-${id}`);
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '저장 중...';
+  
+  fetch(`/cover_letters/save_company_analysis/${id}`, {
+    method: 'POST',
+    headers: {
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      saveBtn.innerHTML = '✅ 저장됨';
+      saveBtn.className = 'px-6 py-3 bg-gray-400 text-white font-medium rounded-lg cursor-not-allowed';
+      alert('기업 분석이 저장되었습니다.');
+    } else {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '💾 분석 저장하기';
+      alert('저장 실패: ' + data.error);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = '💾 분석 저장하기';
+    alert('저장 중 오류가 발생했습니다.');
+  });
+}
+</script>
+
+<% if is_enhanced %>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Tab functionality
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+  
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const targetTab = button.dataset.tab;
+      
+      // Update button states
+      tabButtons.forEach(btn => {
+        btn.classList.remove('active', 'border-blue-600', 'text-blue-600');
+        btn.classList.add('text-gray-600');
+      });
+      button.classList.add('active', 'border-blue-600', 'text-blue-600');
+      button.classList.remove('text-gray-600');
+      
+      // Update content visibility
+      tabContents.forEach(content => {
+        content.classList.add('hidden');
+      });
+      document.getElementById(`${targetTab}-tab`).classList.remove('hidden');
+    });
+  });
+});
+
+function shareReport() {
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({
+      title: '<%= @company_analysis.company_name %> 기업 분석 리포트',
+      text: '전문 기업 분석 리포트를 확인하세요',
+      url: url
+    });
+  } else {
+    navigator.clipboard.writeText(url);
+    alert('링크가 클립보드에 복사되었습니다');
+  }
+}
+</script>
+
+<!-- Print & Professional styles -->
+<style>
+@media print {
+  .tab-btn { display: none !important; }
+  .tab-content { display: block !important; page-break-before: always; }
+  .hidden { display: block !important; }
+  button { display: none !important; }
+  a { color: black !important; text-decoration: none !important; }
+}
+
+/* JACHUI 디자인 시스템 - Content Area 스타일 */
+.content-area {
+  color: #374151 !important; /* text-gray-700 */
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.content-area * {
+  color: #374151 !important; /* 모든 하위 요소에 강제 적용 */
+}
+
+.content-area p {
+  color: #374151 !important; /* text-gray-700 */
+  margin-bottom: 1rem;
+  line-height: 1.8;
+}
+
+.content-area ul, .content-area ol {
+  margin-bottom: 1rem;
+  color: #374151 !important;
+}
+
+.content-area ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.content-area ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
+.content-area li {
+  color: #374151 !important; /* text-gray-700 */
+  margin-bottom: 0.5rem;
+  line-height: 1.7;
+}
+
+.content-area strong, .content-area b {
+  color: #111827 !important; /* text-gray-900 */
+  font-weight: 600 !important;
+}
+
+.content-area em, .content-area i {
+  font-style: italic;
+  color: inherit;
+}
+
+.content-area h1 {
+  color: #111827 !important; /* text-gray-900 */
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  margin-top: 1.5rem;
+  line-height: 1.2;
+}
+
+.content-area h2 { 
+  color: #1e40af !important; /* blue-800 */
+  font-size: 1.875rem;
+  font-weight: 700;
+  border-bottom: 2px solid #e5e7eb; 
+  padding-bottom: 0.5rem; 
+  margin-bottom: 1rem;
+  margin-top: 1.5rem;
+  line-height: 1.3;
+}
+
+.content-area h3 { 
+  color: #1f2937 !important; /* text-gray-800 */
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.content-area h4 {
+  color: #374151 !important; /* text-gray-700 */
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.content-area table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  background: white;
+}
+
+.content-area table th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  padding: 0.75rem;
+  text-align: left;
+  border: 1px solid #e5e7eb;
+  color: #111827 !important;
+}
+
+.content-area table td {
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  color: #374151 !important;
+}
+
+.content-area blockquote {
+  border-left: 4px solid #6366f1; /* indigo-500 */
+  padding-left: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-style: italic;
+  color: #4b5563 !important;
+  background-color: #f9fafb;
+  margin-bottom: 1rem;
+}
+
+.content-area code {
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-family: monospace;
+  font-size: 0.875em;
+  color: #dc2626 !important; /* red-600 */
+}
+
+.content-area pre {
+  background-color: #1f2937;
+  color: #f3f4f6 !important;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.content-area pre code {
+  background-color: transparent;
+  color: #f3f4f6 !important;
+  padding: 0;
+}
+
+.content-area a {
+  color: #6366f1 !important; /* indigo-500 */
+  text-decoration: underline;
+}
+
+.content-area a:hover {
+  color: #4f46e5 !important; /* indigo-600 */
+}
+
+/* 탭 활성 상태 */
+.tab-btn {
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background-color: #f9fafb;
+}
+
+.tab-btn.active {
+  border-bottom-color: #6366f1 !important; /* indigo-500 */
+  color: #6366f1 !important;
+}
+</style>
+<% end %>

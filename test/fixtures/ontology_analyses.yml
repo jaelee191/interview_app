@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  job_analysis: one
+  user_profile: one
+  applicant_graph: 
+  job_graph: 
+  company_graph: 
+  matching_result: 
+  analysis_status: MyString
+  analyzed_at: 2025-08-15 12:37:38
+
+two:
+  job_analysis: two
+  user_profile: two
+  applicant_graph: 
+  job_graph: 
+  company_graph: 
+  matching_result: 
+  analysis_status: MyString
+  analyzed_at: 2025-08-15 12:37:38

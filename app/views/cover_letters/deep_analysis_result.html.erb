@@ -1,0 +1,457 @@
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-8">
+  <div class="max-w-7xl mx-auto px-4">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+        🚀 GPT-5 심층 분석 결과
+      </h1>
+      <p class="text-lg text-gray-700">
+        <%= @cover_letter.company_name %> | <%= @cover_letter.position %>
+      </p>
+      <p class="text-sm text-gray-600 mt-1">
+        분석일: <%= @cover_letter.created_at.strftime("%Y년 %m월 %d일 %H:%M") %>
+      </p>
+    </div>
+
+    <% if @analysis_data %>
+      <!-- Top Score Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <!-- Total Score -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-gray-600 text-sm">종합 점수</span>
+            <span class="text-3xl">💯</span>
+          </div>
+          <div class="text-3xl font-bold text-indigo-600">
+            <%= @analysis_data['quantitative_score']['total_score'] rescue '0' %>점
+          </div>
+          <div class="text-sm text-gray-500 mt-1">
+            등급: <%= @analysis_data['quantitative_score']['grade'] rescue '-' %>
+          </div>
+        </div>
+
+        <!-- Pass Rate -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-gray-600 text-sm">합격 가능성</span>
+            <span class="text-3xl">🎲</span>
+          </div>
+          <div class="text-3xl font-bold text-green-600">
+            <%= @analysis_data['pass_prediction']['overall_probability'] rescue '0' %>%
+          </div>
+          <div class="text-sm text-gray-500 mt-1">
+            <%= @analysis_data['pass_prediction']['competitive_position']['estimated_rank'] rescue '평가중' %>
+          </div>
+        </div>
+
+        <!-- Risk Level -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-gray-600 text-sm">리스크 레벨</span>
+            <span class="text-3xl">⚠️</span>
+          </div>
+          <div class="text-lg font-bold">
+            <span class="text-red-600">🔴 <%= @analysis_data['risk_diagnosis']['critical_issues'] rescue '0' %></span>
+            <span class="text-yellow-600 ml-2">🟡 <%= @analysis_data['risk_diagnosis']['minor_issues'] rescue '0' %></span>
+          </div>
+          <div class="text-sm text-gray-500 mt-1">
+            <%= @analysis_data['risk_diagnosis']['overall_risk_level'] rescue 'low' %> risk
+          </div>
+        </div>
+
+        <!-- Differentiation -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-gray-600 text-sm">차별화 지수</span>
+            <span class="text-3xl">🎯</span>
+          </div>
+          <div class="text-3xl font-bold text-purple-600">
+            <%= @analysis_data['differentiation_analysis']['differentiation_score'] rescue '0' %>
+          </div>
+          <div class="text-sm text-gray-500 mt-1">
+            <%= @analysis_data['differentiation_analysis']['uniqueness_index'] rescue '평가중' %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Analysis Sections -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Left Column: Detailed Scores -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- 1. Quantitative Evaluation -->
+          <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+              <span class="text-2xl mr-2">💯</span>
+              100점 정량 평가
+            </h2>
+            <% if @analysis_data['quantitative_score'] && @analysis_data['quantitative_score']['categories'] %>
+              <div class="space-y-3">
+                <% @analysis_data['quantitative_score']['categories'].each do |key, value| %>
+                  <div>
+                    <div class="flex justify-between items-center mb-1">
+                      <span class="text-sm font-medium text-gray-700">
+                        <%= key.humanize %>
+                      </span>
+                      <span class="text-sm font-bold text-indigo-600">
+                        <%= value['score'] %>/20
+                      </span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                      <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full" 
+                           style="width: <%= (value['score'].to_f / 20 * 100) %>%"></div>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-1"><%= value['feedback'] %></p>
+                  </div>
+                <% end %>
+              </div>
+              <div class="mt-4 pt-4 border-t border-gray-200">
+                <p class="text-sm text-gray-700">
+                  <span class="font-semibold">개선 우선순위:</span>
+                  <%= (@analysis_data['quantitative_score']['improvement_priority'] || []).join(', ') %>
+                </p>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- 2. Competency Matrix -->
+          <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+              <span class="text-2xl mr-2">⭐</span>
+              핵심 역량 매트릭스
+            </h2>
+            <% if @analysis_data['competency_matrix'] && @analysis_data['competency_matrix']['competencies'] %>
+              <div class="grid grid-cols-2 gap-4">
+                <% @analysis_data['competency_matrix']['competencies'].each do |key, value| %>
+                  <div class="border border-gray-200 rounded-lg p-3">
+                    <div class="flex justify-between items-center mb-2">
+                      <span class="text-sm font-medium text-gray-700">
+                        <%= key.humanize %>
+                      </span>
+                      <div class="flex">
+                        <% (1..5).each do |i| %>
+                          <svg class="w-4 h-4 <%= i <= value['rating'].to_f ? 'text-yellow-400' : 'text-gray-300' %>" 
+                               fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                          </svg>
+                        <% end %>
+                      </div>
+                    </div>
+                    <% if value['evidence'] && value['evidence'].any? %>
+                      <p class="text-xs text-green-600">✓ <%= value['evidence'].first %></p>
+                    <% end %>
+                    <% if value['missing'] && value['missing'].any? %>
+                      <p class="text-xs text-red-600">✗ <%= value['missing'].first %></p>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+              <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                <p class="text-sm">
+                  <span class="font-semibold">최강 역량:</span> 
+                  <%= @analysis_data['competency_matrix']['strongest_competency']&.humanize %>
+                  | <span class="font-semibold">보완 필요:</span>
+                  <%= @analysis_data['competency_matrix']['weakest_competency']&.humanize %>
+                </p>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- 3. STAR Analysis -->
+          <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+              <span class="text-2xl mr-2">📊</span>
+              STAR 프레임워크 분석
+            </h2>
+            <% if @analysis_data['star_analysis'] && @analysis_data['star_analysis']['star_analyses'] %>
+              <% @analysis_data['star_analysis']['star_analyses'].each do |star| %>
+                <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+                  <h4 class="font-semibold text-gray-800 mb-2"><%= star['experience'] %></h4>
+                  <div class="grid grid-cols-4 gap-2 text-sm">
+                    <div>
+                      <span class="font-medium">S</span>
+                      <div class="text-xs <%= star['situation']['quality'] == 'excellent' ? 'text-green-600' : 'text-gray-600' %>">
+                        <%= star['situation']['score'] %>/10
+                      </div>
+                    </div>
+                    <div>
+                      <span class="font-medium">T</span>
+                      <div class="text-xs <%= star['task']['quality'] == 'excellent' ? 'text-green-600' : 'text-gray-600' %>">
+                        <%= star['task']['score'] %>/10
+                      </div>
+                    </div>
+                    <div>
+                      <span class="font-medium">A</span>
+                      <div class="text-xs <%= star['action']['quality'] == 'excellent' ? 'text-green-600' : 'text-gray-600' %>">
+                        <%= star['action']['score'] %>/10
+                      </div>
+                    </div>
+                    <div>
+                      <span class="font-medium">R</span>
+                      <div class="text-xs <%= star['result']['quality'] == 'excellent' ? 'text-green-600' : 'text-gray-600' %>">
+                        <%= star['result']['score'] %>/10
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-600 mt-2"><%= star['improvement'] %></p>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+
+          <!-- 4. Risk Diagnosis -->
+          <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+              <span class="text-2xl mr-2">⚠️</span>
+              리스크 진단
+            </h2>
+            <% if @analysis_data['risk_diagnosis'] %>
+              <!-- Red Flags -->
+              <% if @analysis_data['risk_diagnosis']['red_flags'] && @analysis_data['risk_diagnosis']['red_flags'].any? %>
+                <div class="mb-4">
+                  <h3 class="font-semibold text-red-600 mb-2">🔴 즉시 수정 필요</h3>
+                  <% @analysis_data['risk_diagnosis']['red_flags'].each do |flag| %>
+                    <div class="mb-2 p-3 bg-red-50 border border-red-200 rounded">
+                      <p class="text-sm font-medium text-red-800"><%= flag['issue'] %></p>
+                      <p class="text-xs text-red-600 mt-1">위치: <%= flag['location'] %></p>
+                      <p class="text-xs text-gray-700 mt-1">💡 <%= flag['solution'] %></p>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+              
+              <!-- Yellow Flags -->
+              <% if @analysis_data['risk_diagnosis']['yellow_flags'] && @analysis_data['risk_diagnosis']['yellow_flags'].any? %>
+                <div class="mb-4">
+                  <h3 class="font-semibold text-yellow-600 mb-2">🟡 개선 권장</h3>
+                  <% @analysis_data['risk_diagnosis']['yellow_flags'].each do |flag| %>
+                    <div class="mb-2 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                      <p class="text-sm font-medium text-yellow-800"><%= flag['issue'] %></p>
+                      <p class="text-xs text-yellow-600 mt-1">위치: <%= flag['location'] %></p>
+                      <p class="text-xs text-gray-700 mt-1">💡 <%= flag['solution'] %></p>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Right Column: Summary & Recommendations -->
+        <div class="space-y-6">
+          <!-- Pass Prediction -->
+          <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold mb-4">🎲 합격 가능성 예측</h2>
+            <% if @analysis_data['pass_prediction'] %>
+              <div class="text-center mb-4">
+                <div class="text-5xl font-bold">
+                  <%= @analysis_data['pass_prediction']['overall_probability'] %>%
+                </div>
+                <p class="text-sm mt-2 opacity-90">
+                  <%= @analysis_data['pass_prediction']['confidence_level'] %> confidence
+                </p>
+              </div>
+              
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span>서류 품질</span>
+                  <span class="font-semibold"><%= @analysis_data['pass_prediction']['breakdown']['document_quality'] %>%</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>직무 적합도</span>
+                  <span class="font-semibold"><%= @analysis_data['pass_prediction']['breakdown']['job_fit'] %>%</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>기업 적합도</span>
+                  <span class="font-semibold"><%= @analysis_data['pass_prediction']['breakdown']['company_fit'] %>%</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>경쟁력</span>
+                  <span class="font-semibold"><%= @analysis_data['pass_prediction']['breakdown']['competitiveness'] %>%</span>
+                </div>
+              </div>
+              
+              <div class="mt-4 pt-4 border-t border-white/30">
+                <p class="text-sm">
+                  <span class="font-semibold">개선 시 예상:</span> 
+                  <%= @analysis_data['pass_prediction']['improvement_impact']['if_improved'] %>%
+                  <span class="text-green-300">
+                    <%= @analysis_data['pass_prediction']['improvement_impact']['expected_lift'] %>
+                  </span>
+                </p>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Differentiation Strategy -->
+          <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+              <span class="text-2xl mr-2">🎯</span>
+              차별화 전략
+            </h2>
+            <% if @analysis_data['differentiation_analysis'] && @analysis_data['differentiation_analysis']['positioning_strategy'] %>
+              <div class="space-y-3">
+                <div>
+                  <p class="text-xs text-gray-600">현재 포지션</p>
+                  <p class="text-sm font-medium text-gray-800">
+                    <%= @analysis_data['differentiation_analysis']['positioning_strategy']['current_position'] %>
+                  </p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-600">목표 포지션</p>
+                  <p class="text-sm font-medium text-indigo-600">
+                    <%= @analysis_data['differentiation_analysis']['positioning_strategy']['recommended_position'] %>
+                  </p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-600">핵심 메시지</p>
+                  <p class="text-sm font-semibold text-purple-600">
+                    "<%= @analysis_data['differentiation_analysis']['positioning_strategy']['key_message'] %>"
+                  </p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Keyword Intelligence -->
+          <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+              <span class="text-2xl mr-2">🔍</span>
+              키워드 인텔리전스
+            </h2>
+            <% if @analysis_data['keyword_intelligence'] && @analysis_data['keyword_intelligence']['keyword_analysis'] %>
+              <div class="space-y-3">
+                <div>
+                  <p class="text-xs text-gray-600 mb-1">매칭된 직무 키워드</p>
+                  <div class="flex flex-wrap gap-1">
+                    <% (@analysis_data['keyword_intelligence']['keyword_analysis']['job_keywords']['matched'] || []).each do |keyword| %>
+                      <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full"><%= keyword %></span>
+                    <% end %>
+                  </div>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-600 mb-1">누락된 중요 키워드</p>
+                  <div class="flex flex-wrap gap-1">
+                    <% (@analysis_data['keyword_intelligence']['keyword_analysis']['job_keywords']['missing'] || []).each do |keyword| %>
+                      <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full"><%= keyword %></span>
+                    <% end %>
+                  </div>
+                </div>
+                <div class="pt-2 border-t">
+                  <div class="flex justify-between text-sm">
+                    <span>키워드 매칭률</span>
+                    <span class="font-semibold text-indigo-600">
+                      <%= @analysis_data['keyword_intelligence']['keyword_analysis']['job_keywords']['match_rate'] %>%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Experience Assets -->
+          <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+              <span class="text-2xl mr-2">💎</span>
+              경험 자산 평가
+            </h2>
+            <% if @analysis_data['experience_assets'] && @analysis_data['experience_assets']['experience_assets'] %>
+              <div class="space-y-2">
+                <% if @analysis_data['experience_assets']['experience_assets']['core_experiences'] %>
+                  <div>
+                    <p class="text-xs font-semibold text-gray-600 mb-1">핵심 경험</p>
+                    <% @analysis_data['experience_assets']['experience_assets']['core_experiences'].each do |exp| %>
+                      <div class="text-sm p-2 bg-blue-50 rounded mb-1">
+                        <span class="font-medium"><%= exp['experience'] %></span>
+                        <span class="ml-2 text-xs text-blue-600">가치: <%= exp['value'] %></span>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+                <% if @analysis_data['experience_assets']['experience_assets']['unique_experiences'] %>
+                  <div>
+                    <p class="text-xs font-semibold text-gray-600 mb-1">독특한 경험</p>
+                    <% @analysis_data['experience_assets']['experience_assets']['unique_experiences'].each do |exp| %>
+                      <div class="text-sm p-2 bg-purple-50 rounded mb-1">
+                        <span class="font-medium"><%= exp['experience'] %></span>
+                        <span class="ml-2 text-xs text-purple-600">가치: <%= exp['value'] %></span>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+                <div class="pt-2 border-t">
+                  <p class="text-sm font-semibold">
+                    총 자산 가치: 
+                    <span class="text-indigo-600">
+                      <%= @analysis_data['experience_assets']['total_asset_value'] %>
+                    </span>
+                  </p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comprehensive Report Section -->
+      <div class="mt-8 bg-white rounded-xl shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">📊 종합 분석 보고서</h2>
+        <div class="prose prose-lg max-w-none">
+          <%= simple_format(@comprehensive_report) %>
+        </div>
+      </div>
+    <% else %>
+      <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+        <p class="text-gray-600">분석 데이터를 불러올 수 없습니다.</p>
+      </div>
+    <% end %>
+
+    <!-- Action Buttons -->
+    <div class="mt-8 flex justify-center space-x-4">
+      <%= link_to "📝 새로운 분석", deep_analysis_cover_letters_path, 
+          class: "px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all" %>
+      <%= link_to "📋 분석 목록", cover_letters_path, 
+          class: "px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-all" %>
+      <% if current_user %>
+        <%= link_to "👤 내 프로필", user_profile_path(current_user.user_profile || current_user.create_user_profile),
+            class: "px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-all" %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js for Visualizations -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('turbo:load', () => {
+    <% if @visualization_data %>
+      // Radar Chart for 5 Categories
+      const radarCtx = document.getElementById('radarChart');
+      if (radarCtx) {
+        new Chart(radarCtx, {
+          type: 'radar',
+          data: {
+            labels: <%= @visualization_data[:radar_chart][:categories].to_json.html_safe %>,
+            datasets: [{
+              label: '점수',
+              data: <%= @visualization_data[:radar_chart][:scores].to_json.html_safe %>,
+              backgroundColor: 'rgba(99, 102, 241, 0.2)',
+              borderColor: 'rgb(99, 102, 241)',
+              pointBackgroundColor: 'rgb(99, 102, 241)',
+              pointBorderColor: '#fff',
+              pointHoverBackgroundColor: '#fff',
+              pointHoverBorderColor: 'rgb(99, 102, 241)'
+            }]
+          },
+          options: {
+            scales: {
+              r: {
+                beginAtZero: true,
+                max: 100
+              }
+            }
+          }
+        });
+      }
+    <% end %>
+  });
+</script>

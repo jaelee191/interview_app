@@ -1,0 +1,144 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        온톨로지 매칭 분석 결과
+      </h1>
+      <p class="text-xl text-gray-600">
+        AI가 분석한 지원자-채용공고 매칭 결과입니다
+      </p>
+    </div>
+
+    <% if @analysis_result %>
+      <!-- Overall Matching Score -->
+      <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <div class="text-center">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">종합 매칭 점수</h2>
+          <div class="relative inline-flex items-center justify-center">
+            <svg class="transform -rotate-90 w-32 h-32">
+              <circle cx="64" cy="64" r="56" stroke="currentColor" stroke-width="8" fill="none" class="text-gray-200"></circle>
+              <circle cx="64" cy="64" r="56" stroke="currentColor" stroke-width="8" fill="none" 
+                      stroke-dasharray="<%= 351.86 * (@analysis_result[:matching_result][:overall_score] || 0) / 100 %> 351.86"
+                      class="text-blue-600"></circle>
+            </svg>
+            <span class="absolute text-3xl font-bold text-gray-900">
+              <%= (@analysis_result[:matching_result][:overall_score] || 0).round %>%
+            </span>
+          </div>
+          <p class="mt-4 text-gray-600">
+            <%= case (@analysis_result[:matching_result][:overall_score] || 0)
+                when 80..100 then "매우 높은 매칭도 - 적극 지원 권장"
+                when 60..79 then "양호한 매칭도 - 보완 후 지원 권장"
+                when 40..59 then "보통 매칭도 - 전략적 접근 필요"
+                else "낮은 매칭도 - 신중한 검토 필요"
+                end %>
+          </p>
+        </div>
+      </div>
+
+      <!-- Detailed Analysis -->
+      <div class="grid lg:grid-cols-2 gap-8 mb-8">
+        <!-- Strengths -->
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+            <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            강점 분석
+          </h3>
+          <ul class="space-y-3">
+            <% (@analysis_result[:matching_result][:strengths] || []).each do |strength| %>
+              <li class="flex items-start">
+                <span class="text-green-500 mr-2 mt-1">•</span>
+                <span class="text-gray-700"><%= strength %></span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+
+        <!-- Weaknesses -->
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+            <svg class="w-6 h-6 text-orange-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            보완 필요 사항
+          </h3>
+          <ul class="space-y-3">
+            <% (@analysis_result[:matching_result][:gaps] || []).each do |gap| %>
+              <li class="flex items-start">
+                <span class="text-orange-500 mr-2 mt-1">•</span>
+                <span class="text-gray-700"><%= gap %></span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 mb-8">
+        <h3 class="text-xl font-bold text-gray-900 mb-6">
+          자기소개서 작성 전략
+        </h3>
+        <div class="space-y-4">
+          <% (@analysis_result[:matching_result][:recommendations] || []).each_with_index do |rec, index| %>
+            <div class="flex items-start">
+              <span class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold text-sm">
+                <%= index + 1 %>
+              </span>
+              <p class="ml-4 text-gray-700"><%= rec %></p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Visualization -->
+      <% if @visualization_data %>
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          <h3 class="text-xl font-bold text-gray-900 mb-6">역량 매칭 시각화</h3>
+          <div id="ontology-visualization" class="h-96">
+            <!-- D3.js or Chart.js visualization would go here -->
+            <div class="flex items-center justify-center h-full text-gray-500">
+              <p>시각화 차트가 여기 표시됩니다</p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Action Buttons -->
+      <div class="mt-12 flex justify-center space-x-4">
+        <%= link_to interactive_cover_letters_path(
+              company_name: @analysis_result[:job_info][:company_name],
+              position: @analysis_result[:job_info][:position]
+            ), class: "inline-block" do %>
+          <button class="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+            AI 자소서 작성 시작하기 →
+          </button>
+        <% end %>
+        
+        <%= link_to ontology_input_cover_letters_path, class: "inline-block" do %>
+          <button class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition">
+            다른 채용공고 분석
+          </button>
+        <% end %>
+      </div>
+    <% else %>
+      <!-- No Analysis Result -->
+      <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
+        <svg class="w-24 h-24 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">분석 결과가 없습니다</h2>
+        <p class="text-gray-600 mb-8">
+          먼저 온톨로지 분석을 진행해주세요.
+        </p>
+        <%= link_to ontology_input_cover_letters_path, class: "inline-block" do %>
+          <button class="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+            온톨로지 분석 시작하기 →
+          </button>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

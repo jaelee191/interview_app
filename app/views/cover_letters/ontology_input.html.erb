@@ -1,0 +1,330 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        온톨로지 기반 매칭 분석
+      </h1>
+      <p class="text-xl text-gray-600">
+        지원자 역량과 채용공고를 심층 분석하여 최적의 매칭 전략을 제시합니다
+      </p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="grid lg:grid-cols-2 gap-8">
+      <!-- Left Column: Job Analysis Selection -->
+      <div class="bg-white rounded-2xl shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          채용공고 선택
+        </h2>
+        
+        <% if @job_analysis %>
+          <!-- Pre-selected Job Analysis -->
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-300 rounded-xl p-6 mb-6">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+                <span class="text-green-600">✓</span>
+                선택된 채용공고
+              </h3>
+              <a href="#" onclick="changeJobAnalysis()" class="text-sm text-blue-600 hover:text-blue-700 underline">
+                변경
+              </a>
+            </div>
+            <p class="text-lg font-bold text-gray-900 mb-1"><%= @job_analysis.company_name %></p>
+            <p class="text-gray-700 font-medium mb-3"><%= @job_analysis.position %></p>
+            
+            <% if @job_analysis.keywords.present? %>
+              <div class="flex flex-wrap gap-2 mb-3">
+                <% keywords_array = @job_analysis.keywords.is_a?(String) ? JSON.parse(@job_analysis.keywords) : @job_analysis.keywords %>
+                <% keywords_array.first(5).each do |keyword| %>
+                  <span class="inline-block bg-white px-2 py-1 rounded text-xs font-medium text-blue-700">
+                    <%= keyword %>
+                  </span>
+                <% end %>
+              </div>
+            <% end %>
+            
+            <% if @job_analysis.summary.present? %>
+              <p class="text-sm text-gray-600 line-clamp-2">
+                <%= @job_analysis.summary %>
+              </p>
+            <% end %>
+            
+            <div class="mt-4 pt-4 border-t border-blue-200">
+              <p class="text-xs text-gray-500">
+                분석일: <%= @job_analysis.created_at.strftime("%Y년 %m월 %d일 %H:%M") %>
+              </p>
+            </div>
+          </div>
+          
+          <!-- Quick Actions -->
+          <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+            <p class="text-sm text-yellow-800">
+              <strong>💡 Tip:</strong> 이미 분석된 채용공고를 사용하면 더 정확한 온톨로지 매칭이 가능합니다.
+            </p>
+          </div>
+        <% else %>
+          <!-- Job Analysis Selection -->
+          <div class="space-y-4">
+            <!-- Recent Analyses Quick Select -->
+            <% recent_analyses = JobAnalysis.where(saved: true).order(created_at: :desc).limit(3) %>
+            <% if recent_analyses.any? %>
+              <div class="mb-6">
+                <h4 class="text-sm font-medium text-gray-700 mb-3">최근 저장된 분석</h4>
+                <div class="space-y-2">
+                  <% recent_analyses.each do |analysis| %>
+                    <a href="<%= ontology_input_cover_letters_path(job_analysis_id: analysis.id) %>" 
+                       class="block p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                      <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                          <p class="font-medium text-gray-900 text-sm"><%= analysis.company_name %></p>
+                          <p class="text-xs text-gray-600"><%= analysis.position %></p>
+                        </div>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                      </div>
+                    </a>
+                  <% end %>
+                </div>
+              </div>
+              
+              <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                  <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                  <span class="px-4 bg-white text-gray-500">또는</span>
+                </div>
+              </div>
+            <% else %>
+              <p class="text-gray-600 mb-4">
+                온톨로지 분석을 위해 먼저 채용공고를 분석해주세요.
+              </p>
+            <% end %>
+            
+            <div class="grid grid-cols-2 gap-3">
+              <%= link_to job_posting_cover_letters_path, class: "block" do %>
+                <button class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition text-sm">
+                  새 채용공고 분석
+                </button>
+              <% end %>
+              
+              <%= link_to saved_job_analyses_cover_letters_path, class: "block" do %>
+                <button class="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition text-sm">
+                  저장된 분석 보기
+                </button>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Right Column: User Profile -->
+      <div class="bg-white rounded-2xl shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+          지원자 프로필
+        </h2>
+        
+        <% if current_user && @user_profile %>
+          <!-- User Profile Summary -->
+          <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+            <h3 class="font-semibold text-gray-900 mb-2">내 프로필</h3>
+            <p class="text-gray-700 font-medium"><%= @user_profile.name || current_user.email %></p>
+            <p class="text-sm text-gray-600 mt-2">
+              학력: <%= @user_profile.education || "미입력" %>
+            </p>
+            <p class="text-sm text-gray-600">
+              경력: <%= @user_profile.career_history&.size || 0 %>개 등록
+            </p>
+            <p class="text-sm text-gray-600">
+              프로젝트: <%= @user_profile.projects&.size || 0 %>개 등록
+            </p>
+          </div>
+          
+          <%= link_to edit_user_profile_path(@user_profile), class: "block w-full" do %>
+            <button class="w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition">
+              프로필 수정하기
+            </button>
+          <% end %>
+        <% else %>
+          <!-- No Profile -->
+          <div class="space-y-4">
+            <p class="text-gray-600 mb-4">
+              온톨로지 분석을 위해서는 프로필 정보가 필요합니다. 로그인 후 프로필을 작성해주세요.
+            </p>
+            
+            <% if current_user %>
+              <%= link_to edit_user_profile_path(current_user.id), class: "block w-full" do %>
+                <button class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+                  프로필 작성하기 →
+                </button>
+              <% end %>
+            <% else %>
+              <%= link_to new_user_session_path, class: "block w-full" do %>
+                <button class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+                  로그인하기 →
+                </button>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Analysis Button -->
+    <% if @job_analysis && @user_profile %>
+      <div class="mt-12 text-center">
+        <%= form_with url: ontology_analysis_cover_letters_path, method: :post, local: true, class: "inline-block" do |form| %>
+          <%= form.hidden_field :job_analysis_id, value: @job_analysis.id %>
+          <%= form.hidden_field :user_profile_id, value: @user_profile.id %>
+          
+          <button type="submit" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-bold text-lg hover:from-blue-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+            온톨로지 매칭 분석 시작 →
+          </button>
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- Features Section -->
+    <div class="mt-16 grid md:grid-cols-3 gap-8">
+      <div class="text-center">
+        <div class="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">심층 매칭 분석</h3>
+        <p class="text-gray-600">
+          지원자 역량과 채용 요구사항을 다차원적으로 분석하여 매칭도를 산출합니다
+        </p>
+      </div>
+
+      <div class="text-center">
+        <div class="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">강점/약점 도출</h3>
+        <p class="text-gray-600">
+          지원자의 강점을 극대화하고 약점을 보완할 수 있는 전략을 제시합니다
+        </p>
+      </div>
+
+      <div class="text-center">
+        <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">맞춤형 제안</h3>
+        <p class="text-gray-600">
+          자기소개서 작성 시 강조해야 할 포인트와 구체적인 작성 가이드를 제공합니다
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function changeJobAnalysis() {
+  // 모달 창 생성
+  const modal = document.createElement('div');
+  modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+  modal.innerHTML = `
+    <div class="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+      <div class="p-6 border-b">
+        <h3 class="text-xl font-bold text-gray-900">채용공고 변경</h3>
+      </div>
+      <div class="p-6 overflow-y-auto max-h-[60vh]">
+        <div id="jobAnalysesList" class="space-y-3">
+          <div class="text-center py-4">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <p class="mt-2 text-gray-600">로딩 중...</p>
+          </div>
+        </div>
+      </div>
+      <div class="p-6 border-t bg-gray-50">
+        <button onclick="closeJobAnalysisModal()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium">
+          취소
+        </button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // 저장된 분석 목록 가져오기
+  fetch('/cover_letters/saved_job_analyses.json', {
+    headers: {
+      'Accept': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    const listContainer = document.getElementById('jobAnalysesList');
+    
+    if (data.analyses && data.analyses.length > 0) {
+      listContainer.innerHTML = data.analyses.map(analysis => `
+        <a href="/cover_letters/ontology_input?job_analysis_id=${analysis.id}" 
+           class="block p-4 bg-gray-50 hover:bg-blue-50 rounded-lg transition-colors border hover:border-blue-300">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="font-bold text-gray-900">${analysis.company_name}</p>
+              <p class="text-sm text-gray-700 mt-1">${analysis.position}</p>
+              ${analysis.keywords ? `
+                <div class="flex flex-wrap gap-1 mt-2">
+                  ${(typeof analysis.keywords === 'string' ? JSON.parse(analysis.keywords) : analysis.keywords).slice(0, 3).map(k => 
+                    `<span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">${k}</span>`
+                  ).join('')}
+                </div>
+              ` : ''}
+            </div>
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+        </a>
+      `).join('');
+    } else {
+      listContainer.innerHTML = `
+        <div class="text-center py-8">
+          <p class="text-gray-600 mb-4">저장된 채용공고 분석이 없습니다.</p>
+          <a href="/cover_letters/job_posting" class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
+            채용공고 분석하기
+          </a>
+        </div>
+      `;
+    }
+  })
+  .catch(error => {
+    console.error('Error loading analyses:', error);
+    document.getElementById('jobAnalysesList').innerHTML = `
+      <div class="text-center py-8 text-red-600">
+        목록을 불러올 수 없습니다.
+      </div>
+    `;
+  });
+  
+  return false;
+}
+
+function closeJobAnalysisModal() {
+  const modal = document.querySelector('.fixed.inset-0');
+  if (modal) {
+    modal.remove();
+  }
+}
+
+// ESC 키로 모달 닫기
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeJobAnalysisModal();
+  }
+});
+</script>

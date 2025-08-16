@@ -13,4 +13,63 @@ module ApplicationHelper
       'text-red-600'
     end
   end
+  
+  def markdown_to_html(text)
+    return "" if text.blank?
+    
+    # Redcarpet 렌더러 설정
+    renderer = Redcarpet::Render::HTML.new(
+      filter_html: false,
+      hard_wrap: true,
+      tables: true,
+      fenced_code_blocks: true,
+      autolink: true,
+      strikethrough: true,
+      escape_html: false
+    )
+    
+    # 마크다운 파서 설정
+    markdown = Redcarpet::Markdown.new(renderer,
+      no_intra_emphasis: true,
+      tables: true,
+      fenced_code_blocks: true,
+      autolink: true,
+      strikethrough: true,
+      lax_spacing: true,
+      space_after_headers: true,
+      superscript: true
+    )
+    
+    # 마크다운을 HTML로 변환
+    html = markdown.render(text.to_s)
+    
+    # Tailwind 클래스 추가 (정규표현식으로 태그에 클래스 추가)
+    html = html.gsub(/<h1>/, '<h1 class="text-3xl font-bold mb-4 mt-6 text-gray-900">')
+    html = html.gsub(/<h2>/, '<h2 class="text-2xl font-bold mb-3 mt-5 text-blue-900 border-b-2 border-gray-200 pb-2">')
+    html = html.gsub(/<h3>/, '<h3 class="text-xl font-semibold mb-2 mt-4 text-gray-800">')
+    html = html.gsub(/<h4>/, '<h4 class="text-lg font-semibold mb-2 mt-3 text-gray-700">')
+    html = html.gsub(/<p>/, '<p class="mb-4 leading-relaxed text-gray-700">')
+    html = html.gsub(/<ul>/, '<ul class="list-disc list-inside mb-4 space-y-2">')
+    html = html.gsub(/<ol>/, '<ol class="list-decimal list-inside mb-4 space-y-2">')
+    html = html.gsub(/<li>/, '<li class="ml-4">')
+    html = html.gsub(/<strong>/, '<strong class="font-bold text-gray-900">')
+    html = html.gsub(/<em>/, '<em class="italic">')
+    html = html.gsub(/<blockquote>/, '<blockquote class="border-l-4 border-blue-500 pl-4 py-2 mb-4 bg-gray-50 italic">')
+    html = html.gsub(/<code>/, '<code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono">')
+    html = html.gsub(/<pre>/, '<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto mb-4">')
+    
+    # 테이블 스타일링
+    html = html.gsub(/<table>/, '<table class="w-full border-collapse mb-4">')
+    html = html.gsub(/<thead>/, '<thead class="bg-gray-100">')
+    html = html.gsub(/<th>/, '<th class="border border-gray-300 px-4 py-2 text-left font-semibold">')
+    html = html.gsub(/<td>/, '<td class="border border-gray-300 px-4 py-2">')
+    html = html.gsub(/<tr>/, '<tr class="hover:bg-gray-50">')
+    
+    # 화살표와 특수 문자 처리
+    html = html.gsub('→', '<span class="text-blue-600 font-bold">→</span>')
+    html = html.gsub('👉', '<span class="text-xl">👉</span>')
+    html = html.gsub('[취업 TIP]', '<span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded font-bold">취업 TIP</span>')
+    
+    html.html_safe
+  end
 end

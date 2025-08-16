@@ -1,0 +1,215 @@
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12">
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
+        🚀 GPT-5 심층 분석
+      </h1>
+      <p class="text-xl text-gray-700 mb-2">
+        9가지 전문 분석 모듈로 완벽한 자기소개서 진단
+      </p>
+      <p class="text-sm text-gray-600">
+        15년 경력 인사 전문가의 관점 + AI의 정밀 분석
+      </p>
+    </div>
+
+    <!-- 9 Analysis Modules Grid -->
+    <div class="grid grid-cols-3 gap-4 mb-8">
+      <div class="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-3xl mb-2">💯</div>
+        <h3 class="font-semibold text-gray-900">100점 정량평가</h3>
+        <p class="text-xs text-gray-600 mt-1">5개 영역 세부 채점</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-3xl mb-2">⭐</div>
+        <h3 class="font-semibold text-gray-900">역량 매트릭스</h3>
+        <p class="text-xs text-gray-600 mt-1">7개 핵심역량 5점 평가</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-3xl mb-2">📊</div>
+        <h3 class="font-semibold text-gray-900">STAR 분석</h3>
+        <p class="text-xs text-gray-600 mt-1">경험 구조화 진단</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-3xl mb-2">💎</div>
+        <h3 class="font-semibold text-gray-900">경험자산 평가</h3>
+        <p class="text-xs text-gray-600 mt-1">경험의 가치 측정</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-3xl mb-2">💬</div>
+        <h3 class="font-semibold text-gray-900">문장 임팩트</h3>
+        <p class="text-xs text-gray-600 mt-1">기억에 남는 문장 분석</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-3xl mb-2">🔍</div>
+        <h3 class="font-semibold text-gray-900">키워드 인텔리전스</h3>
+        <p class="text-xs text-gray-600 mt-1">전략적 키워드 분석</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-3xl mb-2">⚠️</div>
+        <h3 class="font-semibold text-gray-900">리스크 진단</h3>
+        <p class="text-xs text-gray-600 mt-1">Red/Yellow Flag 체크</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-3xl mb-2">🎯</div>
+        <h3 class="font-semibold text-gray-900">차별화 전략</h3>
+        <p class="text-xs text-gray-600 mt-1">포지셔닝 & 차별점</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-3xl mb-2">🎲</div>
+        <h3 class="font-semibold text-gray-900">합격률 예측</h3>
+        <p class="text-xs text-gray-600 mt-1">AI 기반 합격 가능성</p>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <%= form_with(model: @cover_letter, url: perform_deep_analysis_cover_letters_path, local: true, class: "bg-white shadow-2xl rounded-2xl p-8") do |form| %>
+      <% if @cover_letter.errors.any? %>
+        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p class="text-red-800 font-semibold mb-2">다음 오류를 확인해주세요:</p>
+          <ul class="list-disc list-inside text-red-700">
+            <% @cover_letter.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <!-- GPT-5 Badge -->
+      <div class="mb-6 inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+        </svg>
+        <span class="font-semibold">Powered by GPT-5</span>
+      </div>
+
+      <!-- Basic Information -->
+      <div class="space-y-6">
+        <div>
+          <%= form.label :user_name, "이름", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.text_field :user_name, 
+              value: @user_profile&.name,
+              placeholder: "홍길동",
+              class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" %>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <%= form.label :company_name, "지원 기업", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.text_field :company_name, 
+                placeholder: "삼성전자",
+                required: true,
+                class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" %>
+          </div>
+
+          <div>
+            <%= form.label :position, "지원 직무", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.text_field :position, 
+                placeholder: "AI 연구원",
+                required: true,
+                class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" %>
+          </div>
+        </div>
+
+        <div>
+          <%= form.label :title, "제목", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.text_field :title, 
+              placeholder: "2025년 상반기 공채 자기소개서",
+              class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" %>
+        </div>
+
+        <div>
+          <%= form.label :content, "자기소개서 내용", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <div class="relative">
+            <%= form.text_area :content, 
+                rows: 15,
+                required: true,
+                placeholder: "자기소개서 전문을 입력해주세요.\n\n심층 분석을 위해 가능한 한 상세하게 작성해주세요.",
+                class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none transition-all" %>
+            <div class="absolute bottom-4 right-4 text-sm text-gray-400">
+              <span id="char-count">0</span> / 10000자
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analysis Preview -->
+      <div class="mt-8 p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl">
+        <h4 class="font-bold text-gray-900 mb-4">📈 분석 결과 미리보기</h4>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <p class="text-sm text-gray-700"><span class="font-semibold">✅ 정량 점수:</span> 100점 만점 채점</p>
+            <p class="text-sm text-gray-700"><span class="font-semibold">✅ 합격 예측:</span> AI 기반 확률 계산</p>
+            <p class="text-sm text-gray-700"><span class="font-semibold">✅ 경쟁력 평가:</span> 상위 몇% 수준</p>
+            <p class="text-sm text-gray-700"><span class="font-semibold">✅ 리스크 진단:</span> 위험 요소 체크</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-700"><span class="font-semibold">✅ 강점 분석:</span> TOP 3 강점</p>
+            <p class="text-sm text-gray-700"><span class="font-semibold">✅ 개선 제안:</span> 우선순위별 개선점</p>
+            <p class="text-sm text-gray-700"><span class="font-semibold">✅ 차별화 전략:</span> 포지셔닝 가이드</p>
+            <p class="text-sm text-gray-700"><span class="font-semibold">✅ 시각화:</span> 대시보드 제공</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="mt-8 flex flex-col items-center">
+        <%= form.submit "🚀 GPT-5 심층 분석 시작", 
+            id: "submit-btn",
+            class: "px-10 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-lg rounded-xl hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg" %>
+        <p class="mt-3 text-sm text-gray-600">
+          ⏱️ 분석 소요 시간: 약 30-45초
+        </p>
+      </div>
+    <% end %>
+
+    <!-- Other Options -->
+    <div class="mt-12 text-center">
+      <p class="text-gray-600 mb-4">다른 분석 방법을 원하시나요?</p>
+      <div class="flex justify-center space-x-6">
+        <%= link_to new_cover_letter_path, class: "text-indigo-600 hover:text-indigo-800 font-medium" do %>
+          📝 기본 분석
+        <% end %>
+        <%= link_to advanced_cover_letters_path, class: "text-indigo-600 hover:text-indigo-800 font-medium" do %>
+          🎯 3단계 분석
+        <% end %>
+        <%= link_to interactive_cover_letters_path, class: "text-indigo-600 hover:text-indigo-800 font-medium" do %>
+          💬 AI 코칭
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Character count
+  document.addEventListener('turbo:load', () => {
+    const textarea = document.querySelector('textarea[name="cover_letter[content]"]');
+    const charCount = document.getElementById('char-count');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (textarea && charCount) {
+      const updateCount = () => {
+        charCount.textContent = textarea.value.length;
+        if (textarea.value.length > 10000) {
+          charCount.classList.add('text-red-500');
+        } else {
+          charCount.classList.remove('text-red-500');
+        }
+      };
+      
+      textarea.addEventListener('input', updateCount);
+      updateCount();
+    }
+    
+    // Loading state for submit button
+    if (submitBtn) {
+      const form = submitBtn.closest('form');
+      form.addEventListener('submit', () => {
+        submitBtn.value = '🔄 분석 중... (최대 45초 소요)';
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+      });
+    }
+  });
+</script>

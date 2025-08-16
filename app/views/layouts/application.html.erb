@@ -51,17 +51,79 @@
           </div>
           
           <!-- Navigation Links -->
-          <div class="hidden md:flex items-center space-x-6">
-            <%= link_to "서비스 소개", about_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium" %>
-            <%= link_to "채용공고 분석", job_posting_cover_letters_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium" %>
-            <%= link_to "AI 자소서 작성", interactive_cover_letters_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium" %>
-            <%= link_to "심층 분석", advanced_cover_letters_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium" %>
-            <%= link_to "이력 관리", cover_letters_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium" %>
+          <div class="hidden md:flex items-center space-x-2">
+            <%= link_to "서비스 소개", about_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium px-3 py-2" %>
+            
+            <!-- 채용공고 분석 드롭다운 -->
+            <div class="relative group">
+              <button class="text-gray-600 hover:text-gray-900 transition-colors font-medium flex items-center px-3 py-2">
+                채용공고 분석
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <div class="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <%= link_to "📝 채용공고 분석", job_posting_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50" %>
+                <%= link_to "💼 저장된 채용공고", saved_job_analyses_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
+              </div>
+            </div>
+            
+            <!-- 기업 분석 드롭다운 -->
+            <div class="relative group">
+              <button class="text-purple-600 hover:text-purple-700 transition-colors font-medium flex items-center px-3 py-2">
+                🏢 기업 분석
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <div class="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <%= link_to "🏢 기업 분석", company_analysis_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50" %>
+                <%= link_to "📚 저장된 기업분석", saved_company_analyses_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
+              </div>
+            </div>
+            
+            <!-- 자소서 작성 드롭다운 -->
+            <div class="relative group">
+              <button class="text-gray-600 hover:text-gray-900 transition-colors font-medium flex items-center px-3 py-2">
+                AI 자소서 작성
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <div class="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <%= link_to "✍️ AI 자소서 작성", interactive_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50" %>
+                <%= link_to "🔬 온톨로지 분석", ontology_input_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
+              </div>
+            </div>
+            
+            <!-- 심층 분석 드롭다운 -->
+            <div class="relative group">
+              <button class="text-gray-600 hover:text-gray-900 transition-colors font-medium flex items-center px-3 py-2">
+                심층 분석
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <div class="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <%= link_to "📊 3단계 분석", advanced_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50" %>
+                <%= link_to "🧠 GPT-5 심층분석", deep_analysis_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
+                <%= link_to "🎯 맥락 기반 분석", intelligent_analysis_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100 font-semibold bg-gradient-to-r from-blue-50 to-purple-50" %>
+              </div>
+            </div>
+            
+            <%= link_to "이력 관리", cover_letters_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium px-3 py-2" %>
+            <%= link_to "요금제", pricing_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium px-3 py-2" %>
           </div>
           
           <!-- Login Button -->
           <div class="flex items-center">
-            <button class="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors">로그인</button>
+            <% if defined?(current_user) && current_user %>
+              <%= link_to "프로필", user_profile_path(current_user.id), class: "px-4 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors" %>
+              <%= link_to "로그아웃", destroy_user_session_path, data: { "turbo-method": :delete }, class: "px-4 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors" %>
+            <% else %>
+              <%= link_to "로그인", new_user_session_path, class: "px-4 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors" %>
+              <%= link_to "회원가입", new_user_registration_path, class: "px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors ml-2" %>
+            <% end %>
           </div>
         </div>
       </div>
@@ -93,8 +155,13 @@
             <h4 class="text-sm font-semibold text-gray-900 mb-4">서비스</h4>
             <ul class="space-y-2">
               <li><a href="/cover_letters/job_posting" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">채용공고 분석</a></li>
+              <li><a href="/cover_letters/company_analysis" class="text-sm text-purple-600 hover:text-purple-700 transition-colors font-semibold">🏢 기업 심층 분석</a></li>
+              <li><a href="/cover_letters/saved_company_analyses" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">저장된 기업분석</a></li>
+              <li><a href="/cover_letters/saved_job_analyses" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">저장된 채용공고</a></li>
               <li><a href="/cover_letters/interactive" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">AI 자소서 작성</a></li>
-              <li><a href="/cover_letters/advanced" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">심층 분석</a></li>
+              <li><a href="/cover_letters/advanced" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">3단계 심층 분석</a></li>
+              <li><a href="/cover_letters/deep_analysis" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">GPT-5 심층분석</a></li>
+              <li><a href="/cover_letters/intelligent_analysis" class="text-sm text-gray-600 hover:text-gray-900 transition-colors font-semibold">🎯 맥락 기반 분석</a></li>
               <li><a href="/cover_letters" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">이력 관리</a></li>
             </ul>
           </div>

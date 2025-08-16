@@ -8,6 +8,23 @@
       <p class="text-lg text-gray-600 max-w-2xl mx-auto">
         채용공고 URL을 입력하면 AI가 핵심 키워드와 요구 역량을 자동으로 분석해드립니다
       </p>
+      <!-- Links -->
+      <div class="mt-6 flex justify-center gap-4">
+        <a href="/cover_letters/saved_job_analyses" 
+           class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-lg transition-colors shadow-md hover:shadow-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+          </svg>
+          저장된 분석 보기
+        </a>
+        <a href="/cover_letters/company_analysis" 
+           class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-medium px-6 py-3 rounded-lg transition-colors shadow-md hover:shadow-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+          </svg>
+          기업 심층 분석
+        </a>
+      </div>
     </div>
 
     <!-- Features Grid -->
@@ -78,6 +95,41 @@
           placeholder="예: 삼성물산 패션부문 경력사원 채용(퍼포먼스마케팅, CRM, 브랜드마케팅)" 
           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
         />
+      </div>
+
+      <!-- Analysis Type Selection -->
+      <div class="mb-6 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg">
+        <label class="block text-sm font-medium text-gray-700 mb-3">분석 유형 선택</label>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="relative cursor-pointer">
+            <input type="radio" name="analysis-type" value="basic" class="sr-only peer" checked>
+            <div class="p-4 border-2 rounded-lg peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:bg-gray-50 transition-all">
+              <div class="font-medium text-gray-900 mb-1">⚡ 기본 분석</div>
+              <div class="text-xs text-gray-600">
+                • 빠른 분석 (10-30초)<br>
+                • 핵심 키워드 추출<br>
+                • 요구 역량 분석<br>
+                • 기본 전략 제공
+              </div>
+            </div>
+          </label>
+          
+          <label class="relative cursor-pointer">
+            <input type="radio" name="analysis-type" value="enhanced" class="sr-only peer">
+            <div class="p-4 border-2 rounded-lg peer-checked:border-purple-500 peer-checked:bg-purple-50 hover:bg-gray-50 transition-all">
+              <div class="font-medium text-gray-900 mb-1">🚀 강화 분석 <span class="text-xs bg-purple-200 text-purple-700 px-2 py-0.5 rounded-full ml-1">Premium</span></div>
+              <div class="text-xs text-gray-600">
+                • 기업 최신 이슈 분석 ⭐<br>
+                • 맥락 기반 전략 (핵심)<br>
+                • 3000자+ 상세 가이드<br>
+                • 대기업은 경쟁사 분석 포함
+              </div>
+            </div>
+          </label>
+        </div>
+        <p class="mt-3 text-xs text-gray-500">
+          💡 <strong>팁:</strong> 처음에는 기본 분석으로 빠르게 확인 후, 필요시 강화 분석을 사용하세요.
+        </p>
       </div>
 
       <button 
@@ -211,8 +263,14 @@
       
       const url = urlInput.value.trim();
       const jobTitle = jobTitleInput ? jobTitleInput.value.trim() : '';
+      
+      // Get selected analysis type
+      const analysisType = document.querySelector('input[name="analysis-type"]:checked').value;
+      const useEnhanced = analysisType === 'enhanced';
+      
       console.log('URL:', url);
       console.log('Job Title:', jobTitle);
+      console.log('Analysis Type:', analysisType);
       
       if (!url) {
         alert('채용공고 URL을 입력해주세요.');
@@ -224,9 +282,15 @@
         return;
       }
       
-      // Show loading
+      // Show loading with different message based on analysis type
       console.log('Showing loading state...');
       loadingState.classList.remove('hidden');
+      const loadingMessage = loadingState.querySelector('p.text-sm');
+      if (loadingMessage) {
+        loadingMessage.textContent = useEnhanced ? 
+          '강화 분석을 수행하고 있습니다... (약 1-2분 소요)' : 
+          '기본 분석을 수행하고 있습니다... (약 10-30초 소요)';
+      }
       resultDiv.classList.add('hidden');
       analyzeBtn.disabled = true;
       analyzeBtn.style.opacity = '0.5';
@@ -245,7 +309,11 @@
             'X-CSRF-Token': token,
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ url: url, job_title: jobTitle })
+          body: JSON.stringify({ 
+            url: url, 
+            job_title: jobTitle, 
+            use_enhanced: useEnhanced ? 'true' : 'false' 
+          })
         });
         
         console.log('Response received:', response.status);
@@ -258,10 +326,41 @@
         console.log('Data received:', data);
         
         if (data.success) {
+          // Check if fallback occurred
+          if (data.fallback_reason) {
+            alert(data.fallback_reason);
+          }
+          
+          // Store analysis ID for save functionality
+          window.currentAnalysisId = data.analysis_id;
+          
           // Display results
           displayResults(data.analysis);
           loadingState.classList.add('hidden');
           resultDiv.classList.remove('hidden');
+          
+          // Create save button container
+          const saveContainer = document.createElement('div');
+          saveContainer.className = 'flex items-center justify-between mb-4';
+          
+          // Add indicator if enhanced analysis was used
+          const badge = document.createElement('span');
+          badge.className = data.is_enhanced ? 
+            'inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium' :
+            'inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium';
+          badge.textContent = data.is_enhanced ? '🚀 강화 분석 결과' : '⚡ 기본 분석 결과';
+          
+          // Add save button
+          const saveBtn = document.createElement('button');
+          saveBtn.id = 'save-analysis-btn';
+          saveBtn.className = 'bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2';
+          saveBtn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V2"></path></svg>분석 저장';
+          saveBtn.onclick = saveAnalysis;
+          
+          saveContainer.appendChild(badge);
+          saveContainer.appendChild(saveBtn);
+          resultContent.prepend(saveContainer);
+          
           resultDiv.scrollIntoView({ behavior: 'smooth' });
         } else {
           throw new Error(data.error || '분석 실패');
@@ -277,10 +376,193 @@
       }
     });
     
-    // Display results function - simplified design
+    // Display results function - handles both enhanced and regular analysis
     function displayResults(analysis) {
       if (!analysis) return;
       
+      // Check if this is enhanced analysis (object) or regular analysis (string)
+      if (typeof analysis === 'object' && analysis.cover_letter_strategy) {
+        displayEnhancedResults(analysis);
+      } else {
+        displayRegularResults(analysis);
+      }
+    }
+    
+    // Display enhanced analysis results
+    function displayEnhancedResults(analysis) {
+      let html = '<div class="space-y-6">';
+      
+      // Company Context Section
+      if (analysis.company_context) {
+        html += `
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span class="text-2xl">🎯</span>
+              기업 맥락 분석
+            </h3>
+            <div class="space-y-4">
+              ${analysis.company_context.current_issues ? `
+                <div>
+                  <h4 class="font-semibold text-gray-800 mb-2">현재 이슈</h4>
+                  <ul class="space-y-1">
+                    ${analysis.company_context.current_issues.map(issue => 
+                      `<li class="text-sm text-gray-700 flex items-start">
+                        <span class="text-blue-500 mr-2">•</span>
+                        <span>${issue}</span>
+                      </li>`
+                    ).join('')}
+                  </ul>
+                </div>
+              ` : ''}
+              ${analysis.company_context.urgent_needs ? `
+                <div>
+                  <h4 class="font-semibold text-gray-800 mb-2">긴급 니즈</h4>
+                  <ul class="space-y-1">
+                    ${analysis.company_context.urgent_needs.map(need => 
+                      `<li class="text-sm text-gray-700 flex items-start">
+                        <span class="text-red-500 mr-2">⚡</span>
+                        <span>${need}</span>
+                      </li>`
+                    ).join('')}
+                  </ul>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }
+      
+      // Cover Letter Strategy Section (대폭 강화)
+      if (analysis.cover_letter_strategy) {
+        html += `
+          <div class="bg-white rounded-xl border-2 border-indigo-200 overflow-hidden">
+            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
+              <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                <span class="text-2xl">📝</span>
+                자소서 작성 전략 (강화 버전)
+              </h3>
+            </div>
+            <div class="p-6">
+              <div class="prose prose-lg max-w-none">
+                ${formatEnhancedStrategy(analysis.cover_letter_strategy)}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      // Differentiation Guide Section
+      if (analysis.differentiation_guide) {
+        html += `
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span class="text-2xl">🎯</span>
+              차별화 전략
+            </h3>
+            <div class="prose max-w-none">
+              ${formatDifferentiationGuide(analysis.differentiation_guide)}
+            </div>
+          </div>
+        `;
+      }
+      
+      // Customization Guide Section  
+      if (analysis.customization_guide) {
+        html += `
+          <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span class="text-2xl">✨</span>
+              커스터마이징 가이드
+            </h3>
+            <div class="prose max-w-none">
+              ${formatCustomizationGuide(analysis.customization_guide)}
+            </div>
+          </div>
+        `;
+      }
+      
+      // Interview Insights Section
+      if (analysis.interview_insights) {
+        html += `
+          <div class="bg-yellow-50 rounded-xl p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span class="text-2xl">💡</span>
+              면접 대비 인사이트
+            </h3>
+            <div class="prose max-w-none">
+              ${formatContent(analysis.interview_insights)}
+            </div>
+          </div>
+        `;
+      }
+      
+      // Risks and Warnings Section
+      if (analysis.risks_and_warnings) {
+        html += `
+          <div class="bg-red-50 rounded-xl p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span class="text-2xl">⚠️</span>
+              주의사항
+            </h3>
+            <div class="prose max-w-none text-red-900">
+              ${formatContent(analysis.risks_and_warnings)}
+            </div>
+          </div>
+        `;
+      }
+      
+      html += '</div>';
+      resultContent.innerHTML = html;
+    }
+    
+    // Format enhanced strategy content with better styling
+    function formatEnhancedStrategy(strategy) {
+      if (!strategy) return '';
+      
+      return strategy
+        .replace(/###\s*(.*?)$/gm, '<h3 class="text-lg font-bold text-indigo-700 mt-6 mb-3 border-b border-indigo-200 pb-2">$1</h3>')
+        .replace(/####\s*(.*?)$/gm, '<h4 class="text-base font-semibold text-gray-800 mt-4 mb-2">$1</h4>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-indigo-600">$1</strong>')
+        .replace(/```([^`]+)```/g, '<div class="bg-gray-100 rounded-lg p-4 my-3 font-mono text-sm">$1</div>')
+        .replace(/\|([^|]+)\|([^|]+)\|([^|]+)\|/g, function(match, p1, p2, p3) {
+          return `<div class="grid grid-cols-3 gap-2 my-2 text-sm">
+            <div class="bg-gray-100 p-2 rounded">${p1.trim()}</div>
+            <div class="bg-gray-100 p-2 rounded">${p2.trim()}</div>
+            <div class="bg-gray-100 p-2 rounded">${p3.trim()}</div>
+          </div>`;
+        })
+        .replace(/^[•\-]\s*(.*?)$/gm, '<li class="ml-4 mb-2 text-gray-700">$1</li>')
+        .replace(/^(\d+)\.\s*(.*?)$/gm, '<div class="ml-4 mb-3"><span class="inline-block w-6 h-6 bg-indigo-100 text-indigo-700 rounded-full text-center text-sm font-bold mr-2">$1</span>$2</div>')
+        .replace(/\n\n/g, '</p><p class="mb-4 text-gray-700 leading-relaxed">');
+    }
+    
+    // Format differentiation guide with visual elements
+    function formatDifferentiationGuide(guide) {
+      if (!guide) return '';
+      
+      return guide
+        .replace(/###\s*(.*?)$/gm, '<h3 class="text-lg font-bold text-green-700 mt-4 mb-3">$1</h3>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-green-600">$1</strong>')
+        .replace(/❌/g, '<span class="text-red-500 text-xl">❌</span>')
+        .replace(/✅/g, '<span class="text-green-500 text-xl">✅</span>')
+        .replace(/```([^`]+)```/g, '<div class="bg-white border border-gray-300 rounded-lg p-4 my-3">$1</div>')
+        .replace(/\n\n/g, '</p><p class="mb-3 text-gray-700">');
+    }
+    
+    // Format customization guide
+    function formatCustomizationGuide(guide) {
+      if (!guide) return '';
+      
+      return guide
+        .replace(/###\s*(.*?)$/gm, '<h3 class="text-lg font-bold text-purple-700 mt-4 mb-3">$1</h3>')
+        .replace(/####\s*(.*?)$/gm, '<h4 class="text-base font-semibold text-purple-600 mt-3 mb-2">$1</h4>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-purple-600">$1</strong>')
+        .replace(/□/g, '<input type="checkbox" class="mr-2">')
+        .replace(/\n\n/g, '</p><p class="mb-3 text-gray-700">');
+    }
+    
+    // Display regular analysis results (fallback)
+    function displayRegularResults(analysis) {
       let html = '<div class="space-y-4">';
       
       // Parse sections
@@ -454,6 +736,67 @@
         .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
         .replace(/^[•\-]\s*(.*?)$/gm, '<li>$1</li>')
         .replace(/\n\n/g, '</p><p>');
+    }
+    
+    // Save analysis function
+    async function saveAnalysis() {
+      if (!window.currentAnalysisId) {
+        alert('저장할 분석 결과가 없습니다.');
+        return;
+      }
+      
+      console.log('Saving analysis ID:', window.currentAnalysisId);
+      
+      const saveBtn = document.getElementById('save-analysis-btn');
+      const originalText = saveBtn.innerHTML;
+      
+      try {
+        // Update button state
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>저장 중...';
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        const token = csrfToken ? csrfToken.content : '';
+        
+        const url = `/cover_letters/save_job_analysis/${window.currentAnalysisId}`;
+        console.log('Saving to URL:', url);
+        
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': token,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({})
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Success state
+          saveBtn.innerHTML = '<svg class="w-5 h-5 mr-2 inline" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>저장 완료!';
+          saveBtn.className = 'bg-green-500 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 cursor-default';
+          
+          // Show saved analyses link
+          setTimeout(() => {
+            const viewSavedBtn = document.createElement('a');
+            viewSavedBtn.href = '/cover_letters/saved_job_analyses';
+            viewSavedBtn.className = 'ml-3 text-blue-600 hover:text-blue-700 underline text-sm';
+            viewSavedBtn.textContent = '저장된 분석 보기 →';
+            saveBtn.parentElement.appendChild(viewSavedBtn);
+          }, 500);
+        } else {
+          throw new Error(data.error || '저장 실패');
+        }
+        
+      } catch (error) {
+        console.error('Save error:', error);
+        alert('저장 중 오류가 발생했습니다: ' + error.message);
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+      }
     }
     
     // Setup other buttons

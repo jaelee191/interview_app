@@ -1,0 +1,452 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        💾 저장된 채용공고 분석
+      </h1>
+      <p class="text-gray-600">
+        분석한 채용공고를 다시 확인하고 자소서 작성에 활용해보세요
+      </p>
+    </div>
+
+    <!-- Filters and Actions -->
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-gray-500">
+          총 <%= @job_analyses.total_count %>개의 분석 저장됨
+        </span>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="/cover_letters/job_posting" 
+           class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          새 분석하기
+        </a>
+      </div>
+    </div>
+
+    <!-- Saved Analyses List -->
+    <% if @job_analyses.any? %>
+      <div class="space-y-4">
+        <% @job_analyses.each do |analysis| %>
+          <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6">
+            <div class="flex flex-col lg:flex-row items-start lg:justify-between gap-4">
+              <div class="flex-1 w-full lg:w-auto">
+                <!-- Company and Position -->
+                <div class="mb-3">
+                  <h3 class="text-xl font-bold text-gray-900 mb-1">
+                    <%= analysis.company_name || "회사명 미상" %>
+                  </h3>
+                  <p class="text-lg text-gray-700">
+                    <%= analysis.position || "포지션 미상" %>
+                  </p>
+                </div>
+
+                <!-- Keywords and Skills -->
+                <div class="flex flex-wrap gap-2 mb-3">
+                  <% if analysis.keywords.present? %>
+                    <% keywords_array = analysis.keywords.is_a?(String) ? JSON.parse(analysis.keywords) : analysis.keywords %>
+                    <% keywords_array.first(5).each do |keyword| %>
+                      <span class="inline-block bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">
+                        <%= keyword %>
+                      </span>
+                    <% end %>
+                  <% end %>
+                  <% if analysis.required_skills.present? %>
+                    <% skills_array = analysis.required_skills.is_a?(String) ? JSON.parse(analysis.required_skills) : analysis.required_skills %>
+                    <% skills_array.first(3).each do |skill| %>
+                      <span class="inline-block bg-green-100 text-green-700 px-2 py-1 rounded text-sm">
+                        <%= skill %>
+                      </span>
+                    <% end %>
+                  <% end %>
+                </div>
+
+                <!-- Summary -->
+                <% if analysis.summary.present? %>
+                  <p class="text-gray-600 text-sm line-clamp-2 mb-3">
+                    <%= analysis.summary %>
+                  </p>
+                <% end %>
+
+                <!-- Meta Info -->
+                <div class="flex items-center gap-4 text-sm text-gray-500">
+                  <span class="flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <%= time_ago_in_words(analysis.created_at) %>전 분석
+                  </span>
+                  <% if analysis.url && analysis.url != "text_input" %>
+                    <a href="<%= analysis.url %>" target="_blank" class="flex items-center gap-1 hover:text-blue-600">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                      </svg>
+                      원본 공고
+                    </a>
+                  <% end %>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="flex flex-row lg:flex-col gap-2 w-full lg:w-auto flex-shrink-0">
+                <a href="/cover_letters/view_job_analysis/<%= analysis.id %>" 
+                   class="flex-1 lg:flex-initial bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 lg:min-w-[120px]">
+                  <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                  </svg>
+                  <span>상세보기</span>
+                </a>
+                <a href="/cover_letters/ontology_input?job_analysis_id=<%= analysis.id %>" 
+                   class="flex-1 lg:flex-initial bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 lg:min-w-[120px] shadow-sm hover:shadow-md">
+                  <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                  <span>자소서 작성</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-8 flex justify-center">
+        <%= paginate @job_analyses %>
+      </div>
+    <% else %>
+      <!-- Empty State -->
+      <div class="bg-white rounded-xl shadow-sm p-12 text-center">
+        <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">
+          저장된 분석이 없습니다
+        </h3>
+        <p class="text-gray-500 mb-6">
+          채용공고를 분석하고 저장하여 나중에 다시 확인해보세요
+        </p>
+        <a href="/cover_letters/job_posting" 
+           class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          첫 분석 시작하기
+        </a>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Modal for detailed view -->
+<div id="analysisModal" class="fixed inset-0 bg-black bg-opacity-50" style="z-index: 9999; display: none;">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="bg-white border-b px-6 py-4 flex items-center justify-between flex-shrink-0">
+        <h2 class="text-xl font-bold text-gray-900">분석 상세보기</h2>
+        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div id="modalContent" class="p-6 overflow-y-auto flex-1">
+        <!-- Content will be loaded here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Test function to show modal directly
+function testShowModal() {
+  const modal = document.getElementById('analysisModal');
+  if (modal) {
+    modal.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; z-index: 9999 !important;';
+    console.log('Modal forced to show with !important');
+  } else {
+    console.error('Modal not found in DOM');
+  }
+}
+
+async function loadAnalysis(id) {
+  console.log('Loading analysis with ID:', id);
+  
+  const modal = document.getElementById('analysisModal');
+  const modalContent = document.getElementById('modalContent');
+  
+  if (!modal || !modalContent) {
+    console.error('Modal elements not found');
+    alert('모달 요소를 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+    return;
+  }
+  
+  // Show modal with loading state - force with !important
+  modal.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; z-index: 9999 !important; position: fixed !important; inset: 0 !important; background-color: rgba(0,0,0,0.5) !important;';
+  document.body.style.overflow = 'hidden'; // Prevent background scrolling
+  
+  console.log('Modal display style:', modal.style.display);
+  console.log('Modal computed display:', getComputedStyle(modal).display);
+  console.log('Modal visibility:', getComputedStyle(modal).visibility);
+  console.log('Modal z-index:', getComputedStyle(modal).zIndex);
+  
+  modalContent.innerHTML = '<div class="text-center py-8"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div><p class="mt-4 text-gray-600">분석 내용을 불러오는 중...</p></div>';
+  
+  try {
+    const url = `/cover_letters/load_job_analysis?id=${id}`;
+    console.log('Fetching from URL:', url);
+    
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
+      }
+    });
+    
+    console.log('Response status:', response.status);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('Data received:', data);
+    
+    if (data.success) {
+      displayAnalysisInModal(data.job_analysis);
+    } else {
+      modalContent.innerHTML = `<div class="text-center py-8 text-red-600">분석을 불러올 수 없습니다: ${data.error || '알 수 없는 오류'}</div>`;
+    }
+  } catch (error) {
+    console.error('Error loading analysis:', error);
+    modalContent.innerHTML = `<div class="text-center py-8 text-red-600">오류가 발생했습니다: ${error.message}</div>`;
+  }
+}
+
+function displayAnalysisInModal(analysis) {
+  console.log('Displaying analysis:', analysis);
+  
+  const modalContent = document.getElementById('modalContent');
+  if (!modalContent) {
+    console.error('Modal content element not found');
+    return;
+  }
+  
+  let html = '<div class="space-y-6">';
+  
+  // Company and Position
+  html += `
+    <div>
+      <h3 class="text-2xl font-bold text-gray-900">${analysis.company_name || '회사명 미상'}</h3>
+      <p class="text-lg text-gray-700 mt-1">${analysis.position || '포지션 미상'}</p>
+    </div>
+  `;
+  
+  // Keywords and Skills
+  if (analysis.keywords || analysis.required_skills) {
+    html += '<div class="flex flex-wrap gap-2">';
+    if (analysis.keywords) {
+      const keywords = typeof analysis.keywords === 'string' ? JSON.parse(analysis.keywords) : analysis.keywords;
+      keywords.forEach(keyword => {
+        html += `<span class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">${keyword}</span>`;
+      });
+    }
+    if (analysis.required_skills) {
+      const skills = typeof analysis.required_skills === 'string' ? JSON.parse(analysis.required_skills) : analysis.required_skills;
+      skills.forEach(skill => {
+        html += `<span class="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">${skill}</span>`;
+      });
+    }
+    html += '</div>';
+  }
+  
+  // Summary
+  if (analysis.summary) {
+    const summaryText = typeof analysis.summary === 'object' ? JSON.stringify(analysis.summary, null, 2) : analysis.summary;
+    html += `
+      <div class="bg-gray-50 rounded-lg p-4">
+        <h4 class="font-semibold text-gray-900 mb-2">요약</h4>
+        <p class="text-gray-700 whitespace-pre-wrap">${summaryText}</p>
+      </div>
+    `;
+  }
+  
+  // Full Analysis
+  if (analysis.analysis_result) {
+    html += '<div class="border-t pt-6">';
+    html += '<h4 class="font-semibold text-gray-900 mb-4">전체 분석 결과</h4>';
+    
+    let fullAnalysis = analysis.analysis_result;
+    
+    // Try to parse as JSON if it's a string
+    if (typeof fullAnalysis === 'string') {
+      // Check if it starts with JSON characters
+      if (fullAnalysis.trim().startsWith('{') || fullAnalysis.trim().startsWith('[')) {
+        try {
+          fullAnalysis = JSON.parse(fullAnalysis);
+        } catch (e) {
+          // If JSON parse fails, treat as plain text
+          console.log('Not JSON, treating as text');
+        }
+      }
+    }
+    
+    // Format and display the full analysis
+    if (typeof fullAnalysis === 'object' && fullAnalysis !== null) {
+      html += '<div class="bg-gray-50 rounded-lg p-6 max-h-96 overflow-y-auto">';
+      html += formatAnalysisObject(fullAnalysis);
+      html += '</div>';
+    } else {
+      html += `<div class="prose prose-sm max-w-none bg-gray-50 rounded-lg p-6 max-h-96 overflow-y-auto">${formatAnalysisText(fullAnalysis)}</div>`;
+    }
+    html += '</div>';
+  }
+  
+  // Action buttons
+  html += `
+    <div class="border-t pt-6 flex gap-3">
+      <a href="/cover_letters/ontology_input?job_analysis_id=${analysis.id}" 
+         class="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-lg transition-colors flex items-center gap-2 shadow-md hover:shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+        </svg>
+        이 분석으로 자소서 작성
+      </a>
+      <button onclick="closeModal()" 
+              class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium px-6 py-3 rounded-lg transition-colors">
+        닫기
+      </button>
+    </div>
+  `;
+  
+  html += '</div>';
+  modalContent.innerHTML = html;
+  
+  // Ensure modal is visible
+  const modal = document.getElementById('analysisModal');
+  if (modal) {
+    modal.style.display = 'block';
+    console.log('Modal display set to block');
+  }
+  
+  console.log('Modal display completed');
+}
+
+function formatAnalysisObject(obj) {
+  let html = '<div class="space-y-4">';
+  
+  for (const [key, value] of Object.entries(obj)) {
+    if (value !== null && value !== undefined) {
+      html += `
+        <div class="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+          <h5 class="font-semibold text-gray-900 mb-3 text-lg">${formatKey(key)}</h5>
+          <div class="text-gray-700">${formatValue(value)}</div>
+        </div>
+      `;
+    }
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+function formatAnalysisText(text) {
+  if (!text) return '';
+  
+  // Ensure text is a string
+  text = String(text);
+  
+  return text
+    .replace(/###\s*(.*?)$/gm, '<h4 class="text-base font-semibold mt-3 mb-2">$1</h4>')
+    .replace(/##\s*(.*?)$/gm, '<h3 class="text-lg font-bold mt-4 mb-2">$1</h3>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/^[•\-]\s*(.*?)$/gm, '<li class="ml-4">$1</li>')
+    .replace(/^\d+\.\s*(.*?)$/gm, '<li class="ml-4 list-decimal">$1</li>')
+    .replace(/\n\n/g, '</p><p class="mb-3">')
+    .replace(/\n/g, '<br>');
+}
+
+function formatKey(key) {
+  const keyMap = {
+    'company_context': '🎯 기업 맥락',
+    'cover_letter_strategy': '📝 자소서 전략',
+    'differentiation_guide': '✨ 차별화 가이드',
+    'customization_guide': '🎨 커스터마이징 가이드',
+    'interview_insights': '💡 면접 인사이트',
+    'risks_and_warnings': '⚠️ 주의사항'
+  };
+  return keyMap[key] || key;
+}
+
+function formatValue(value) {
+  if (value === null || value === undefined) {
+    return '<span class="text-gray-400">정보 없음</span>';
+  }
+  
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return '<span class="text-gray-400">항목 없음</span>';
+    }
+    return '<ul class="list-disc pl-5 space-y-1">' + 
+           value.map(item => {
+             if (typeof item === 'object') {
+               return `<li>${JSON.stringify(item, null, 2)}</li>`;
+             }
+             return `<li>${item}</li>`;
+           }).join('') + 
+           '</ul>';
+  } else if (typeof value === 'object') {
+    // For nested objects, format them nicely
+    let nestedHtml = '<div class="pl-4 space-y-2">';
+    for (const [k, v] of Object.entries(value)) {
+      nestedHtml += `
+        <div class="border-l-2 border-gray-200 pl-3">
+          <span class="font-medium text-gray-700">${k}:</span>
+          <span class="ml-2">${typeof v === 'object' ? JSON.stringify(v, null, 2) : v}</span>
+        </div>
+      `;
+    }
+    nestedHtml += '</div>';
+    return nestedHtml;
+  } else if (typeof value === 'string') {
+    // Check if it's a long text with markdown
+    if (value.includes('\n') || value.includes('##') || value.includes('**')) {
+      return formatAnalysisText(value);
+    }
+    return value;
+  } else {
+    return String(value);
+  }
+}
+
+function closeModal() {
+  const modal = document.getElementById('analysisModal');
+  if (modal) {
+    modal.style.display = 'none';
+    document.body.style.overflow = ''; // Restore scrolling
+  }
+}
+
+// Close modal on ESC key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeModal();
+  }
+});
+
+// Close modal on background click
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('analysisModal');
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+  }
+});
+</script>

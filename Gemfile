@@ -42,13 +42,21 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
+# Authentication
+gem "devise", "~> 4.9"
+gem "kaminari", "~> 1.2"  # Pagination
+
 # 뉴스 크롤링을 위한 gem
 gem "nokogiri"      # HTML/XML 파싱
 gem "httparty"      # HTTP 요청
+gem "ferrum"        # Headless Chrome 드라이버 (더 가벼운 대안)
 gem "playwright-ruby-client"  # 동적 콘텐츠용 헤드리스 브라우저 (Playwright)
 gem "sidekiq"       # 백그라운드 작업
 gem "redis"         # Sidekiq용
 gem "kimurai"       # 크롤링 프레임워크 (선택사항)
+
+# 마크다운 렌더링
+gem "redcarpet"     # 마크다운 파서
 
 # 환경변수 관리
 gem "dotenv-rails"  # .env 파일에서 환경변수 로드
