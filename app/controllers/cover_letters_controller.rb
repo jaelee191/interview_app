@@ -663,56 +663,57 @@ class CoverLettersController < ApplicationController
     end
   end
   
-  def deep_analysis
-    # 심층 분석 입력 페이지
-    @cover_letter = CoverLetter.new
-    @user_profile = current_user&.user_profile
-  end
+  # GPT-5 심층 분석 - 사용하지 않음
+  # def deep_analysis
+  #   # 심층 분석 입력 페이지
+  #   @cover_letter = CoverLetter.new
+  #   @user_profile = current_user&.user_profile
+  # end
   
-  def perform_deep_analysis
-    @cover_letter = CoverLetter.new(cover_letter_params)
-    
-    if @cover_letter.save
-      # GPT-5 심층 분석 실행
-      service = DeepAnalysisService.new
-      user_profile = current_user&.user_profile
-      
-      result = service.perform_deep_analysis(
-        @cover_letter.content,
-        @cover_letter.company_name,
-        @cover_letter.position,
-        user_profile
-      )
-      
-      if result[:success]
-        # 분석 결과 저장
-        @cover_letter.update(
-          analysis_result: result[:comprehensive_report],
-          deep_analysis_data: result[:analyses]
-        )
-        
-        # 분석 결과 페이지로 이동
-        redirect_to deep_analysis_result_cover_letter_path(@cover_letter)
-      else
-        @cover_letter.update(analysis_result: "분석 실패: #{result[:error]}")
-        redirect_to @cover_letter, alert: "분석 중 오류가 발생했습니다: #{result[:error]}"
-      end
-    else
-      render :deep_analysis
-    end
-  end
+  # def perform_deep_analysis
+  #   @cover_letter = CoverLetter.new(cover_letter_params)
+  #   
+  #   if @cover_letter.save
+  #     # GPT-5 심층 분석 실행
+  #     service = DeepAnalysisService.new
+  #     user_profile = current_user&.user_profile
+  #     
+  #     result = service.perform_deep_analysis(
+  #       @cover_letter.content,
+  #       @cover_letter.company_name,
+  #       @cover_letter.position,
+  #       user_profile
+  #     )
+  #     
+  #     if result[:success]
+  #       # 분석 결과 저장
+  #       @cover_letter.update(
+  #         analysis_result: result[:comprehensive_report],
+  #         deep_analysis_data: result[:analyses]
+  #       )
+  #       
+  #       # 분석 결과 페이지로 이동
+  #       redirect_to deep_analysis_result_cover_letter_path(@cover_letter)
+  #     else
+  #       @cover_letter.update(analysis_result: "분석 실패: #{result[:error]}")
+  #       redirect_to @cover_letter, alert: "분석 중 오류가 발생했습니다: #{result[:error]}"
+  #     end
+  #   else
+  #     render :deep_analysis
+  #   end
+  # end
   
-  def deep_analysis_result
-    @cover_letter = CoverLetter.find(params[:id])
-    @analysis_data = @cover_letter.deep_analysis_data
-    @comprehensive_report = @cover_letter.analysis_result
-    
-    # 시각화를 위한 데이터 준비
-    if @analysis_data
-      service = DeepAnalysisService.new
-      @visualization_data = service.send(:prepare_visualization_data, @analysis_data)
-    end
-  end
+  # def deep_analysis_result
+  #   @cover_letter = CoverLetter.find(params[:id])
+  #   @analysis_data = @cover_letter.deep_analysis_data
+  #   @comprehensive_report = @cover_letter.analysis_result
+  #   
+  #   # 시각화를 위한 데이터 준비
+  #   if @analysis_data
+  #     service = DeepAnalysisService.new
+  #     @visualization_data = service.send(:prepare_visualization_data, @analysis_data)
+  #   end
+  # end
   
   def rewrite_with_feedback
     @cover_letter = CoverLetter.find(params[:id])

@@ -60,8 +60,9 @@ Rails.application.routes.draw do
       post 'generate_final'
       get 'advanced'
       post 'analyze_advanced'
-      get 'deep_analysis'
-      post 'perform_deep_analysis'
+      # GPT-5 심층 분석 - 사용하지 않음
+      # get 'deep_analysis'
+      # post 'perform_deep_analysis'
       get 'job_posting'
       post 'analyze_job_posting'
       get 'job_posting_text'
@@ -88,7 +89,7 @@ Rails.application.routes.draw do
       get 'saved_company_analyses', to: 'cover_letters#saved_company_analyses'
     end
     member do
-      get 'deep_analysis_result'
+      # get 'deep_analysis_result' # GPT-5 심층 분석 - 사용하지 않음
       post 'rewrite_with_feedback'
       get 'rewrite_result'
     end
