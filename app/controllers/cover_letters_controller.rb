@@ -151,14 +151,48 @@ class CoverLettersController < ApplicationController
     company_name = params[:company_name]
     analysis_type = params[:analysis_type] || 'basic'
     force_refresh = params[:force_refresh] == 'true'
+    use_verification = params[:use_verification] == 'true' || analysis_type == 'verified'
     
     # 캐시된 분석이 있는지 확인 (강화 분석만 캐시 사용)
-    if analysis_type == 'enhanced'
+    if analysis_type == 'enhanced' && !use_verification
       existing_analysis = CompanyAnalysis.by_company(company_name).recent.first
       
       if existing_analysis && !force_refresh
         redirect_to company_analysis_result_cover_letters_path(existing_analysis)
         return
+      end
+    end
+    
+    # 검증된 분석 사용
+    if use_verification || analysis_type == 'verified'
+      service = VerifiedCompanyAnalysisService.new
+      result = service.analyze_with_verification(company_name)
+      
+      if result[:success]
+        company_analysis = CompanyAnalysis.create!(
+          company_name: company_name,
+          industry: result[:web_data][:industry] || "부동산 중개업",
+          company_size: result[:web_data][:company_size] || "중소기업",
+          recent_issues: result[:analysis],
+          business_context: "검증된 기업 정보 기반 분석",
+          hiring_patterns: "실제 채용 패턴 분석",
+          analysis_date: Time.current,
+          cached_until: 30.days.from_now,
+          user_id: current_user&.id,
+          session_id: session.id.to_s,
+          metadata: {
+            verified: true,
+            web_data: result[:web_data],
+            company_scale: result[:company_scale],
+            analysis_type: 'verified',
+            analysis_version: '2.0'
+          }
+        )
+        
+        redirect_to company_analysis_result_cover_letters_path(company_analysis)
+        return
+      else
+        flash[:alert] = "검증된 분석 실패: #{result[:error]}"
       end
     end
     
@@ -187,9 +221,10 @@ class CoverLettersController < ApplicationController
       redirect_to company_analysis_result_cover_letters_path(0) # 0은 임시 분석을 의미
       
     else
-      # 강화 분석: 구직자 맞춤 취업 컨설팅 심층 분석
-      service = JobSeekerCompanyAnalyzerService.new(company_name)
-      analysis_result = service.perform_job_seeker_analysis
+      # 강화 분석: 웹 크롤링 기반 심층 분석
+      Rails.logger.info "🚀 Starting enhanced analysis with web scraping for: #{company_name}"
+      service = EnhancedCompanyAnalyzerService.new(company_name)
+      analysis_result = service.perform_enhanced_analysis
       
       # 분석 결과 저장 (캐시)
       company_analysis = CompanyAnalysis.create!(

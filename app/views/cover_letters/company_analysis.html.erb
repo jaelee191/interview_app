@@ -34,7 +34,7 @@
         <!-- Analysis Type Selection -->
         <div class="mb-6">
           <label class="block text-sm font-medium text-gray-700 mb-3">분석 유형 선택</label>
-          <div class="grid md:grid-cols-2 gap-4">
+          <div class="grid md:grid-cols-3 gap-4">
             <label class="relative cursor-pointer">
               <input type="radio" name="analysis_type" value="basic" checked class="sr-only peer">
               <div class="p-4 border-2 rounded-lg peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:bg-gray-50 transition-all">
@@ -50,17 +50,32 @@
             </label>
             
             <label class="relative cursor-pointer">
+              <input type="radio" name="analysis_type" value="verified" class="sr-only peer">
+              <div class="p-4 border-2 rounded-lg peer-checked:border-green-500 peer-checked:bg-green-50 hover:bg-gray-50 transition-all">
+                <div class="font-medium text-gray-900 mb-1">✅ 검증 분석 <span class="text-xs bg-green-200 text-green-700 px-2 py-0.5 rounded-full ml-1">NEW</span></div>
+                <div class="text-xs text-gray-600">
+                  • 실시간 웹 검증<br>
+                  • 기업 규모별 맞춤 분석<br>
+                  • 팩트 체크 적용<br>
+                  • 과장 없는 정확한 정보<br>
+                  • 30일간 캐시 저장
+                </div>
+                <div class="mt-2 text-xs font-medium text-green-600">정확도 우선</div>
+              </div>
+            </label>
+            
+            <label class="relative cursor-pointer">
               <input type="radio" name="analysis_type" value="enhanced" class="sr-only peer">
               <div class="p-4 border-2 rounded-lg peer-checked:border-purple-500 peer-checked:bg-purple-50 hover:bg-gray-50 transition-all">
                 <div class="font-medium text-gray-900 mb-1">🚀 강화 분석 <span class="text-xs bg-purple-200 text-purple-700 px-2 py-0.5 rounded-full ml-1">Premium</span></div>
                 <div class="text-xs text-gray-600">
-                  • 심층 분석 (30-60초)<br>
-                  • 뉴스 크롤링 + AI 분석<br>
-                  • 산업 동향 & 경쟁사 분석<br>
-                  • 채용 전략 제안<br>
+                  • 실시간 웹 크롤링 (30-60초)<br>
+                  • JobKorea, 사람인, 네이버 뉴스<br>
+                  • 실제 채용공고 & 뉴스 분석<br>
+                  • 데이터 기반 정확한 분석<br>
                   • 7일간 캐시 저장
                 </div>
-                <div class="mt-2 text-xs font-medium text-purple-600">프리미엄 전용</div>
+                <div class="mt-2 text-xs font-medium text-purple-600">웹 크롤링 기반</div>
               </div>
             </label>
           </div>
@@ -108,7 +123,25 @@
           
           // Different loading messages based on analysis type
           if (analysisType === 'enhanced') {
-            submitBtn.innerHTML = '<span class="animate-pulse">🚀 강화 분석 중... (30-60초 소요)</span>';
+            submitBtn.innerHTML = '<span class="animate-pulse">🚀 웹 크롤링 중... (30-60초 소요)</span>';
+            // 진행 상태 표시 추가
+            setTimeout(() => {
+              if (submitBtn.disabled) {
+                submitBtn.innerHTML = '<span class="animate-pulse">📰 뉴스 수집 중...</span>';
+              }
+            }, 5000);
+            setTimeout(() => {
+              if (submitBtn.disabled) {
+                submitBtn.innerHTML = '<span class="animate-pulse">💼 채용공고 분석 중...</span>';
+              }
+            }, 15000);
+            setTimeout(() => {
+              if (submitBtn.disabled) {
+                submitBtn.innerHTML = '<span class="animate-pulse">🤖 AI 분석 중...</span>';
+              }
+            }, 25000);
+          } else if (analysisType === 'verified') {
+            submitBtn.innerHTML = '<span class="animate-pulse">✅ 검증 분석 중... (10-20초 소요)</span>';
           } else {
             submitBtn.innerHTML = '<span class="animate-pulse">⚡ 기본 분석 중... (5-10초 소요)</span>';
           }
