@@ -5,130 +5,109 @@ class JobSeekerCompanyAnalyzerService
   end
 
   def perform_job_seeker_analysis
-    # 병렬 처리를 위한 Thread 사용
+    # 병렬 처리를 위한 Thread 사용 - 7개 섹션을 각각 병렬로 처리
     results = {}
     threads = []
+    errors = []
     
-    # 2개의 API를 동시에 호출
+    # 각 분석 섹션을 별도의 스레드로 동시 실행
     threads << Thread.new do
-      results[:comprehensive] = generate_comprehensive_analysis
+      begin
+        results[:executive_summary] = generate_executive_summary
+      rescue => e
+        errors << "Executive Summary: #{e.message}"
+        results[:executive_summary] = nil
+      end
     end
     
     threads << Thread.new do
-      results[:executive_summary] = generate_executive_summary
+      begin
+        results[:company_overview] = analyze_company_overview
+      rescue => e
+        errors << "Company Overview: #{e.message}"
+        results[:company_overview] = nil
+      end
+    end
+    
+    threads << Thread.new do
+      begin
+        results[:industry_market] = analyze_industry_market
+      rescue => e
+        errors << "Industry Market: #{e.message}"
+        results[:industry_market] = nil
+      end
+    end
+    
+    threads << Thread.new do
+      begin
+        results[:hiring_strategy] = analyze_hiring_strategy
+      rescue => e
+        errors << "Hiring Strategy: #{e.message}"
+        results[:hiring_strategy] = nil
+      end
+    end
+    
+    threads << Thread.new do
+      begin
+        results[:job_preparation] = analyze_job_preparation
+      rescue => e
+        errors << "Job Preparation: #{e.message}"
+        results[:job_preparation] = nil
+      end
+    end
+    
+    threads << Thread.new do
+      begin
+        results[:competitor_comparison] = analyze_competitor_comparison
+      rescue => e
+        errors << "Competitor Comparison: #{e.message}"
+        results[:competitor_comparison] = nil
+      end
+    end
+    
+    threads << Thread.new do
+      begin
+        results[:consultant_advice] = generate_consultant_advice
+      rescue => e
+        errors << "Consultant Advice: #{e.message}"
+        results[:consultant_advice] = nil
+      end
     end
     
     # 모든 스레드가 완료될 때까지 대기
     threads.each(&:join)
     
-    # 결과 조합
-    comprehensive_analysis = results[:comprehensive]
+    # 에러가 있으면 로깅
+    if errors.any?
+      Rails.logger.error "Company Analysis Errors: #{errors.join(', ')}"
+    end
     
+    # 결과 조합 (nil 값은 빈 문자열로 처리)
     {
-      executive_summary: results[:executive_summary],
-      company_overview: comprehensive_analysis[:company_overview],
-      industry_market: comprehensive_analysis[:industry_market],
-      hiring_strategy: comprehensive_analysis[:hiring_strategy],
-      job_preparation: comprehensive_analysis[:job_preparation],
-      competitor_comparison: comprehensive_analysis[:competitor_comparison],
-      consultant_advice: comprehensive_analysis[:consultant_advice],
+      executive_summary: results[:executive_summary] || "분석 중 오류가 발생했습니다.",
+      company_overview: results[:company_overview] || "분석 중 오류가 발생했습니다.",
+      industry_market: results[:industry_market] || "분석 중 오류가 발생했습니다.",
+      hiring_strategy: results[:hiring_strategy] || "분석 중 오류가 발생했습니다.",
+      job_preparation: results[:job_preparation] || "분석 중 오류가 발생했습니다.",
+      competitor_comparison: results[:competitor_comparison] || "분석 중 오류가 발생했습니다.",
+      consultant_advice: results[:consultant_advice] || "분석 중 오류가 발생했습니다.",
       metadata: {
         analysis_date: Time.current,
-        analysis_version: '4.0',
-        methodology: 'Job Seeker Focused Deep Analysis with GPT-4.1 (Parallel)',
+        analysis_version: '4.1',
+        methodology: 'Job Seeker Focused Deep Analysis with GPT-4.1 (7-way Parallel)',
         minimum_content_length: 3500,
         model_used: ENV['OPENAI_MODEL'] || 'gpt-4.1',
-        parallel_processing: true
+        parallel_processing: true,
+        parallel_threads: 7,
+        errors: errors
       }
     }
   end
 
   private
 
-  def generate_comprehensive_analysis
-    prompt = <<~PROMPT
-      기업명: #{@company_name}
-      현재 날짜: #{Time.current.strftime('%Y년 %m월')}
-      
-      너는 [기업분석 전문가이자 취업컨설턴트] 역할을 맡는다.  
-      너의 임무는 #{@company_name}을 분석하여 취업 준비생이 자기소개서, 면접, 커리어 전략에 바로 활용할 수 있는 **심층 기업분석 리포트(최소 3,500자)**를 작성하는 것이다.  
-
-      ### 작성 원칙
-      1. 각 항목은 단순 나열이 아니라 **"왜 중요한가 → 취업 준비생에게 어떤 의미인가 → 어떻게 활용할 수 있는가"**의 흐름으로 서술한다.  
-      2. **데이터, 실제 채용공고 키워드, 최근 3년 내 기업 이슈**를 반드시 반영한다.  
-      3. 각 섹션 끝에는 **[취업 TIP]** 박스를 넣어 실질적 전략을 정리한다.  
-      4. 특히 [3. 채용 전략 & 인재상 분석]과 [6. 핵심 요약 & 컨설턴트 조언]은 **세부적이고 행동 가능한 전략**을 포함해 상세히 작성한다. (각 최소 1,500자 이상)  
-      5. [6. 핵심 요약 & 컨설턴트 조언] 파트에서는 단순 요약이 아니라,  
-         - "취업 준비생이 반드시 기억해야 할 5가지"  
-         - "각 항목이 왜 중요한지 + 실제 준비 방법(자소서·포트폴리오·면접 전략)"  
-         - "합격을 위해 구직자가 지금 당장 해야 할 3가지 행동"  
-         을 구체적으로 제시한다.  
-      6. 전체 글은 컨설팅 보고서 스타일로, 최소 3,500자 이상 분량을 유지한다.  
-
-      ### 분석 프레임워크
-      1. **기업 개요 & 산업 포지션**  
-         - 기업 연혁, 핵심 비즈니스 모델, 매출 구조(최근 3년 데이터)  
-         - 최근 전략 변화 (AI, 글로벌 확장, M&A 등)  
-         - 산업 내 위치(경쟁사 대비 강점/약점)  
-
-      2. **산업·시장 분석**  
-         - 해당 산업 규모·성장률, 주요 트렌드 (AI, ESG, 글로벌 등)  
-         - 주요 경쟁사 비교 (시장점유율, 전략 차이)  
-         - 기업이 직면한 기회와 위기  
-
-      3. **채용 전략 & 인재상 분석** (최소 1,500자)
-         - 3-1. 채용 방식: 왜 수시채용·프로젝트 단위 채용을 하는지, 이것이 구직자에게 의미하는 바  
-         - 3-2. 직무별 채용 키워드: 개발/기획/데이터/디자인별 최근 요구 역량을 실제 공고 기반으로 정리  
-         - 3-3. 인재상: 공식 인재상 + 실제 현업에서 요구되는 특성  
-         - 각 세부 항목 후 반드시 "구직자 관점 해석 + 구체적 준비 전략" 포함  
-
-      4. **취업 준비 전략 (자소서·면접 연결)**  
-         - 자소서 작성 시 강조 포인트 (직무별 맞춤 사례 포함)  
-         - 면접 예상 질문과 답변 전략  
-         - 경쟁사와의 차별화 전략  
-
-      5. **경쟁사 비교 및 선택 전략**  
-         - 동일 산업 내 주요 경쟁사와 비교  
-         - 구직자가 커리어 선택 시 고려할 장단점  
-
-      6. **핵심 요약 & 컨설턴트 조언** (최소 1,500자)
-         - 취업 준비생이 반드시 기억해야 할 핵심 5가지  
-         - 각 항목의 중요성과 실제 준비 방법 (자소서, 면접, 포트폴리오 관점)  
-         - 합격을 위해 구직자가 지금 당장 해야 할 3가지 행동  
-
-      ### 출력 형식
-      - 마크다운 구조 (제목·소제목·표·리스트 적극 활용)  
-      - 각 파트는 최소 5문단 이상, [3번]과 [6번] 파트는 심층 분석으로 분량 확장  
-      - 최종 리포트는 최소 3,500자 이상, 전문 컨설팅 보고서처럼 작성
-      
-      JSON 형식으로 응답:
-      {
-        "company_overview": "## 1. 기업 개요 & 산업 포지션\\n[상세 내용]",
-        "industry_market": "## 2. 산업·시장 분석\\n[상세 내용]",
-        "hiring_strategy": "## 3. 채용 전략 & 인재상 분석\\n[상세 내용 - 최소 1,500자]",
-        "job_preparation": "## 4. 취업 준비 전략\\n[상세 내용]",
-        "competitor_comparison": "## 5. 경쟁사 비교 및 선택 전략\\n[상세 내용]",
-        "consultant_advice": "## 6. 핵심 요약 & 컨설턴트 조언\\n[상세 내용 - 최소 1,500자]"
-      }
-    PROMPT
-
-    response = call_gpt_api(prompt, max_tokens: 4000, json_mode: true)
-    
-    begin
-      JSON.parse(response)
-    rescue JSON::ParserError => e
-      Rails.logger.error "Failed to parse comprehensive analysis: #{e.message}"
-      # Fallback to individual analysis methods
-      {
-        company_overview: analyze_company_overview,
-        industry_market: analyze_industry_market,
-        hiring_strategy: analyze_hiring_strategy,
-        job_preparation: analyze_job_preparation,
-        competitor_comparison: analyze_competitor_comparison,
-        consultant_advice: generate_consultant_advice
-      }
-    end
-  end
+  # generate_comprehensive_analysis 메서드는 더 이상 사용되지 않음
+  # 7개의 개별 분석 메서드를 병렬로 실행하는 방식으로 변경됨
 
   def generate_executive_summary
     prompt = <<~PROMPT
@@ -622,7 +601,7 @@ class JobSeekerCompanyAnalyzerService
     uri = URI('https://api.openai.com/v1/chat/completions')
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
-    http.read_timeout = 60
+    http.read_timeout = 180
     
     request = Net::HTTP::Post.new(uri)
     request['Authorization'] = "Bearer #{@api_key}"

@@ -452,7 +452,7 @@ class ProfessionalCompanyAnalyzerService
     uri = URI('https://api.openai.com/v1/chat/completions')
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
-    http.read_timeout = 60
+    http.read_timeout = 180
     
     request = Net::HTTP::Post.new(uri)
     request['Authorization'] = "Bearer #{@api_key}"

@@ -1,0 +1,132 @@
+<div class="min-h-screen bg-gradient-to-b from-purple-50 to-white">
+  <!-- Page Header -->
+  <div class="border-b border-gray-100 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">
+            ✨ AI가 리라이트한 자기소개서
+          </h1>
+          <p class="text-gray-600 mt-2">피드백이 반영된 개선된 자기소개서입니다</p>
+        </div>
+        <div class="flex space-x-3">
+          <%= link_to @cover_letter, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium" do %>
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            원본 분석으로 돌아가기
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- 왼쪽: 원본 자기소개서 -->
+      <div>
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900">📝 원본 자기소개서</h2>
+            <span class="text-sm text-gray-500">Before</span>
+          </div>
+          <div class="prose prose-sm max-w-none">
+            <p class="text-gray-700 whitespace-pre-wrap text-sm leading-relaxed">
+              <%= @cover_letter.content %>
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 오른쪽: 리라이트된 자기소개서 -->
+      <div>
+        <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-200 p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900">✨ 개선된 자기소개서</h2>
+            <span class="text-sm font-semibold text-purple-600">After</span>
+          </div>
+          
+          <% if @rewritten_content %>
+            <div class="prose prose-sm max-w-none">
+              <div class="bg-white rounded-lg p-4">
+                <pre class="whitespace-pre-wrap text-gray-800 text-sm leading-relaxed font-sans">
+                  <%= @rewritten_content %>
+                </pre>
+              </div>
+            </div>
+            
+            <!-- 복사 버튼 -->
+            <div class="mt-6 flex items-center justify-between">
+              <button onclick="copyToClipboard()" class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all font-medium">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                전체 복사
+              </button>
+              <span id="copy-feedback" class="text-sm text-green-600 hidden">
+                ✅ 복사되었습니다!
+              </span>
+            </div>
+          <% else %>
+            <div class="text-center py-8">
+              <p class="text-gray-500">리라이트된 내용이 없습니다.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 주요 개선 포인트 -->
+    <% if @rewritten_content %>
+      <div class="mt-8 bg-white rounded-xl border border-gray-100 p-8">
+        <h3 class="text-xl font-bold text-gray-900 mb-6">💡 주요 개선 포인트</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-blue-50 rounded-lg p-4">
+            <div class="flex items-center mb-2">
+              <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
+              <h4 class="ml-3 font-semibold text-gray-900">기업 맞춤형 내용</h4>
+            </div>
+            <p class="text-sm text-gray-600">
+              <%= @cover_letter.company_name %>의 최신 이슈와 인재상을 반영하여 작성되었습니다.
+            </p>
+          </div>
+          
+          <div class="bg-green-50 rounded-lg p-4">
+            <div class="flex items-center mb-2">
+              <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
+              <h4 class="ml-3 font-semibold text-gray-900">구체적 성과 강조</h4>
+            </div>
+            <p class="text-sm text-gray-600">
+              막연한 표현을 구체적인 수치와 성과로 대체하여 신뢰성을 높였습니다.
+            </p>
+          </div>
+          
+          <div class="bg-purple-50 rounded-lg p-4">
+            <div class="flex items-center mb-2">
+              <div class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">3</div>
+              <h4 class="ml-3 font-semibold text-gray-900">차별화된 스토리</h4>
+            </div>
+            <p class="text-sm text-gray-600">
+              개인의 독특한 경험과 역량을 부각시켜 차별화된 자기소개서로 개선했습니다.
+            </p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+function copyToClipboard() {
+  const content = `<%= j(@rewritten_content) %>`;
+  navigator.clipboard.writeText(content).then(function() {
+    const feedback = document.getElementById('copy-feedback');
+    feedback.classList.remove('hidden');
+    setTimeout(() => {
+      feedback.classList.add('hidden');
+    }, 2000);
+  }, function(err) {
+    alert('복사에 실패했습니다.');
+  });
+}
+</script>

@@ -39,6 +39,42 @@
         </div>
       <% end %>
 
+      <!-- PDF Upload Section -->
+      <div class="mb-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
+        <h3 class="font-bold text-gray-900 mb-4">📄 이력서/자소서 PDF 업로드 (선택)</h3>
+        <div class="space-y-4">
+          <div class="flex items-center justify-center w-full">
+            <label for="pdf-upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-purple-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-purple-50 transition-colors">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <svg class="w-8 h-8 mb-3 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                </svg>
+                <p class="mb-2 text-sm text-gray-700"><span class="font-semibold">클릭하여 PDF 업로드</span></p>
+                <p class="text-xs text-gray-500">PDF 파일만 가능 (최대 10MB)</p>
+              </div>
+              <input id="pdf-upload" type="file" class="hidden" accept=".pdf" />
+            </label>
+          </div>
+          <div id="pdf-info" class="hidden">
+            <div class="bg-white p-4 rounded-lg border border-purple-200">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <svg class="w-6 h-6 text-purple-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z"></path>
+                  </svg>
+                  <span id="pdf-filename" class="text-sm font-medium text-gray-700"></span>
+                </div>
+                <button id="remove-pdf" class="text-red-500 hover:text-red-700">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Features -->
       <div class="mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
         <h3 class="font-bold text-gray-900 mb-4">✨ 3단계 심층 분석의 특별함</h3>
@@ -151,7 +187,7 @@
 </div>
 
 <script>
-  // Character count
+  // Character count and PDF upload
   document.addEventListener('turbo:load', () => {
     const textarea = document.querySelector('textarea[name="cover_letter[content]"]');
     const charCount = document.getElementById('char-count');
@@ -163,6 +199,73 @@
       
       textarea.addEventListener('input', updateCount);
       updateCount();
+    }
+    
+    // PDF Upload functionality
+    const pdfUpload = document.getElementById('pdf-upload');
+    const pdfInfo = document.getElementById('pdf-info');
+    const pdfFilename = document.getElementById('pdf-filename');
+    const removePdf = document.getElementById('remove-pdf');
+    let selectedFile = null;
+    
+    if (pdfUpload) {
+      pdfUpload.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        
+        if (file) {
+          // Validate file type
+          if (file.type !== 'application/pdf') {
+            alert('PDF 파일만 업로드 가능합니다.');
+            this.value = '';
+            return;
+          }
+          
+          // Validate file size (10MB)
+          if (file.size > 10 * 1024 * 1024) {
+            alert('파일 크기는 10MB 이하여야 합니다.');
+            this.value = '';
+            return;
+          }
+          
+          selectedFile = file;
+          pdfFilename.textContent = file.name;
+          pdfInfo.classList.remove('hidden');
+          
+          // Add hidden input for file
+          const existingInput = document.getElementById('pdf-file-data');
+          if (existingInput) {
+            existingInput.remove();
+          }
+          
+          // Create FormData for file upload
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.id = 'pdf-file-data';
+            hiddenInput.name = 'cover_letter[pdf_content]';
+            hiddenInput.value = e.target.result;
+            document.querySelector('form').appendChild(hiddenInput);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+    
+    if (removePdf) {
+      removePdf.addEventListener('click', function(e) {
+        e.preventDefault();
+        selectedFile = null;
+        pdfUpload.value = '';
+        pdfInfo.classList.add('hidden');
+        pdfFilename.textContent = '';
+        
+        // Remove hidden input
+        const hiddenInput = document.getElementById('pdf-file-data');
+        if (hiddenInput) {
+          hiddenInput.remove();
+        }
+      });
     }
   });
 </script>

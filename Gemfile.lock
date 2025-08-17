@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    Ascii85 (2.0.1)
     actioncable (8.0.2)
       actionpack (= 8.0.2)
       activesupport (= 8.0.2)
@@ -74,6 +75,7 @@ GEM
       uri (>= 0.13.1)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
+    afm (1.0.0)
     ast (2.4.3)
     base64 (0.3.0)
     bcrypt (3.1.20)
@@ -137,6 +139,7 @@ GEM
       raabro (~> 1.4)
     globalid (1.2.1)
       activesupport (>= 6.1)
+    hashery (2.1.2)
     headless (3.0.0)
     http-cookie (1.0.8)
       domain_name (~> 0.5)
@@ -270,6 +273,12 @@ GEM
     parser (3.3.9.0)
       ast (~> 2.4.1)
       racc
+    pdf-reader (2.15.0)
+      Ascii85 (>= 1.0, < 3.0, != 2.0.0)
+      afm (>= 0.2.1, < 2)
+      hashery (~> 2.0)
+      ruby-rc4
+      ttfunk
     pg (1.6.1)
     pg (1.6.1-aarch64-linux)
     pg (1.6.1-aarch64-linux-musl)
@@ -387,6 +396,7 @@ GEM
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
     ruby-progressbar (1.13.0)
+    ruby-rc4 (0.1.5)
     rubyntlm (0.6.5)
       base64
     rubyzip (2.4.1)
@@ -444,6 +454,8 @@ GEM
     thruster (0.1.15-arm64-darwin)
     thruster (0.1.15-x86_64-linux)
     timeout (0.4.3)
+    ttfunk (1.8.0)
+      bigdecimal (~> 3.1)
     turbo-rails (2.0.16)
       actionpack (>= 7.1.0)
       railties (>= 7.1.0)
@@ -500,6 +512,7 @@ DEPENDENCIES
   kaminari (~> 1.2)
   kimurai
   nokogiri
+  pdf-reader (~> 2.11)
   pg (~> 1.1)
   playwright-ruby-client
   propshaft

@@ -9,54 +9,360 @@ class EnhancedJobPostingAnalyzerService
   end
   
   def perform_deep_analysis(company_name, position, job_content, url = nil)
-    Rails.logger.info "=== 강화된 채용공고 분석 시작 ==="
+    Rails.logger.info "=== 강화된 채용공고 분석 시작 (6-way Parallel) ==="
     Rails.logger.info "Company: #{company_name}, Position: #{position}"
     
-    # 병렬로 다각도 분석 실행
+    # 6개 섹션을 완전 병렬로 처리
     futures = []
+    errors = []
     
-    # 1. 기업 최신 이슈 수집 (핵심!)
+    # 1. 기업 개요 & 산업 포지션 분석
     futures << Concurrent::Future.execute do
-      fetch_company_context(company_name)
-    end
-    
-    # 2. 산업 동향 분석
-    futures << Concurrent::Future.execute do
-      analyze_industry_trends(company_name, position)
-    end
-    
-    # 3. 경쟁사 분석 - 대기업만 수행
-    is_large_company = check_if_large_company(company_name)
-    if is_large_company
-      futures << Concurrent::Future.execute do
-        analyze_competitor_hiring(company_name)
+      begin
+        analyze_company_overview_section(company_name, position, job_content)
+      rescue => e
+        Rails.logger.error "Company Overview Error: #{e.message}"
+        errors << "Company Overview: #{e.message}"
+        nil
       end
     end
     
-    # 결과 수집 (타임아웃을 30초로 늘림)
-    company_context = futures[0].value(30) || {}
-    industry_trends = futures[1].value(30) || {}
-    competitor_analysis = is_large_company ? (futures[2].value(30) || {}) : {}
+    # 2. 채용공고 기본 정보 & 맥락 분석
+    futures << Concurrent::Future.execute do
+      begin
+        analyze_job_context_section(company_name, position, job_content)
+      rescue => e
+        Rails.logger.error "Job Context Error: #{e.message}"
+        errors << "Job Context: #{e.message}"
+        nil
+      end
+    end
     
-    Rails.logger.info "Context collected: #{company_context.keys}"
-    Rails.logger.info "Trends collected: #{industry_trends.keys}"
-    Rails.logger.info "Is large company: #{is_large_company}"
-    Rails.logger.info "Competitors analyzed: #{competitor_analysis.keys.any?}"
+    # 3. 직무 분석 & 요구 역량 (핵심, 2000자+)
+    futures << Concurrent::Future.execute do
+      begin
+        analyze_job_requirements_section(company_name, position, job_content)
+      rescue => e
+        Rails.logger.error "Job Requirements Error: #{e.message}"
+        errors << "Job Requirements: #{e.message}"
+        nil
+      end
+    end
     
-    # 통합 분석
-    integrated_analysis = generate_comprehensive_analysis(
-      company_name,
-      position,
-      job_content,
-      company_context,
-      industry_trends,
-      competitor_analysis
-    )
+    # 4. 취업 준비 전략 (자소서·면접)
+    futures << Concurrent::Future.execute do
+      begin
+        analyze_preparation_strategy_section(company_name, position, job_content)
+      rescue => e
+        Rails.logger.error "Preparation Strategy Error: #{e.message}"
+        errors << "Preparation Strategy: #{e.message}"
+        nil
+      end
+    end
     
-    integrated_analysis
+    # 5. 경쟁사 비교 & 차별화 전략
+    futures << Concurrent::Future.execute do
+      begin
+        analyze_competition_section(company_name, position, job_content)
+      rescue => e
+        Rails.logger.error "Competition Analysis Error: #{e.message}"
+        errors << "Competition Analysis: #{e.message}"
+        nil
+      end
+    end
+    
+    # 6. 핵심 요약 & 컨설턴트 조언 (1500자+)
+    futures << Concurrent::Future.execute do
+      begin
+        generate_consultant_summary_section(company_name, position, job_content)
+      rescue => e
+        Rails.logger.error "Consultant Summary Error: #{e.message}"
+        errors << "Consultant Summary: #{e.message}"
+        nil
+      end
+    end
+    
+    # 모든 Future 완료 대기 (타임아웃 30초)
+    results = futures.map.with_index do |future, index|
+      result = future.value(30)
+      Rails.logger.info "Section #{index + 1} completed: #{result ? 'Success' : 'Failed'}"
+      result
+    end
+    
+    # 에러 로깅
+    if errors.any?
+      Rails.logger.error "Enhanced Analysis Errors: #{errors.join(', ')}"
+    end
+    
+    # 결과 조합
+    {
+      # 기본 정보
+      company_name: company_name,
+      position: position,
+      analysis_date: Time.current,
+      
+      # 6개 섹션 독립 분석 결과
+      sections: {
+        company_overview: results[0] || "분석 중 오류가 발생했습니다.",
+        job_context: results[1] || "분석 중 오류가 발생했습니다.",
+        job_requirements: results[2] || "분석 중 오류가 발생했습니다.",  # 핵심 2000자+
+        preparation_strategy: results[3] || "분석 중 오류가 발생했습니다.",
+        competition_analysis: results[4] || "분석 중 오류가 발생했습니다.",
+        consultant_summary: results[5] || "분석 중 오류가 발생했습니다."  # 1500자+
+      },
+      
+      # 메타데이터
+      metadata: {
+        analysis_version: 'enhanced_v3.0_parallel',
+        total_sections: 6,
+        successful_sections: results.compact.count,
+        parallel_threads: 6,
+        errors: errors,
+        model_used: @model || 'gpt-4.1'
+      }
+    }
   end
   
   private
+  
+  # 섹션 1: 기업 개요 & 산업 포지션
+  def analyze_company_overview_section(company_name, position, job_content)
+    prompt = <<~PROMPT
+      채용공고 분석 - 섹션 1: 기업 개요 & 산업 포지션
+      
+      기업명: #{company_name}
+      직무: #{position}
+      현재 날짜: #{Time.current.strftime('%Y년 %m월')}
+      
+      채용공고 내용:
+      #{job_content[0..1500]}
+      
+      다음 내용을 800자 이상으로 분석하세요:
+      
+      ## 1. 기업 개요 & 산업 포지션
+      
+      - 기업 연혁과 핵심 비즈니스 모델
+      - 최근 3년 매출 구조와 성장 추이
+      - 최근 전략 변화 (AI, 글로벌 확장, M&A 등)
+      - 산업 내 위치 (경쟁사 대비 강점/약점)
+      - 최근 이슈사항 (2025년 기준)
+      
+      [취업 TIP]을 반드시 포함하고, 실제 채용공고 문구를 인용하며 분석하세요.
+    PROMPT
+    
+    response = @parallel_service.call_api(
+      prompt,
+      system_prompt: '채용공고 분석 전문가로서 기업과 산업 맥락을 상세히 분석하세요.',
+      temperature: 0.7,
+      max_tokens: 1500
+    )
+    
+    response[:content] || "기업 개요 분석 실패"
+  end
+  
+  # 섹션 2: 채용공고 기본 정보 & 맥락
+  def analyze_job_context_section(company_name, position, job_content)
+    prompt = <<~PROMPT
+      채용공고 분석 - 섹션 2: 채용공고 기본 정보 & 맥락
+      
+      기업명: #{company_name}
+      직무: #{position}
+      현재 날짜: #{Time.current.strftime('%Y년 %m월')}
+      
+      채용공고 내용:
+      #{job_content[0..2000]}
+      
+      다음 내용을 800자 이상으로 분석하세요:
+      
+      ## 2. 채용공고 기본 정보 & 맥락
+      
+      - 모집 직무명, 고용형태, 근무지, 자격요건, 우대사항 정리
+      - "왜 지금 이 직무를 채용하는가?"를 산업·기업 맥락과 연결
+      - 채용공고에 숨겨진 의도와 니즈 파악
+      - 긴급도와 중요도 평가
+      
+      반드시 Why-So What-How 3단계 구조로 설명하고 [취업 TIP]을 포함하세요.
+    PROMPT
+    
+    response = @parallel_service.call_api(
+      prompt,
+      system_prompt: '채용공고의 숨은 의도와 맥락을 날카롭게 분석하세요.',
+      temperature: 0.7,
+      max_tokens: 1500
+    )
+    
+    response[:content] || "채용 맥락 분석 실패"
+  end
+  
+  # 섹션 3: 직무 분석 & 요구 역량 (핵심, 2000자+)
+  def analyze_job_requirements_section(company_name, position, job_content)
+    prompt = <<~PROMPT
+      채용공고 분석 - 섹션 3: 직무 분석 & 요구 역량 (핵심 파트)
+      
+      기업명: #{company_name}
+      직무: #{position}
+      현재 날짜: #{Time.current.strftime('%Y년 %m월')}
+      
+      채용공고 전문:
+      #{job_content[0..3000]}
+      
+      다음 내용을 반드시 2,000자 이상으로 초상세하게 분석하세요:
+      
+      ## 3. 직무 분석 & 요구 역량 (핵심 파트, 최소 2,000자)
+      
+      ### 3-1. 채용 방식 분석
+      - 정기공채 vs 수시 vs 프로젝트형 채용의 의미
+      - 지원자에게 미치는 영향
+      
+      ### 3-2. 채용공고 키워드별 요구 역량 심층 분석
+      채용공고의 실제 문구를 "" 안에 인용하며:
+      - 필수 역량: Why(왜 필요한가) → So What(지원자 의미) → How(준비 방법)
+      - 우대 역량: Why → So What → How
+      - 숨겨진 역량: 명시되지 않았지만 필요한 것들
+      
+      ### 3-3. 인재상 분석
+      - 기업 공식 인재상
+      - 실제 현업에서 중시되는 특성
+      - 지원자가 보여줘야 할 포인트
+      
+      각 키워드마다 Why-So What-How 구조로 상세히 설명하고,
+      실제 활용 가능한 예문을 포함한 [취업 TIP]을 3개 이상 넣으세요.
+    PROMPT
+    
+    response = @parallel_service.call_api(
+      prompt,
+      system_prompt: '채용공고 분석 전문가로서 요구 역량을 초디테일하게 분석하세요. 반드시 2000자 이상 작성하세요.',
+      temperature: 0.7,
+      max_tokens: 2500
+    )
+    
+    response[:content] || "직무 요구사항 분석 실패"
+  end
+  
+  # 섹션 4: 취업 준비 전략 (자소서·면접)
+  def analyze_preparation_strategy_section(company_name, position, job_content)
+    prompt = <<~PROMPT
+      채용공고 분석 - 섹션 4: 취업 준비 전략
+      
+      기업명: #{company_name}
+      직무: #{position}
+      
+      채용공고 핵심:
+      #{job_content[0..1500]}
+      
+      다음 내용을 1,200자 이상으로 분석하세요:
+      
+      ## 4. 취업 준비 전략 (자소서·면접 연결)
+      
+      ### 자소서 작성 전략
+      - 강조해야 할 핵심 포인트 3가지
+      - STAR+ 기법 활용 예시
+      - 실제 작성 템플릿과 예문
+      
+      ### 면접 대비 전략
+      - 예상 질문 Top 5와 모범 답변 구조
+      - 포트폴리오 구성 방향
+      - 차별화 포인트
+      
+      ### 준비 체크리스트
+      - 지금 당장 해야 할 3가지
+      - 1개월 준비 계획
+      
+      실제 활용 가능한 예문과 템플릿을 포함한 [취업 TIP]을 제공하세요.
+    PROMPT
+    
+    response = @parallel_service.call_api(
+      prompt,
+      system_prompt: '실용적이고 구체적인 취업 준비 전략을 제시하세요.',
+      temperature: 0.7,
+      max_tokens: 2000
+    )
+    
+    response[:content] || "준비 전략 분석 실패"
+  end
+  
+  # 섹션 5: 경쟁사 비교 & 차별화 전략
+  def analyze_competition_section(company_name, position, job_content)
+    prompt = <<~PROMPT
+      채용공고 분석 - 섹션 5: 경쟁사 비교 & 차별화 전략
+      
+      기업명: #{company_name}
+      직무: #{position}
+      
+      다음 내용을 1,000자 이상으로 분석하세요:
+      
+      ## 5. 경쟁사 비교 & 차별화 전략
+      
+      ### 동종업계 채용 트렌드
+      - 주요 경쟁사 채용 동향
+      - 업계 표준 vs #{company_name}만의 특징
+      
+      ### 지원자 차별화 전략
+      - 90%가 하는 실수 vs Top 10% 전략
+      - #{company_name}만을 위한 맞춤 어필 포인트
+      - 경쟁률 예상과 대응 방법
+      
+      ### 포지셔닝 전략
+      - 나만의 독특한 강점 찾기
+      - 스토리텔링으로 차별화하기
+      
+      구체적인 차별화 예시와 [취업 TIP]을 포함하세요.
+    PROMPT
+    
+    response = @parallel_service.call_api(
+      prompt,
+      system_prompt: '경쟁 환경과 차별화 전략을 날카롭게 분석하세요.',
+      temperature: 0.7,
+      max_tokens: 1500
+    )
+    
+    response[:content] || "경쟁 분석 실패"
+  end
+  
+  # 섹션 6: 핵심 요약 & 컨설턴트 조언 (1500자+)
+  def generate_consultant_summary_section(company_name, position, job_content)
+    prompt = <<~PROMPT
+      채용공고 분석 - 섹션 6: 핵심 요약 & 컨설턴트 조언
+      
+      기업명: #{company_name}
+      직무: #{position}
+      
+      반드시 1,500자 이상으로 작성하세요:
+      
+      ## 6. 핵심 요약 & 컨설턴트 조언 (심층, 최소 1,500자)
+      
+      ### 🎯 취업 준비생이 반드시 기억해야 할 핵심 5가지
+      
+      1. [가장 중요한 포인트]
+         - 왜 중요한가: [상세 설명]
+         - 어떻게 준비하나: [구체적 방법]
+         - 자소서 활용: [실제 예문]
+         - 면접 활용: [답변 예시]
+      
+      2~5. [동일 구조로 작성]
+      
+      ### 📋 합격률을 높이기 위해 지금 당장 해야 할 3가지 행동
+      
+      1. [오늘 시작]: [구체적 행동과 방법]
+      2. [이번 주 완료]: [구체적 목표와 계획]
+      3. [이번 달 달성]: [측정 가능한 성과]
+      
+      ### 💡 최종 메시지
+      #{company_name} #{position} 합격을 위한 핵심 전략과 
+      차별화 포인트를 종합하여 강력한 동기부여 메시지 제공
+      
+      반드시 1,500자 이상의 깊이 있는 조언을 작성하세요.
+    PROMPT
+    
+    response = @parallel_service.call_api(
+      prompt,
+      system_prompt: '15년 경력 컨설턴트로서 심층적이고 실용적인 조언을 1,500자 이상 제공하세요.',
+      temperature: 0.7,
+      max_tokens: 2000
+    )
+    
+    response[:content] || "컨설턴트 조언 생성 실패"
+  end
   
   def fetch_company_context(company_name)
     begin
@@ -169,32 +475,102 @@ class EnhancedJobPostingAnalyzerService
   
   def build_comprehensive_prompt(company_name, position, job_content, context, trends, competitors)
     <<~PROMPT
-      당신은 채용 전략 전문가입니다. 다음 정보를 바탕으로 지원자에게 실질적이고 구체적인 인사이트를 제공하세요.
+      📌 최종 강화 프롬프트 (채용공고 분석 / 초디테일 버전)
+      너는 [채용공고 분석 전문가이자 취업컨설턴트] 역할을 맡는다.  
+      너의 임무는 특정 채용공고를 분석하여 취업 준비생이 자기소개서, 면접, 포트폴리오, 커리어 전략에 바로 활용할 수 있는 **초디테일 심층 채용공고 분석 리포트(최소 4,500자)**를 작성하는 것이다.  
 
-      ## 기업 정보
+      ## 🎯 채용공고 정보
       - 기업명: #{company_name}
       - 모집 직무: #{position}
+      - 현재 날짜: #{Time.current.strftime('%Y년 %m월')}
       
-      ## 채용공고 내용
-      #{job_content[0..2000]}
+      ## 📝 채용공고 원문
+      #{job_content[0..3000]}
       
-      ## 기업 최신 맥락
-      #{context && context[:recent_issues] ? context[:recent_issues].join("\n") : "정보 없음"}
+      ## 🔍 기업 최신 맥락 (2025년)
+      #{context && context[:recent_issues] ? context[:recent_issues].map { |i| "• #{i}" }.join("\n") : "• 정보 수집 중"}
       
-      ## 산업 동향
+      ## 📊 산업 동향 분석
       #{trends && trends[:trends] ? trends[:trends] : "정보 수집 중"}
       
-      ## 경쟁사 동향
+      ## 🏢 경쟁사 채용 동향
       #{competitors && competitors[:hiring_comparison] ? competitors[:hiring_comparison] : "분석 중"}
-      
-      다음 관점에서 종합 분석을 제공하세요:
-      1. 왜 지금 이 시점에 채용하는가?
-      2. 숨겨진 요구사항은 무엇인가?
-      3. 지원자가 강조해야 할 핵심 포인트
-      4. 차별화 전략
-      5. 주의사항
-      
-      구체적이고 실용적인 조언을 4000자 이상으로 작성하세요.
+
+      ### 작성 원칙
+      1. 각 항목은 반드시 **실제 채용공고 문구(Keywords)**를 인용하고,  
+         → (예: "SQL 활용 능력", "대규모 트래픽 환경 경험")  
+         → 이 문구가 "왜 중요한지"를 **산업/기업 맥락**에서 해석하고,  
+         → "구직자가 어떻게 활용할 수 있는지"를 **자소서·면접·포트폴리오 적용법**까지 구체적으로 제시한다.  
+
+      2. 단순한 요구사항 나열이 아니라:  
+         - **Why? (기업이 왜 이 역량을 찾는가)**  
+         - **So what? (지원자에게 어떤 의미가 있는가)**  
+         - **How? (지원자가 어떻게 준비하고 보여줄 수 있는가)**  
+         의 3단계 구조로 설명한다.  
+
+      3. 각 섹션 끝에는 **[취업 TIP]** 박스를 넣어, 구체적 행동 가이드를 정리한다.  
+
+      4. [3. 직무 분석 & 요구 역량]은 최소 2,000자 이상,  
+         [6. 핵심 요약 & 컨설턴트 조언]은 최소 1,500자 이상으로 작성한다.  
+
+      5. [6. 핵심 요약 & 컨설턴트 조언]에서는:  
+         - 취업 준비생이 반드시 기억해야 할 핵심 5가지  
+         - 각 항목의 중요성과 실제 준비 방법 (자소서, 포트폴리오, 면접 전략)  
+         - "합격률을 높이기 위해 구직자가 지금 당장 해야 할 3가지 행동"  
+         을 구체적으로 제시한다.  
+
+      6. 전체 글은 전문 컨설팅 보고서 스타일로 작성하며, 최소 4,500자 이상 분량을 유지한다.  
+
+      ---
+
+      ## 📍 분석 프레임워크
+
+      1. **기업 개요 & 산업 포지션**  
+         - 기업 연혁, 핵심 비즈니스 모델, 최근 3년 매출 구조  
+         - 최근 전략 변화 (AI, 글로벌 확장, M&A 등)  
+         - 산업 내 위치 (경쟁사 대비 강점/약점)  
+         - 최근 이슈사항 (뉴스·기사 기반)
+
+      2. **채용공고 기본 정보 & 맥락**  
+         - 모집 기업, 직무명, 고용형태, 근무지, 자격요건, 우대사항  
+         - "왜 지금 이 직무를 채용하는가?"를 산업·기업 맥락과 연결하여 설명  
+
+      3. **직무 분석 & 요구 역량 (핵심 파트, 최소 2,000자)**  
+         - 3-1. 채용 방식 분석 (정기공채 vs 수시 vs 프로젝트형) → 지원자에게 의미  
+         - 3-2. 채용공고 키워드별 요구 역량 심층 분석  
+           * 개발직군: 기술스택, 프로젝트 경험, 대규모 트래픽 경험  
+           * 기획/PM: 데이터 기반 기획, 사용자 경험, 시장분석 역량  
+           * 데이터/AI: 머신러닝·딥러닝, 추천 알고리즘, MLOps  
+           * 디자인: UX/UI 개선, BX, 글로벌 감각  
+           - 각 키워드별로 Why–So What–How 구조로 상세히 풀어낼 것  
+         - 3-3. 인재상 분석  
+           - 기업 공식 인재상 + 실제 현업에서 암묵적으로 중시되는 특성  
+
+      4. **취업 준비 전략 (자소서·면접 연결)**  
+         - 자소서 작성 시 강조 포인트 (직무별 맞춤 사례 포함)  
+         - STAR+ 기법 활용한 경험 기술법  
+         - 면접 예상 질문과 답변 전략  
+         - 포트폴리오 구성 전략  
+
+      5. **경쟁사 비교 & 차별화 전략**  
+         - 동종업계 채용 트렌드와 비교  
+         - #{company_name}만의 특징과 지원자 차별화 포인트  
+         - 경쟁률 예상과 대응 전략  
+
+      6. **핵심 요약 & 컨설턴트 조언 (심층, 최소 1,500자)**  
+         - 취업 준비생이 반드시 기억해야 할 핵심 5가지  
+         - 각 항목의 중요성과 실제 준비 방법  
+         - 지금 당장 해야 할 3가지 행동  
+
+      ---
+
+      ## 📍 출력 형식
+      - 마크다운 구조 (제목·소제목·리스트·표 적극 활용)  
+      - 각 파트는 최소 5문단 이상  
+      - [3. 직무 분석 & 요구 역량] 2,000자 이상 / [6. 핵심 요약] 1,500자 이상  
+      - 최종 리포트는 최소 4,500자 이상  
+      - 전문 컨설팅 보고서 스타일 (실제 리서치 기반, 실행 전략 중심)
+      - 실제 채용공고 문구를 "" 안에 인용하며 분석
     PROMPT
   end
   
@@ -203,12 +579,17 @@ class EnhancedJobPostingAnalyzerService
     
     response = @parallel_service.call_api(
       prompt,
-      system_prompt: '당신은 채용 전략 전문가이자 자소서 컨설턴트입니다. 지원자에게 실질적이고 구체적인 인사이트를 제공하세요.',
-      temperature: 0.6,
-      max_tokens: 3000  # 4000에서 3000으로 최적화
+      system_prompt: '당신은 15년 경력의 채용공고 분석 전문가이자 취업컨설턴트입니다. 
+      취업 준비생에게 실질적이고 구체적인 인사이트를 제공하세요. 
+      반드시 4,500자 이상의 초디테일 분석을 작성하고, 
+      채용공고의 실제 문구를 인용하며 Why-So What-How 3단계 구조로 설명하세요.
+      각 섹션마다 [취업 TIP]을 포함하고, 실제 활용 가능한 예문과 템플릿을 제공하세요.',
+      temperature: 0.7,
+      max_tokens: 4000  # 초디테일 분석을 위해 증가
     )
     
-    analysis = response[:content]
+    # API 응답을 메인 분석으로 사용
+    main_analysis = response[:content] || "분석 중 오류가 발생했습니다."
     
     # 구조화된 결과 생성
     {
@@ -217,27 +598,41 @@ class EnhancedJobPostingAnalyzerService
       position: position,
       analysis_date: Time.current,
       
-      # 맥락 기반 분석
+      # 초디테일 메인 분석 (프롬프트대로 생성된 4,500자 이상 분석)
+      comprehensive_analysis: main_analysis,
+      
+      # 맥락 기반 추가 정보
       company_context: {
         current_issues: context[:recent_issues] || [],
         urgent_needs: extract_urgent_needs(context, job_content),
         hidden_requirements: discover_hidden_requirements(context, job_content)
       },
       
-      # 자소서 전략 (대폭 강화)
-      cover_letter_strategy: generate_detailed_strategy(company_name, position, context, trends, competitors),
+      # 보조 가이드 (메인 분석 보완용)
+      supplementary_guides: {
+        # 자소서 전략 (추가 템플릿)
+        cover_letter_templates: generate_detailed_strategy(company_name, position, context, trends, competitors),
+        
+        # 차별화 가이드 (추가 예시)
+        differentiation_examples: create_differentiation_guide(company_name, position, context, competitors),
+        
+        # 커스터마이징 가이드 (추가 예문)
+        customization_samples: create_detailed_customization_guide(company_name, position, context, trends),
+        
+        # 면접 인사이트 (추가 질문)
+        interview_questions: generate_interview_insights(context, trends),
+        
+        # 주의사항
+        warnings: identify_risks_and_warnings(context, competitors)
+      },
       
-      # 차별화 포인트 (구체적 예시 포함)
-      differentiation_guide: create_differentiation_guide(company_name, position, context, competitors),
-      
-      # 커스터마이징 가이드 (실전 예문 포함)
-      customization_guide: create_detailed_customization_guide(company_name, position, context, trends),
-      
-      # 면접 대비 인사이트
-      interview_insights: generate_interview_insights(context, trends),
-      
-      # 리스크 및 주의사항
-      risks_and_warnings: identify_risks_and_warnings(context, competitors)
+      # 메타데이터
+      metadata: {
+        analysis_version: 'enhanced_v2.0',
+        word_count: main_analysis.length,
+        includes_tips: main_analysis.include?('[취업 TIP]'),
+        api_model: response[:model] || 'gpt-4.1'
+      }
     }
   end
   

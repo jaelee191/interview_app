@@ -61,6 +61,9 @@ gem "redcarpet"     # 마크다운 파서
 # 환경변수 관리
 gem "dotenv-rails"  # .env 파일에서 환경변수 로드
 
+# PDF 파싱
+gem "pdf-reader", "~> 2.11"  # PDF 파일 읽기
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"

@@ -108,6 +108,13 @@
                   </svg>
                   <span>자소서 작성</span>
                 </a>
+                <button onclick="deleteJobAnalysis(<%= analysis.id %>)" 
+                        class="flex-1 lg:flex-initial bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 lg:min-w-[120px] shadow-sm hover:shadow-md">
+                  <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                  <span>삭제</span>
+                </button>
               </div>
             </div>
           </div>
@@ -449,4 +456,38 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+// Delete job analysis function
+async function deleteJobAnalysis(id) {
+  if (!confirm('정말로 이 채용공고 분석을 삭제하시겠습니까?\n삭제된 분석은 복구할 수 없습니다.')) {
+    return;
+  }
+  
+  try {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    
+    const response = await fetch(`/cover_letters/delete_job_analysis/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-Token': csrfToken,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      // 성공 메시지 표시
+      alert('채용공고 분석이 삭제되었습니다.');
+      // 페이지 새로고침
+      window.location.reload();
+    } else {
+      alert('삭제 실패: ' + (data.error || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('Delete error:', error);
+    alert('삭제 중 오류가 발생했습니다: ' + error.message);
+  }
+}
 </script>

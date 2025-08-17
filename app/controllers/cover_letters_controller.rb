@@ -1,6 +1,9 @@
+require 'base64'
+require 'tempfile'
+
 class CoverLettersController < ApplicationController
   before_action :set_cover_letter, only: [:show, :destroy]
-  skip_before_action :verify_authenticity_token, only: [:start_interactive, :send_message, :save_interactive, :analyze_job_posting]
+  skip_before_action :verify_authenticity_token, only: [:start_interactive, :send_message, :save_interactive, :analyze_job_posting, :analyze_advanced]
   
   def index
     @cover_letters = CoverLetter.order(created_at: :desc)
@@ -100,6 +103,42 @@ class CoverLettersController < ApplicationController
         redirect_to saved_job_analyses_cover_letters_path, alert: "권한이 없습니다."
         return
       end
+    end
+  end
+  
+  def delete_job_analysis
+    @job_analysis = JobAnalysis.find(params[:id])
+    
+    # 권한 확인
+    if current_user
+      unless @job_analysis.user_id == current_user.id
+        respond_to do |format|
+          format.html { redirect_to saved_job_analyses_cover_letters_path, alert: "권한이 없습니다." }
+          format.json { render json: { success: false, error: "권한이 없습니다." }, status: 403 }
+        end
+        return
+      end
+    else
+      unless @job_analysis.session_id == session.id.to_s
+        respond_to do |format|
+          format.html { redirect_to saved_job_analyses_cover_letters_path, alert: "권한이 없습니다." }
+          format.json { render json: { success: false, error: "권한이 없습니다." }, status: 403 }
+        end
+        return
+      end
+    end
+    
+    # 삭제 실행
+    @job_analysis.destroy
+    
+    respond_to do |format|
+      format.html { redirect_to saved_job_analyses_cover_letters_path, notice: "채용공고 분석이 삭제되었습니다." }
+      format.json { render json: { success: true, message: "채용공고 분석이 삭제되었습니다." } }
+    end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.html { redirect_to saved_job_analyses_cover_letters_path, alert: "분석을 찾을 수 없습니다." }
+      format.json { render json: { success: false, error: "분석을 찾을 수 없습니다." }, status: 404 }
     end
   end
   
@@ -556,19 +595,64 @@ class CoverLettersController < ApplicationController
   end
   
   def analyze_advanced
-    @cover_letter = CoverLetter.new(cover_letter_params)
+    # pdf_content는 DB 필드가 아니므로 별도로 처리
+    permitted_params = params.require(:cover_letter).permit(:title, :content, :company_name, :position, :user_name)
+    @cover_letter = CoverLetter.new(permitted_params)
+    
+    # PDF 처리
+    pdf_analysis = nil
+    if params[:cover_letter][:pdf_content].present?
+      begin
+        # Base64 디코딩
+        pdf_data = params[:cover_letter][:pdf_content]
+        pdf_data = pdf_data.sub(/^data:application\/pdf;base64,/, '')
+        
+        # 임시 파일로 저장
+        temp_file = Tempfile.new(['resume', '.pdf'])
+        temp_file.binmode
+        temp_file.write(Base64.decode64(pdf_data))
+        temp_file.rewind
+        
+        # PDF 분석
+        pdf_service = PdfAnalyzerService.new(temp_file.path)
+        pdf_analysis = pdf_service.analyze_resume
+        
+        # 분석 결과를 자소서에 추가
+        if pdf_analysis[:success]
+          enhanced_content = "#{@cover_letter.content}\n\n--- PDF 분석 내용 ---\n#{pdf_analysis[:extracted_text][0..2000]}"
+          @cover_letter.content = enhanced_content
+        end
+        
+        temp_file.close
+        temp_file.unlink
+      rescue => e
+        Rails.logger.error "PDF Processing Error: #{e.message}"
+      end
+    end
     
     if @cover_letter.save
-      # 3단계 고급 분석
+      # 자소서 분석만 실행 (기업 분석 제외)
       service = AdvancedCoverLetterService.new
-      result = service.analyze_complete(
-        @cover_letter.content,
-        @cover_letter.company_name,
-        @cover_letter.position
-      )
+      result = service.analyze_cover_letter_only(@cover_letter.content)
       
       if result[:success]
-        @cover_letter.update(analysis_result: result[:full_analysis])
+        analysis_with_pdf = result[:full_analysis]
+        
+        # PDF 분석 결과 추가
+        if pdf_analysis && pdf_analysis[:success]
+          analysis_with_pdf += "\n\n## PDF 이력서 분석 결과\n#{pdf_analysis[:analysis][:combined] rescue pdf_analysis[:analysis]}"
+        end
+        
+        # deep_analysis_data에 PDF 구조화 분석 결과 저장
+        deep_analysis_data = {}
+        if pdf_analysis && pdf_analysis[:success]
+          deep_analysis_data = pdf_analysis
+        end
+        
+        @cover_letter.update(
+          analysis_result: analysis_with_pdf,
+          deep_analysis_data: deep_analysis_data
+        )
         redirect_to @cover_letter, notice: '3단계 심층 분석이 완료되었습니다.'
       else
         @cover_letter.update(analysis_result: "분석 실패: #{result[:error]}")
@@ -627,6 +711,48 @@ class CoverLettersController < ApplicationController
     if @analysis_data
       service = DeepAnalysisService.new
       @visualization_data = service.send(:prepare_visualization_data, @analysis_data)
+    end
+  end
+  
+  def rewrite_with_feedback
+    @cover_letter = CoverLetter.find(params[:id])
+    
+    # 서비스 초기화
+    service = AdvancedCoverLetterService.new
+    
+    # 기존 분석 결과에서 자소서 분석 부분만 추출 (기업 분석 제외)
+    existing_analysis = @cover_letter.analysis_result || ""
+    
+    # 피드백 기반 리라이트 실행 (기업 분석 제외)
+    result = service.rewrite_with_feedback_only(
+      @cover_letter.content,
+      existing_analysis,  # 2단계 분석 결과를 피드백으로 사용
+      @cover_letter.company_name,
+      @cover_letter.position
+    )
+    
+    if result[:success]
+      # 결과 저장 (advanced_analysis 필드에 저장)
+      @cover_letter.update(
+        advanced_analysis: result[:rewritten_letter]
+      )
+      
+      redirect_to rewrite_result_cover_letter_path(@cover_letter)
+    else
+      redirect_to @cover_letter, alert: result[:error] || "리라이트 중 오류가 발생했습니다"
+    end
+  rescue => e
+    Rails.logger.error "Rewrite error: #{e.message}"
+    Rails.logger.error e.backtrace.first(5).join("\n")
+    redirect_to @cover_letter, alert: "자기소개서 리라이트 중 오류가 발생했습니다: #{e.message}"
+  end
+  
+  def rewrite_result
+    @cover_letter = CoverLetter.find(params[:id])
+    @rewritten_content = @cover_letter.advanced_analysis
+    
+    unless @rewritten_content
+      redirect_to @cover_letter, alert: "리라이트된 자기소개서가 없습니다."
     end
   end
   

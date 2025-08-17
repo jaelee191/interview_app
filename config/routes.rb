@@ -78,6 +78,7 @@ Rails.application.routes.draw do
       get 'saved_job_analyses'
       get 'view_job_analysis/:id', to: 'cover_letters#view_job_analysis', as: 'view_job_analysis'
       post 'save_job_analysis/:id', to: 'cover_letters#save_job_analysis', as: 'save_job_analysis'
+      delete 'delete_job_analysis/:id', to: 'cover_letters#delete_job_analysis', as: 'delete_job_analysis'
       get 'load_job_analysis', to: 'cover_letters#load_job_analysis'
       get 'company_analysis', to: 'cover_letters#company_analysis'
       post 'analyze_company', to: 'cover_letters#analyze_company'
@@ -88,6 +89,8 @@ Rails.application.routes.draw do
     end
     member do
       get 'deep_analysis_result'
+      post 'rewrite_with_feedback'
+      get 'rewrite_result'
     end
   end
 end
