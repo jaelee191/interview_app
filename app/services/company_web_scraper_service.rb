@@ -18,55 +18,69 @@ class CompanyWebScraperService
   def scrape_all
     Rails.logger.info "🌐 Starting web scraping for: #{@company_name}"
     
-    Playwright.create(playwright_cli_executable_path: 'npx playwright') do |playwright|
-      chromium = playwright.chromium
-      browser = chromium.launch(headless: true)
-      
-      begin
-        # 병렬로 여러 사이트 크롤링
-        threads = []
+    begin
+      Playwright.create(playwright_cli_executable_path: './node_modules/.bin/playwright') do |playwright|
+        chromium = playwright.chromium
+        browser = chromium.launch(headless: true)
         
-        # 1. 잡코리아 크롤링
-        threads << Thread.new do
-          scrape_jobkorea(browser)
-        rescue => e
-          Rails.logger.error "JobKorea scraping error: #{e.message}"
+        begin
+          # 병렬로 여러 사이트 크롤링
+          threads = []
+          
+          # 1. 잡코리아 크롤링
+          threads << Thread.new do
+            begin
+              scrape_jobkorea(browser)
+            rescue => e
+              Rails.logger.error "JobKorea scraping error: #{e.message}"
+              Rails.logger.error e.backtrace.first(3).join("\n")
+            end
+          end
+          
+          # 2. 사람인 크롤링
+          threads << Thread.new do
+            begin
+              scrape_saramin(browser)
+            rescue => e
+              Rails.logger.error "Saramin scraping error: #{e.message}"
+              Rails.logger.error e.backtrace.first(3).join("\n")
+            end
+          end
+          
+          # 3. 네이버 뉴스 크롤링
+          threads << Thread.new do
+            begin
+              scrape_naver_news(browser)
+            rescue => e
+              Rails.logger.error "Naver news scraping error: #{e.message}"
+              Rails.logger.error e.backtrace.first(3).join("\n")
+            end
+          end
+          
+          # 4. 잡플래닛 리뷰 크롤링 (선택적)
+          # threads << Thread.new do
+          #   begin
+          #     scrape_jobplanet(browser)
+          #   rescue => e
+          #     Rails.logger.error "JobPlanet scraping error: #{e.message}"
+          #   end
+          # end
+          
+          # 모든 스레드 완료 대기
+          threads.each(&:join)
+          
+        ensure
+          browser.close if browser
         end
-        
-        # 2. 사람인 크롤링
-        threads << Thread.new do
-          scrape_saramin(browser)
-        rescue => e
-          Rails.logger.error "Saramin scraping error: #{e.message}"
-        end
-        
-        # 3. 네이버 뉴스 크롤링
-        threads << Thread.new do
-          scrape_naver_news(browser)
-        rescue => e
-          Rails.logger.error "Naver news scraping error: #{e.message}"
-        end
-        
-        # 4. 잡플래닛 리뷰 크롤링
-        threads << Thread.new do
-          scrape_jobplanet(browser)
-        rescue => e
-          Rails.logger.error "JobPlanet scraping error: #{e.message}"
-        end
-        
-        # 모든 스레드 완료 대기
-        threads.each(&:join)
-        
-      ensure
-        browser.close
       end
+    rescue => e
+      Rails.logger.error "Playwright initialization failed: #{e.message}"
+      Rails.logger.error e.backtrace.first(5).join("\n")
+      @results[:error] = "Playwright 초기화 실패: #{e.message}"
     end
     
     Rails.logger.info "✅ Web scraping completed for: #{@company_name}"
-    @results
-  rescue => e
-    Rails.logger.error "Web scraping failed: #{e.message}"
-    @results[:error] = e.message
+    Rails.logger.info "Results summary: recruitment=#{@results[:recruitment].size}, news=#{@results[:news].size}"
     @results
   end
   
@@ -78,15 +92,17 @@ class CompanyWebScraperService
     context = browser.new_context
     page = context.new_page
     
-    # 잡코리아에서 기업 검색
-    search_url = "https://www.jobkorea.co.kr/Search/?stext=#{URI.encode_www_form_component(@company_name)}"
-    page.goto(search_url, wait_until: 'networkidle')
-    
-    # 검색 결과 대기
-    page.wait_for_selector('.list-default', timeout: 10000) rescue nil
-    
-    # 채용공고 정보 수집
-    job_listings = page.evaluate(<<~JS)
+    begin
+      # 잡코리아에서 기업 검색
+      search_url = "https://www.jobkorea.co.kr/Search/?stext=#{URI.encode_www_form_component(@company_name)}"
+      page.goto(search_url)
+      
+      # 페이지 로드 대기
+      sleep 3
+      page.wait_for_selector('.list-default', timeout: 5000) rescue nil
+      
+      # 채용공고 정보 수집
+      job_listings = page.evaluate(<<~JS)
       Array.from(document.querySelectorAll('.list-default li')).slice(0, 5).map(item => ({
         title: item.querySelector('.title')?.innerText || '',
         company: item.querySelector('.name')?.innerText || '',
@@ -120,8 +136,11 @@ class CompanyWebScraperService
       
       @results[:basic_info].merge!(company_info)
     end
-    
-    context.close
+    rescue => e
+      Rails.logger.error "JobKorea scraping error detail: #{e.message}"
+    ensure
+      context.close
+    end
   end
   
   def scrape_saramin(browser)
@@ -132,7 +151,7 @@ class CompanyWebScraperService
     
     # 사람인에서 기업 검색
     search_url = "https://www.saramin.co.kr/zf_user/search?searchword=#{URI.encode_www_form_component(@company_name)}&go=&flag=n&searchMode=1&searchType=search&search_done=y&search_optional_item=n"
-    page.goto(search_url, wait_until: 'networkidle')
+    page.goto(search_url, waitUntil: 'networkidle')
     
     # 기업 정보 탭 클릭
     company_tab = page.query_selector("a[data-tab='company']")
@@ -179,38 +198,81 @@ class CompanyWebScraperService
   end
   
   def scrape_naver_news(browser)
-    Rails.logger.info "📍 Scraping Naver News..."
+    Rails.logger.info "📍 Scraping Naver News (Mobile)..."
     
-    context = browser.new_context
+    # 모바일 디바이스 설정
+    device = {
+      userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1',
+      viewport: { width: 390, height: 844 },
+      isMobile: true
+    }
+    
+    context = browser.new_context(**device)
     page = context.new_page
     
-    # 네이버 뉴스 검색
-    news_url = "https://search.naver.com/search.naver?where=news&query=#{URI.encode_www_form_component(@company_name)}"
-    page.goto(news_url, wait_until: 'networkidle')
-    
-    # 뉴스 결과 대기
-    page.wait_for_selector('.news_area', timeout: 5000) rescue nil
-    
-    # 최근 뉴스 수집 (최대 10개)
-    news_data = page.evaluate(<<~JS)
-      Array.from(document.querySelectorAll('.news_area')).slice(0, 10).map(item => ({
-        title: item.querySelector('.news_tit')?.innerText || '',
-        content: item.querySelector('.news_dsc')?.innerText || '',
-        source: item.querySelector('.info_group .press')?.innerText || '',
-        date: item.querySelector('.info_group span.info')?.innerText || '',
-        url: item.querySelector('.news_tit')?.href || ''
-      }))
-    JS
-    
-    @results[:news] = news_data
-    
-    # 최신 뉴스에서 핵심 키워드 추출
-    if news_data.any?
-      keywords = extract_keywords_from_news(news_data)
-      @results[:basic_info][:recent_keywords] = keywords
+    begin
+      # 네이버 모바일 뉴스 검색
+      mobile_news_url = "https://m.search.naver.com/search.naver?where=m_news&query=#{URI.encode_www_form_component(@company_name)}"
+      page.goto(mobile_news_url)
+      
+      # 페이지 로드 대기
+      sleep 3
+      
+      # 모바일 페이지에서 뉴스 추출
+      news_items = page.evaluate(<<~JS)
+        (() => {
+          // 뉴스 링크 필터링 (네이버 UI 요소 제외)
+          const newsLinks = Array.from(document.querySelectorAll('a'))
+            .filter(a => {
+              const text = a.innerText || '';
+              return text.length > 20 && 
+                     !text.includes('네이버') && 
+                     !text.includes('로그인') &&
+                     !text.includes('도움말') &&
+                     !text.includes('언론사') &&
+                     !text.includes('관심사');
+            })
+            .slice(0, 15);
+          
+          return newsLinks.map((a, idx) => {
+            // 제목과 내용 구분
+            const isTitle = idx % 2 === 0; // 보통 제목이 먼저 나옴
+            return {
+              text: a.innerText,
+              url: a.href,
+              isTitle: isTitle
+            };
+          });
+        })()
+      JS
+      
+      # 제목만 필터링
+      news_titles = news_items.select { |item| item['isTitle'] }
+      
+      # 뉴스 데이터 구성
+      news_data = news_titles.first(10).map do |item|
+        {
+          title: item['text'],
+          content: "", # 상세 내용은 별도 크롤링 필요
+          source: "네이버 뉴스",
+          date: Time.current.strftime('%Y-%m-%d'),
+          url: item['url']
+        }
+      end
+      
+      @results[:news] = news_data
+      Rails.logger.info "📰 Found #{news_data.size} news articles from mobile"
+      
+      # 최신 뉴스에서 핵심 키워드 추출
+      if news_data.any?
+        keywords = extract_keywords_from_news(news_data)
+        @results[:basic_info][:recent_keywords] = keywords
+      end
+    rescue => e
+      Rails.logger.error "Mobile Naver news scraping error: #{e.message}"
+    ensure
+      context.close
     end
-    
-    context.close
   end
   
   def scrape_jobplanet(browser)
@@ -221,7 +283,7 @@ class CompanyWebScraperService
     
     # 잡플래닛 검색 (로그인 필요 없는 공개 정보만)
     search_url = "https://www.jobplanet.co.kr/search?query=#{URI.encode_www_form_component(@company_name)}"
-    page.goto(search_url, wait_until: 'networkidle')
+    page.goto(search_url, waitUntil: 'networkidle')
     
     # 기업 리뷰 요약 정보 수집
     page.wait_for_selector('.company_card', timeout: 5000) rescue nil
