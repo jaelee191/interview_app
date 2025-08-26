@@ -18,111 +18,92 @@
     <!-- Pretendard Font -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
-    <%# Include Tailwind CSS %>
-    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%# Include CSS files without preload %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload", media: "all" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload", media: "all" %>
+    <%= stylesheet_link_tag "modern", "data-turbo-track": "reload", media: "all" %>
+    
+    <%# JavaScript with importmap %>
     <%= javascript_importmap_tags %>
     
     <style>
       :root {
-        --primary-color: #5865F2;
-        --primary-hover: #4752C4;
-        --accent-purple: #8B5CF6;
-        --text-primary: #1F2937;
+        --primary-color: #10b981;
+        --primary-hover: #059669;
+        --text-primary: #111827;
         --text-secondary: #6B7280;
-        --border-color: #E5E7EB;
+        --border-color: #f3f4f6;
       }
     </style>
   </head>
 
-  <body class="h-full bg-gray-50">
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full bg-white border-b border-gray-200 z-50">
+  <body class="h-full bg-gray-50 font-[Pretendard]">
+    <!-- Modern Navigation -->
+    <nav class="fixed top-0 w-full bg-white border-b border-gray-100 z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
+        <div class="flex justify-between items-center h-14">
           <!-- Logo -->
           <div class="flex items-center">
-            <%= link_to root_path, class: "flex items-center space-x-3" do %>
-              <div class="flex flex-col items-start">
-                <span class="text-xl font-bold text-gray-900">JACHUI</span>
-                <span class="text-sm text-gray-600 font-medium">자취를 남기다</span>
-              </div>
+            <%= link_to root_path, class: "flex items-center space-x-2 group" do %>
+              <span class="text-xl font-semibold text-gray-900">jachui</span>
             <% end %>
           </div>
           
           <!-- Navigation Links -->
-          <div class="hidden md:flex items-center space-x-2">
-            <%= link_to "서비스 소개", about_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium px-3 py-2" %>
-            <%= link_to "예비합격자에게", letter_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium px-3 py-2" %>
+          <div class="hidden md:flex items-center space-x-6">
+            <%= link_to "서비스 소개", about_path, class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
+            <%= link_to "예비합격자에게", letter_path, class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
             
             <!-- 채용공고 분석 드롭다운 -->
             <div class="relative group">
-              <button class="text-gray-600 hover:text-gray-900 transition-colors font-medium flex items-center px-3 py-2">
+              <button class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium flex items-center">
                 채용공고 분석
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
               </button>
-              <div class="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <%= link_to "📝 채용공고 분석", job_posting_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50" %>
-                <%= link_to "💼 저장된 채용공고", saved_job_analyses_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
+              <div class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <%= link_to "채용공고 분석", job_posting_cover_letters_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
+                <%= link_to "저장된 분석", saved_job_analyses_cover_letters_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
               </div>
             </div>
             
             <!-- 기업 분석 드롭다운 -->
             <div class="relative group">
-              <button class="text-purple-600 hover:text-purple-700 transition-colors font-medium flex items-center px-3 py-2">
-                🏢 기업 분석
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium flex items-center">
+                기업 분석
+                <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
               </button>
-              <div class="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <%= link_to "🏢 기업 분석", company_analysis_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50" %>
-                <%= link_to "📚 저장된 기업분석", saved_company_analyses_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
+              <div class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <%= link_to "기업 분석", company_analysis_cover_letters_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
+                <%= link_to "저장된 분석", saved_company_analyses_cover_letters_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
               </div>
             </div>
             
-            <!-- 자소서 작성 드롭다운 -->
-            <div class="relative group">
-              <button class="text-gray-600 hover:text-gray-900 transition-colors font-medium flex items-center px-3 py-2">
-                AI 자소서 작성
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </button>
-              <div class="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <%= link_to "✍️ AI 자소서 작성", interactive_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50" %>
-                <%= link_to "🔬 온톨로지 분석", ontology_input_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
-              </div>
-            </div>
+            <!-- AI 자소서 작성 -->
+            <%= link_to "AI 자소서 작성", interactive_cover_letters_path, 
+                class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
             
-            <!-- 심층 분석 드롭다운 -->
-            <div class="relative group">
-              <button class="text-gray-600 hover:text-gray-900 transition-colors font-medium flex items-center px-3 py-2">
-                심층 분석
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </button>
-              <div class="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <%= link_to "📊 3단계 분석", advanced_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50" %>
-                <%= link_to "🎯 맥락 기반 분석", intelligent_analysis_cover_letters_path, class: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100 font-semibold bg-gradient-to-r from-blue-50 to-purple-50" %>
-              </div>
-            </div>
+            <!-- 심층 분석 -->
+            <%= link_to "심층 분석", advanced_cover_letters_path, 
+                class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
             
-            <%= link_to "이력 관리", cover_letters_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium px-3 py-2" %>
-            <%= link_to "요금제", pricing_path, class: "text-gray-600 hover:text-gray-900 transition-colors font-medium px-3 py-2" %>
+            <%= link_to "이력 관리", cover_letters_path, class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
+            <%= link_to "요금제", pricing_path, class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
           </div>
           
-          <!-- Login Button -->
-          <div class="flex items-center">
+          <!-- Auth Buttons -->
+          <div class="flex items-center gap-4">
             <% if defined?(current_user) && current_user %>
-              <%= link_to "프로필", user_profile_path(current_user.id), class: "px-4 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors" %>
-              <%= link_to "로그아웃", destroy_user_session_path, data: { "turbo-method": :delete }, class: "px-4 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors" %>
+              <%= link_to user_profile_path(current_user.id), class: "text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors" do %>
+                프로필
+              <% end %>
+              <%= link_to "로그아웃", destroy_user_session_path, data: { "turbo-method": :delete }, class: "text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors" %>
             <% else %>
-              <%= link_to "로그인", new_user_session_path, class: "px-4 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors" %>
-              <%= link_to "회원가입", new_user_registration_path, class: "px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors ml-2" %>
+              <%= link_to "로그인", new_user_session_path, class: "text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors" %>
+              <%= link_to "시작하기", new_user_registration_path, class: "px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-full hover:bg-emerald-600 transition-colors" %>
             <% end %>
           </div>
         </div>
@@ -134,34 +115,27 @@
       <%= yield %>
     </main>
     
-    <!-- Footer -->
-    <footer class="bg-gray-50 border-t border-gray-200 mt-24">
+    <!-- Modern Footer -->
+    <footer class="bg-white border-t border-gray-100 mt-24">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div class="grid md:grid-cols-4 gap-8 mb-12">
           <!-- Company Info -->
           <div class="col-span-2 md:col-span-1">
-            <div class="flex items-center space-x-2 mb-4">
-              <span class="text-xl font-bold text-gray-900">JACHUI</span>
-            </div>
-            <p class="text-sm text-gray-600 mb-4">자기소개로 취업하다</p>
-            <p class="text-sm text-gray-500">
-              AI 기술로 당신의 경험을<br>
-              완벽한 자기소개서로 변환합니다
+            <span class="text-xl font-semibold text-gray-900">jachui</span>
+            <p class="text-sm text-gray-600 mt-4 leading-relaxed">
+              AI는 도구일 뿐, 진짜 이야기는<br>
+              지원자 본인만이 쓸 수 있습니다
             </p>
           </div>
           
-          <!-- Product -->
+          <!-- Services -->
           <div>
             <h4 class="text-sm font-semibold text-gray-900 mb-4">서비스</h4>
             <ul class="space-y-2">
               <li><a href="/cover_letters/job_posting" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">채용공고 분석</a></li>
-              <li><a href="/cover_letters/company_analysis" class="text-sm text-purple-600 hover:text-purple-700 transition-colors font-semibold">🏢 기업 심층 분석</a></li>
-              <li><a href="/cover_letters/saved_company_analyses" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">저장된 기업분석</a></li>
-              <li><a href="/cover_letters/saved_job_analyses" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">저장된 채용공고</a></li>
+              <li><a href="/cover_letters/company_analysis" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">기업 분석</a></li>
               <li><a href="/cover_letters/interactive" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">AI 자소서 작성</a></li>
-              <li><a href="/cover_letters/advanced" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">3단계 심층 분석</a></li>
-              <li><a href="/cover_letters/deep_analysis" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">GPT-5 심층분석</a></li>
-              <li><a href="/cover_letters/intelligent_analysis" class="text-sm text-gray-600 hover:text-gray-900 transition-colors font-semibold">🎯 맥락 기반 분석</a></li>
+              <li><a href="/cover_letters/advanced" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">심층 분석</a></li>
               <li><a href="/cover_letters" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">이력 관리</a></li>
             </ul>
           </div>
@@ -171,47 +145,23 @@
             <h4 class="text-sm font-semibold text-gray-900 mb-4">리소스</h4>
             <ul class="space-y-2">
               <li><a href="/about" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">회사 소개</a></li>
-              <li><a href="#" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">가이드</a></li>
-              <li><a href="#" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">템플릿</a></li>
+              <li><a href="#" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">자소서 가이드</a></li>
               <li><a href="#" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">합격 사례</a></li>
               <li><a href="#" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">FAQ</a></li>
             </ul>
           </div>
-          
-          <!-- Stats -->
-          <div>
-            <h4 class="text-sm font-semibold text-gray-900 mb-4">성과</h4>
-            <div class="space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-600">누적 사용자</span>
-                <span class="text-sm font-semibold text-gray-900">12,847명</span>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-600">평균 합격률</span>
-                <span class="text-sm font-semibold text-gray-900">85%</span>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-600">작성 시간</span>
-                <span class="text-sm font-semibold text-gray-900">3분</span>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-600">사용자 만족도</span>
-                <span class="text-sm font-semibold text-gray-900">4.8/5.0</span>
-              </div>
-            </div>
-          </div>
         </div>
         
         <!-- Bottom Bar -->
-        <div class="pt-8 border-t border-gray-200">
+        <div class="pt-8 border-t border-gray-100">
           <div class="flex flex-col md:flex-row justify-between items-center">
             <div class="mb-4 md:mb-0">
-              <p class="text-sm text-gray-500">© 2025 JACHUI. All rights reserved.</p>
+              <p class="text-sm text-gray-500">© 2025 jachui. All rights reserved.</p>
             </div>
             <div class="flex space-x-6">
-              <a href="#" class="text-sm text-gray-500 hover:text-gray-700 transition-colors">이용약관</a>
-              <a href="#" class="text-sm text-gray-500 hover:text-gray-700 transition-colors">개인정보처리방침</a>
-              <a href="#" class="text-sm text-gray-500 hover:text-gray-700 transition-colors">문의하기</a>
+              <a href="#" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">이용약관</a>
+              <a href="#" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">개인정보처리방침</a>
+              <a href="#" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">문의하기</a>
             </div>
           </div>
         </div>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>로딩 테스트</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <h1 class="text-2xl font-bold mb-4">로딩 애니메이션 테스트</h1>
+    
+    <button onclick="showLoading()" class="bg-emerald-500 text-white px-4 py-2 rounded mb-4">
+        로딩 시작
+    </button>
+    
+    <div id="loadingState" class="hidden bg-white rounded-lg border border-gray-100 p-8 mt-8">
+      <div class="text-center">
+        <!-- 로딩 스피너와 타이머 -->
+        <div class="relative inline-block mb-4">
+          <div class="w-20 h-20 border-4 border-gray-200 rounded-full animate-spin">
+            <div class="absolute inset-0 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <span id="loadingTimer" class="text-lg font-bold text-gray-700">0초</span>
+          </div>
+        </div>
+        
+        <!-- 상태 메시지 -->
+        <h3 class="text-xl font-bold text-gray-900 mb-2">채용공고를 분석하고 있습니다</h3>
+        <p id="loadingStatus" class="text-gray-600 mb-4">페이지를 불러오는 중...</p>
+        
+        <!-- 프로그레스 바 -->
+        <div class="max-w-sm mx-auto mb-4">
+          <div class="bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div id="loadingProgress" class="bg-gradient-to-r from-emerald-400 to-emerald-600 h-full rounded-full transition-all duration-500" style="width: 10%"></div>
+          </div>
+          <div class="flex justify-between text-xs text-gray-500 mt-1">
+            <span>시작</span>
+            <span id="progressPercent">10%</span>
+            <span>완료</span>
+          </div>
+        </div>
+        
+        <!-- 단계별 상태 -->
+        <div class="flex justify-center space-x-8 mb-4">
+          <div id="step1" class="flex items-center text-sm">
+            <div class="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></div>
+            <span class="text-gray-600">크롤링</span>
+          </div>
+          <div id="step2" class="flex items-center text-sm">
+            <div class="w-2 h-2 bg-gray-300 rounded-full mr-2"></div>
+            <span class="text-gray-400">분석</span>
+          </div>
+          <div id="step3" class="flex items-center text-sm">
+            <div class="w-2 h-2 bg-gray-300 rounded-full mr-2"></div>
+            <span class="text-gray-400">생성</span>
+          </div>
+        </div>
+        
+        <!-- 팁 메시지 (순환) -->
+        <div class="text-sm text-gray-500 italic">
+          <p id="loadingTip">💡 사람인의 복사 방지 기능도 우회하여 분석합니다</p>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+        let timerInterval, progressInterval, tipInterval;
+        
+        function showLoading() {
+            const loadingState = document.getElementById('loadingState');
+            loadingState.classList.remove('hidden');
+            
+            // 타이머와 프로그레스 초기화
+            let startTime = Date.now();
+            let progressValue = 10;
+            
+            // 타이머 업데이트
+            timerInterval = setInterval(() => {
+              const elapsed = Math.floor((Date.now() - startTime) / 1000);
+              document.getElementById('loadingTimer').textContent = `${elapsed}초`;
+            }, 100);
+            
+            // 프로그레스 업데이트
+            progressInterval = setInterval(() => {
+              if (progressValue < 90) {
+                progressValue += Math.random() * 10;
+                progressValue = Math.min(progressValue, 90);
+                document.getElementById('loadingProgress').style.width = `${progressValue}%`;
+                document.getElementById('progressPercent').textContent = `${Math.floor(progressValue)}%`;
+              }
+            }, 500);
+            
+            // 단계별 상태 업데이트
+            setTimeout(() => {
+              document.getElementById('loadingStatus').textContent = 'AI가 채용공고를 분석 중...';
+              document.querySelector('#step1 .w-2').classList.remove('animate-pulse');
+              document.querySelector('#step1 .w-2').classList.add('bg-emerald-500');
+              document.querySelector('#step2 .w-2').classList.remove('bg-gray-300');
+              document.querySelector('#step2 .w-2').classList.add('bg-emerald-500', 'animate-pulse');
+              document.querySelector('#step2 span').classList.remove('text-gray-400');
+              document.querySelector('#step2 span').classList.add('text-gray-600');
+            }, 3000);
+            
+            setTimeout(() => {
+              document.getElementById('loadingStatus').textContent = '맞춤형 인사이트 생성 중...';
+              document.querySelector('#step2 .w-2').classList.remove('animate-pulse');
+              document.querySelector('#step3 .w-2').classList.remove('bg-gray-300');
+              document.querySelector('#step3 .w-2').classList.add('bg-emerald-500', 'animate-pulse');
+              document.querySelector('#step3 span').classList.remove('text-gray-400');
+              document.querySelector('#step3 span').classList.add('text-gray-600');
+            }, 6000);
+            
+            // 팁 메시지 순환
+            const tips = [
+              '💡 사람인의 복사 방지 기능도 우회하여 분석합니다',
+              '📊 기업의 핵심 요구사항을 파악하고 있습니다',
+              '🎯 맞춤형 자소서 전략을 수립 중입니다',
+              '✨ AI가 최적의 키워드를 추출하고 있습니다',
+              '🔍 경쟁력 있는 지원 전략을 분석 중입니다'
+            ];
+            let tipIndex = 0;
+            tipInterval = setInterval(() => {
+              tipIndex = (tipIndex + 1) % tips.length;
+              document.getElementById('loadingTip').textContent = tips[tipIndex];
+            }, 3000);
+            
+            // 10초 후 자동 완료
+            setTimeout(() => {
+                clearInterval(timerInterval);
+                clearInterval(progressInterval);
+                clearInterval(tipInterval);
+                
+                document.getElementById('loadingProgress').style.width = '100%';
+                document.getElementById('progressPercent').textContent = '100%';
+                document.getElementById('loadingStatus').textContent = '분석 완료!';
+                
+                document.querySelectorAll('.w-2').forEach(dot => {
+                  dot.classList.remove('animate-pulse', 'bg-gray-300');
+                  dot.classList.add('bg-emerald-500');
+                });
+            }, 10000);
+        }
+    </script>
+</body>
+</html>

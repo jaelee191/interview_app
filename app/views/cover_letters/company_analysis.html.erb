@@ -1,305 +1,209 @@
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-12">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Header -->
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold text-gray-900 mb-4">
-        🏢 기업 심층 분석
-      </h1>
-      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-        기업의 최신 동향, 채용 패턴, 산업 트렌드를 AI가 종합적으로 분석합니다
-      </p>
+<!-- Company Analysis Page -->
+<div class="min-h-screen bg-white">
+  <!-- Hero Section -->
+  <div class="bg-gray-50 border-b border-gray-100 py-16">
+    <div class="max-w-4xl mx-auto px-4">
+      <div class="text-center">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          구직자 맞춤 <span class="text-emerald-500">기업분석</span>
+        </h1>
+        <p class="text-lg text-gray-600">
+          실제 채용공고, 최신 뉴스, 기업 문화를 분석해<br>
+          구직자에게 정말 필요한 인사이트를 제공합니다
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <!-- Feature Tags -->
+    <div class="flex justify-center gap-3 mb-12 flex-wrap">
+      <span class="px-4 py-2 bg-white border border-gray-100 rounded-full text-sm text-gray-600">
+        면접 예상 질문
+      </span>
+      <span class="px-4 py-2 bg-white border border-gray-100 rounded-full text-sm text-gray-600">
+        연봉 & 복리후생
+      </span>
+      <span class="px-4 py-2 bg-white border border-gray-100 rounded-full text-sm text-gray-600">
+        기업 문화 평가
+      </span>
     </div>
 
     <!-- Analysis Form -->
-    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+    <div class="bg-white rounded-lg border border-gray-100 p-8">
       <form action="/cover_letters/analyze_company" method="post" id="company-analysis-form">
         <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+        
         <div class="mb-6">
           <label class="block text-sm font-medium text-gray-700 mb-2">기업명 입력</label>
-          <div class="flex gap-3">
-            <input 
-              type="text" 
-              name="company_name" 
-              id="company_name"
-              placeholder="예: 삼성전자, 카카오, 네이버" 
-              class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              required
-            />
-          </div>
+          <input 
+            type="text" 
+            name="company_name" 
+            id="company_name"
+            placeholder="예: 삼성전자, 카카오, 네이버" 
+            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            required
+          />
           <p class="mt-2 text-sm text-gray-500">
-            💡 정확한 기업명을 입력하면 더 정밀한 분석이 가능합니다
+            정확한 기업명을 입력하면 더 정밀한 분석이 가능합니다
           </p>
         </div>
 
         <!-- Analysis Type Selection -->
         <div class="mb-6">
           <label class="block text-sm font-medium text-gray-700 mb-3">분석 유형 선택</label>
-          <div class="grid md:grid-cols-3 gap-4">
-            <label class="relative cursor-pointer">
-              <input type="radio" name="analysis_type" value="basic" checked class="sr-only peer">
-              <div class="p-4 border-2 rounded-lg peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:bg-gray-50 transition-all">
-                <div class="font-medium text-gray-900 mb-1">⚡ 기본 분석</div>
-                <div class="text-xs text-gray-600">
-                  • 빠른 분석 (5-10초)<br>
-                  • 기업 기본 정보<br>
-                  • 최근 주요 이슈<br>
-                  • 채용 동향 요약
+          <div class="grid md:grid-cols-2 gap-4">
+            <label class="cursor-pointer">
+              <input type="radio" name="analysis_type" value="enhanced" checked class="sr-only peer">
+              <div class="p-5 border border-gray-200 rounded-lg peer-checked:border-emerald-500 peer-checked:bg-emerald-50 hover:bg-gray-50 transition-all">
+                <div class="font-medium text-gray-900 mb-2">실시간 웹 분석</div>
+                <div class="text-sm text-gray-600 mb-3 space-y-1">
+                  <div>• 실제 채용공고 & 최신 뉴스 분석</div>
+                  <div>• 면접 예상 질문 & 답변 가이드</div>
+                  <div>• 연봉 정보 & 복리후생 분석</div>
+                  <div>• 기업 문화 & 워라밸 평가</div>
                 </div>
-                <div class="mt-2 text-xs font-medium text-blue-600">무료</div>
+                <div class="text-xs text-emerald-600">
+                  구직 전략 수립 (30-60초)
+                </div>
               </div>
             </label>
             
-            <label class="relative cursor-pointer">
-              <input type="radio" name="analysis_type" value="verified" class="sr-only peer">
-              <div class="p-4 border-2 rounded-lg peer-checked:border-green-500 peer-checked:bg-green-50 hover:bg-gray-50 transition-all">
-                <div class="font-medium text-gray-900 mb-1">✅ 검증 분석 <span class="text-xs bg-green-200 text-green-700 px-2 py-0.5 rounded-full ml-1">NEW</span></div>
-                <div class="text-xs text-gray-600">
-                  • 실시간 웹 검증<br>
-                  • 기업 규모별 맞춤 분석<br>
-                  • 팩트 체크 적용<br>
-                  • 과장 없는 정확한 정보<br>
-                  • 30일간 캐시 저장
+            <label class="cursor-pointer">
+              <input type="radio" name="analysis_type" value="python_ai" class="sr-only peer">
+              <div class="p-5 border border-gray-200 rounded-lg peer-checked:border-emerald-500 peer-checked:bg-emerald-50 hover:bg-gray-50 transition-all">
+                <div class="font-medium text-gray-900 mb-2">
+                  AI 정량 분석 
+                  <span class="text-xs bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded ml-1">NEW</span>
                 </div>
-                <div class="mt-2 text-xs font-medium text-green-600">정확도 우선</div>
-              </div>
-            </label>
-            
-            <label class="relative cursor-pointer">
-              <input type="radio" name="analysis_type" value="enhanced" class="sr-only peer">
-              <div class="p-4 border-2 rounded-lg peer-checked:border-purple-500 peer-checked:bg-purple-50 hover:bg-gray-50 transition-all">
-                <div class="font-medium text-gray-900 mb-1">🚀 강화 분석 <span class="text-xs bg-purple-200 text-purple-700 px-2 py-0.5 rounded-full ml-1">Premium</span></div>
-                <div class="text-xs text-gray-600">
-                  • 실시간 웹 크롤링 (30-60초)<br>
-                  • JobKorea, 사람인, 네이버 뉴스<br>
-                  • 실제 채용공고 & 뉴스 분석<br>
-                  • 데이터 기반 정확한 분석<br>
-                  • 7일간 캐시 저장
+                <div class="text-sm text-gray-600 mb-3 space-y-1">
+                  <div>• 기업 종합 점수 (A~D 등급)</div>
+                  <div>• 뉴스 감정 분석 & 트렌드</div>
+                  <div>• 채용 활성도 & 요구 스킬</div>
+                  <div>• 맞춤형 지원 전략 추천</div>
                 </div>
-                <div class="mt-2 text-xs font-medium text-purple-600">웹 크롤링 기반</div>
+                <div class="text-xs text-emerald-600">
+                  데이터 기반 의사결정 (15-30초)
+                </div>
               </div>
             </label>
           </div>
-          <p class="mt-3 text-xs text-gray-500">
-            💡 <strong>팁:</strong> 기본 분석으로 빠르게 확인 후, 지원 전에는 강화 분석을 추천합니다.
-          </p>
         </div>
 
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2 text-sm text-gray-600">
             <input type="checkbox" name="force_refresh" value="true" id="force_refresh" class="rounded">
-            <label for="force_refresh">캐시된 데이터 무시하고 새로 분석하기</label>
+            <label for="force_refresh">캐시된 데이터 무시하고 새로 분석</label>
           </div>
           
           <button 
             type="submit" 
-            class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors shadow-md hover:shadow-lg">
-            분석 시작
+            class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-full transition-colors">
+            기업 분석 시작
           </button>
         </div>
       </form>
     </div>
-    
-    <!-- Add JavaScript for form submission -->
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('company-analysis-form');
-        
-        form.addEventListener('submit', function(e) {
-          e.preventDefault();
-          
-          const companyName = document.getElementById('company_name').value;
-          const analysisType = document.querySelector('input[name="analysis_type"]:checked').value;
-          const forceRefresh = document.getElementById('force_refresh').checked;
-          
-          if (!companyName.trim()) {
-            alert('기업명을 입력해주세요.');
-            return;
-          }
-          
-          // Show loading state
-          const submitBtn = form.querySelector('button[type="submit"]');
-          const originalText = submitBtn.innerHTML;
-          submitBtn.disabled = true;
-          
-          // Different loading messages based on analysis type
-          if (analysisType === 'enhanced') {
-            submitBtn.innerHTML = '<span class="animate-pulse">🚀 웹 크롤링 중... (30-60초 소요)</span>';
-            // 진행 상태 표시 추가
-            setTimeout(() => {
-              if (submitBtn.disabled) {
-                submitBtn.innerHTML = '<span class="animate-pulse">📰 뉴스 수집 중...</span>';
-              }
-            }, 5000);
-            setTimeout(() => {
-              if (submitBtn.disabled) {
-                submitBtn.innerHTML = '<span class="animate-pulse">💼 채용공고 분석 중...</span>';
-              }
-            }, 15000);
-            setTimeout(() => {
-              if (submitBtn.disabled) {
-                submitBtn.innerHTML = '<span class="animate-pulse">🤖 AI 분석 중...</span>';
-              }
-            }, 25000);
-          } else if (analysisType === 'verified') {
-            submitBtn.innerHTML = '<span class="animate-pulse">✅ 검증 분석 중... (10-20초 소요)</span>';
-          } else {
-            submitBtn.innerHTML = '<span class="animate-pulse">⚡ 기본 분석 중... (5-10초 소요)</span>';
-          }
-          
-          console.log('Submitting form with:', {
-            company_name: companyName,
-            analysis_type: analysisType,
-            force_refresh: forceRefresh
-          });
-          
-          // Create form data
-          const formData = new FormData();
-          formData.append('company_name', companyName);
-          formData.append('analysis_type', analysisType);
-          formData.append('force_refresh', forceRefresh);
-          formData.append('authenticity_token', document.querySelector('meta[name="csrf-token"]').content);
-          
-          // Set longer timeout for enhanced analysis
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), analysisType === 'enhanced' ? 120000 : 30000);
-          
-          // Submit form
-          fetch('/cover_letters/analyze_company', {
-            method: 'POST',
-            body: formData,
-            headers: {
-              'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
-              'Accept': 'text/html'
-            },
-            redirect: 'follow',
-            signal: controller.signal
-          })
-          .then(response => {
-            clearTimeout(timeoutId);
-            console.log('Response received:', response);
-            if (response.redirected) {
-              window.location.href = response.url;
-            } else if (!response.ok) {
-              return response.text().then(text => {
-                throw new Error(`분석 요청 실패: ${response.status} - ${text.substring(0, 200)}`);
-              });
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            if (error.name === 'AbortError') {
-              alert('분석 시간이 초과되었습니다. 다시 시도해주세요.');
-            } else {
-              alert('분석 중 오류가 발생했습니다: ' + error.message);
-            }
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
-          });
-        });
-      });
-    </script>
 
-    <!-- Features -->
-    <div class="grid md:grid-cols-3 gap-6 mb-12">
-      <div class="bg-white rounded-xl p-6 shadow-md">
-        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-          </svg>
+    <!-- Loading State -->
+    <div id="loading-analysis" class="hidden mt-8">
+      <div class="bg-white rounded-lg border border-gray-100 p-8">
+        <div class="text-center">
+          <div class="w-12 h-12 border-4 border-gray-200 border-t-emerald-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">분석 중입니다</h3>
+          <p class="text-gray-600">기업 정보를 수집하고 분석하고 있습니다...</p>
         </div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">최신 이슈 분석</h3>
-        <p class="text-sm text-gray-600">
-          최근 3개월간 뉴스와 공시를 분석하여 기업의 현재 상황을 파악합니다
-        </p>
-      </div>
-
-      <div class="bg-white rounded-xl p-6 shadow-md">
-        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-          </svg>
-        </div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">채용 패턴 분석</h3>
-        <p class="text-sm text-gray-600">
-          과거 채용 트렌드와 현재 긴급도를 분석하여 전략을 제시합니다
-        </p>
-      </div>
-
-      <div class="bg-white rounded-xl p-6 shadow-md">
-        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-          </svg>
-        </div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">산업 동향 연계</h3>
-        <p class="text-sm text-gray-600">
-          업계 트렌드와 경쟁사 동향을 함께 분석하여 맥락을 제공합니다
-        </p>
       </div>
     </div>
 
-    <!-- Recent Analyses -->
-    <% if @recent_analyses.any? %>
-      <div class="bg-white rounded-xl shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">최근 분석 기록</h2>
-        <div class="space-y-3">
-          <% @recent_analyses.each do |analysis| %>
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <div class="flex-1">
-                <h3 class="font-semibold text-gray-900">
-                  <%= analysis.company_name %>
-                  <span class="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">
-                    <%= analysis.company_size || '중견기업' %>
-                  </span>
-                </h3>
-                <p class="text-sm text-gray-500 mt-1">
-                  분석일: <%= analysis.analysis_date.strftime("%Y년 %m월 %d일") %>
-                  | 유효기간: <%= analysis.cached_until.strftime("%m월 %d일까지") %>
-                </p>
-              </div>
-              <div class="flex gap-2">
-                <a href="<%= company_analysis_result_cover_letters_path(analysis) %>" 
-                   class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
-                  결과 보기
-                </a>
-                <button onclick="deleteAnalysis(<%= analysis.id %>, '<%= analysis.company_name %>')" 
-                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
-                        style="background-color: #dc2626; color: white;">
-                  삭제
-                </button>
-              </div>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
+    <!-- Results Container -->
+    <div id="analysis-results" class="hidden mt-8"></div>
+
+    <!-- Saved Analyses Link -->
+    <div class="mt-12 text-center">
+      <a href="/cover_letters/saved_company_analyses" 
+         class="text-emerald-600 hover:text-emerald-700 font-medium text-sm">
+        저장된 분석 결과 보기 →
+      </a>
+    </div>
   </div>
 </div>
 
 <script>
-function deleteAnalysis(id, companyName) {
-  if (confirm(`정말로 "${companyName}" 기업 분석을 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.`)) {
-    fetch(`/cover_letters/delete_company_analysis/${id}`, {
-      method: 'DELETE',
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('company-analysis-form');
+  const loadingDiv = document.getElementById('loading-analysis');
+  const resultsDiv = document.getElementById('analysis-results');
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(form);
+    const data = {
+      company_name: formData.get('company_name'),
+      analysis_type: formData.get('analysis_type'),
+      force_refresh: formData.get('force_refresh') === 'true'
+    };
+    
+    // Show loading
+    loadingDiv.classList.remove('hidden');
+    resultsDiv.classList.add('hidden');
+    resultsDiv.innerHTML = '';
+    
+    fetch('/cover_letters/analyze_company', {
+      method: 'POST',
       headers: {
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+      },
+      body: JSON.stringify(data)
     })
     .then(response => response.json())
     .then(data => {
+      loadingDiv.classList.add('hidden');
+      
       if (data.success) {
-        alert('분석이 성공적으로 삭제되었습니다.');
-        window.location.reload();
+        resultsDiv.innerHTML = `
+          <div class="bg-white rounded-lg border border-gray-100 p-8">
+            <div class="mb-6">
+              <h2 class="text-2xl font-semibold text-gray-900 mb-2">${data.company_name || '기업'} 분석 결과</h2>
+              <p class="text-gray-600">분석 완료 시간: ${new Date().toLocaleString()}</p>
+            </div>
+            <div class="prose prose-gray max-w-none">
+              ${data.analysis || data.content || '분석 결과가 없습니다.'}
+            </div>
+            ${data.analysis_id ? `
+              <div class="mt-6 pt-6 border-t border-gray-100">
+                <a href="/cover_letters/company_analysis_result/${data.analysis_id}" 
+                   class="text-emerald-600 hover:text-emerald-700 font-medium">
+                  전체 결과 보기 →
+                </a>
+              </div>
+            ` : ''}
+          </div>
+        `;
+        resultsDiv.classList.remove('hidden');
       } else {
-        alert('삭제 실패: ' + (data.error || '알 수 없는 오류'));
+        resultsDiv.innerHTML = `
+          <div class="bg-white border border-red-100 rounded-lg p-6">
+            <h3 class="text-red-900 font-medium mb-2">분석 실패</h3>
+            <p class="text-red-700">${data.error || '알 수 없는 오류가 발생했습니다.'}</p>
+          </div>
+        `;
+        resultsDiv.classList.remove('hidden');
       }
     })
     .catch(error => {
-      console.error('Error:', error);
-      alert('삭제 중 오류가 발생했습니다.');
+      loadingDiv.classList.add('hidden');
+      resultsDiv.innerHTML = `
+        <div class="bg-white border border-red-100 rounded-lg p-6">
+          <h3 class="text-red-900 font-medium mb-2">네트워크 오류</h3>
+          <p class="text-red-700">서버와 연결할 수 없습니다: ${error.message}</p>
+        </div>
+      `;
+      resultsDiv.classList.remove('hidden');
     });
-  }
-}
+  });
+});
 </script>

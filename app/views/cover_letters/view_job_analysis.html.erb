@@ -22,36 +22,43 @@
   supplementary_guides = analysis_data['supplementary_guides'] || {}
 %>
 
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100">
-  <!-- Professional Header -->
-  <div class="bg-gradient-to-r from-indigo-900 to-purple-800 text-white">
-    <div class="max-w-7xl mx-auto px-4 py-8">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <div class="text-sm text-gray-300 mb-2">Job Analysis Report</div>
-          <h1 class="text-4xl font-bold mb-2"><%= @job_analysis.company_name || "기업명 미상" %></h1>
-          <p class="text-xl text-gray-200 mb-3"><%= @job_analysis.position || "포지션 미상" %></p>
-          <div class="flex items-center gap-4 text-sm text-gray-300">
-            <span>📅 <%= @job_analysis.created_at.strftime("%Y년 %m월 %d일") %></span>
-            <span>📊 AI-Powered Analysis</span>
-            <% if is_enhanced %>
-              <span class="px-2 py-1 bg-yellow-500/20 text-yellow-300 rounded">
-                Enhanced Edition
-              </span>
-            <% else %>
-              <span class="px-2 py-1 bg-blue-500/20 text-blue-300 rounded">
-                Standard Edition
-              </span>
-            <% end %>
-          </div>
-        </div>
-        <div class="text-right">
-          <a href="/cover_letters/saved_job_analyses" class="inline-flex items-center gap-2 text-white/80 hover:text-white">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+<div class="min-h-screen bg-gray-50">
+  <!-- Clean Header -->
+  <div class="bg-white border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 py-12">
+      <div class="flex items-center justify-between mb-6">
+        <a href="/cover_letters/saved_job_analyses" class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          <span class="text-sm">목록으로</span>
+        </a>
+        <% if is_enhanced %>
+          <span class="px-3 py-1 bg-emerald-50 text-emerald-600 text-sm font-medium rounded-full">
+            Enhanced v3.0
+          </span>
+        <% else %>
+          <span class="px-3 py-1 bg-gray-100 text-gray-600 text-sm font-medium rounded-full">
+            Standard
+          </span>
+        <% end %>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @job_analysis.company_name || "기업명 미상" %></h1>
+        <p class="text-lg text-gray-700 mb-4"><%= @job_analysis.position || "포지션 미상" %></p>
+        <div class="flex items-center gap-6 text-sm text-gray-500">
+          <span class="flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
             </svg>
-            목록으로
-          </a>
+            <%= @job_analysis.created_at.strftime("%Y년 %m월 %d일") %>
+          </span>
+          <span class="flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            AI 분석 완료
+          </span>
         </div>
       </div>
     </div>
@@ -60,11 +67,10 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- 6개 섹션 병렬 분석 (v3 구조) -->
     <% if sections.present? && sections['company_overview'].present? %>
-      <div class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden">
-        <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-4">
-          <h2 class="text-xl font-bold flex items-center gap-2">
-            <span>🚀</span> 초디테일 채용공고 분석 (6-way Parallel)
-            <span class="text-xs bg-white/20 px-2 py-1 rounded">Enhanced v3.0</span>
+      <div class="bg-white rounded-lg border border-gray-100 mb-8 overflow-hidden">
+        <div class="bg-gray-50 border-b border-gray-100 px-6 py-4">
+          <h2 class="text-lg font-semibold text-gray-900">
+            채용공고 심층 분석
           </h2>
         </div>
         
@@ -72,7 +78,7 @@
         <div class="p-6 space-y-8">
           <!-- 섹션 1: 기업 개요 & 산업 포지션 -->
           <% if sections['company_overview'].present? %>
-            <div class="border-l-4 border-indigo-500 pl-4">
+            <div class="border-l-4 border-emerald-500 pl-4">
               <div class="prose prose-lg max-w-none text-gray-700">
                 <%= markdown_to_html(sections['company_overview']) %>
               </div>
@@ -127,11 +133,10 @@
       </div>
     <% elsif main_analysis.present? %>
       <!-- 초디테일 메인 분석 (v2 구조) -->
-      <div class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden">
-        <div class="bg-gradient-to-r from-yellow-600 to-red-600 text-white px-6 py-4">
-          <h2 class="text-xl font-bold flex items-center gap-2">
-            <span>🔥</span> 초디테일 채용공고 분석 (4,500자+)
-            <span class="text-xs bg-white/20 px-2 py-1 rounded">Enhanced v2.0</span>
+      <div class="bg-white rounded-lg border border-gray-100 mb-8 overflow-hidden">
+        <div class="bg-gray-50 border-b border-gray-100 px-6 py-4">
+          <h2 class="text-lg font-semibold text-gray-900">
+            채용공고 종합 분석
           </h2>
         </div>
         <div class="p-6 content-area">
@@ -144,10 +149,10 @@
     
     <!-- Executive Summary (기존) -->
     <% if @job_analysis.summary.present? && !main_analysis.present? %>
-      <div class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden">
-        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-4">
-          <h2 class="text-xl font-bold flex items-center gap-2">
-            <span>📋</span> Executive Summary
+      <div class="bg-white rounded-lg border border-gray-100 mb-8 overflow-hidden">
+        <div class="bg-gray-50 border-b border-gray-100 px-6 py-4">
+          <h2 class="text-lg font-semibold text-gray-900">
+            분석 요약
           </h2>
         </div>
         <div class="p-6 content-area">
@@ -159,33 +164,33 @@
     <% end %>
 
     <!-- Job Analysis Tabs -->
-    <div class="bg-white rounded-xl shadow-lg mb-8">
+    <div class="bg-white rounded-lg border border-gray-100 mb-8">
       <div class="border-b">
         <nav class="flex -mb-px flex-wrap" id="job-tabs">
-          <button class="job-tab-btn active px-4 py-3 text-sm font-medium border-b-2 border-indigo-600 text-indigo-600" 
+          <button class="job-tab-btn active px-4 py-3 text-sm font-medium border-b-2 border-emerald-500 text-emerald-600" 
                   data-tab="overview">
-            📊 채용공고 개요
+            채용공고 개요
           </button>
           <button class="job-tab-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800" 
                   data-tab="requirements">
-            💼 자격요건 분석
+            자격요건 분석
           </button>
           <button class="job-tab-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800" 
                   data-tab="strategy">
-            🎯 지원 전략
+            지원 전략
           </button>
           <% if is_enhanced %>
             <button class="job-tab-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800" 
                     data-tab="coverletter">
-              📝 자소서 가이드
+              자소서 가이드
             </button>
             <button class="job-tab-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800" 
                     data-tab="interview">
-              💬 면접 대비
+              면접 대비
             </button>
             <button class="job-tab-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800" 
                     data-tab="insights">
-              💡 AI 인사이트
+              AI 인사이트
             </button>
           <% end %>
         </nav>
@@ -197,9 +202,8 @@
         <div class="job-tab-content" id="overview-tab">
           <div class="space-y-6">
             <!-- Company Info Card -->
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6">
-              <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <span class="text-2xl">🏢</span>
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
                 기업 정보
               </h3>
               <div class="grid md:grid-cols-2 gap-4">
@@ -211,24 +215,13 @@
                   <span class="text-sm text-gray-600">모집 직무</span>
                   <p class="font-medium text-gray-900"><%= @job_analysis.position || "정보 없음" %></p>
                 </div>
-                <% if @job_analysis.url && @job_analysis.url != "text_input" %>
-                  <div class="md:col-span-2">
-                    <span class="text-sm text-gray-600">원본 채용공고</span>
-                    <p>
-                      <a href="<%= @job_analysis.url %>" target="_blank" class="text-blue-600 hover:text-blue-700 underline">
-                        <%= @job_analysis.url.truncate(50) %>
-                      </a>
-                    </p>
-                  </div>
-                <% end %>
               </div>
             </div>
 
             <!-- Keywords & Skills -->
             <% if @job_analysis.keywords.present? || @job_analysis.required_skills.present? %>
-              <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <span class="text-2xl">🎯</span>
+              <div class="bg-gray-50 rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
                   핵심 키워드 및 역량
                 </h3>
                 <div class="space-y-3">
@@ -238,7 +231,7 @@
                       <div class="flex flex-wrap gap-2">
                         <% keywords_array = @job_analysis.keywords.is_a?(String) ? JSON.parse(@job_analysis.keywords) : @job_analysis.keywords %>
                         <% keywords_array.each do |keyword| %>
-                          <span class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+                          <span class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-medium">
                             <%= keyword %>
                           </span>
                         <% end %>
@@ -251,7 +244,7 @@
                       <div class="flex flex-wrap gap-2">
                         <% skills_array = @job_analysis.required_skills.is_a?(String) ? JSON.parse(@job_analysis.required_skills) : @job_analysis.required_skills %>
                         <% skills_array.each do |skill| %>
-                          <span class="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                          <span class="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
                             <%= skill %>
                           </span>
                         <% end %>
@@ -284,7 +277,7 @@
               </div>
             <% elsif @job_analysis.analysis_result.present? %>
               <!-- Extract requirements from full analysis -->
-              <div class="bg-yellow-50 rounded-lg p-6">
+              <div class="bg-gray-50 rounded-lg p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">자격요건 분석</h3>
                 <div class="prose prose-sm max-w-none text-gray-700">
                   <% if @job_analysis.analysis_result.include?('자격') || @job_analysis.analysis_result.include?('요건') %>
@@ -310,7 +303,7 @@
                 <%= simple_format((analysis_data['strategy'] || analysis_data['application_strategy']).gsub(/\*\*(.*?)\*\*/, '<strong>\1</strong>').html_safe) %>
               </div>
             <% else %>
-              <div class="bg-green-50 rounded-lg p-6">
+              <div class="bg-gray-50 rounded-lg p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">지원 전략 제안</h3>
                 <div class="grid md:grid-cols-2 gap-6">
                   <div>
@@ -341,14 +334,14 @@
             <div class="space-y-6">
               <% # 새 구조 우선 확인 %>
               <% if supplementary_guides['cover_letter_templates'] %>
-                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-6">
+                <div class="bg-gray-50 rounded-lg p-6">
                   <h3 class="text-lg font-semibold text-gray-900 mb-4">자기소개서 작성 템플릿</h3>
                   <div class="prose prose-lg max-w-none text-gray-700">
                     <%= simple_format(supplementary_guides['cover_letter_templates'].gsub(/\*\*(.*?)\*\*/, '<strong>\1</strong>').html_safe) %>
                   </div>
                 </div>
               <% elsif analysis_data['cover_letter_strategy'] %>
-                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-6">
+                <div class="bg-gray-50 rounded-lg p-6">
                   <h3 class="text-lg font-semibold text-gray-900 mb-4">자기소개서 작성 가이드</h3>
                   <div class="prose prose-lg max-w-none text-gray-700">
                     <%= simple_format(analysis_data['cover_letter_strategy'].gsub(/\*\*(.*?)\*\*/, '<strong>\1</strong>').html_safe) %>
@@ -357,14 +350,14 @@
               <% end %>
               
               <% if supplementary_guides['customization_samples'] %>
-                <div class="bg-purple-50 rounded-lg p-6">
+                <div class="bg-gray-50 rounded-lg p-6">
                   <h3 class="text-lg font-semibold text-gray-900 mb-4">맞춤형 작성 예문</h3>
                   <div class="prose prose-sm max-w-none text-gray-700">
                     <%= simple_format(supplementary_guides['customization_samples'].gsub(/\*\*(.*?)\*\*/, '<strong>\1</strong>').html_safe) %>
                   </div>
                 </div>
               <% elsif analysis_data['customization_guide'] %>
-                <div class="bg-purple-50 rounded-lg p-6">
+                <div class="bg-gray-50 rounded-lg p-6">
                   <h3 class="text-lg font-semibold text-gray-900 mb-4">맞춤형 작성 전략</h3>
                   <div class="prose prose-sm max-w-none text-gray-700">
                     <%= simple_format(analysis_data['customization_guide'].gsub(/\*\*(.*?)\*\*/, '<strong>\1</strong>').html_safe) %>
@@ -378,7 +371,7 @@
           <div class="job-tab-content hidden" id="interview-tab">
             <div class="space-y-6">
               <% if analysis_data['interview_insights'] %>
-                <div class="bg-yellow-50 rounded-lg p-6">
+                <div class="bg-gray-50 rounded-lg p-6">
                   <h3 class="text-lg font-semibold text-gray-900 mb-4">면접 대비 인사이트</h3>
                   <div class="prose prose-lg max-w-none text-gray-700">
                     <%= simple_format(analysis_data['interview_insights'].gsub(/\*\*(.*?)\*\*/, '<strong>\1</strong>').html_safe) %>
@@ -387,12 +380,12 @@
               <% end %>
               
               <% if analysis_data['expected_questions'] %>
-                <div class="bg-blue-50 rounded-lg p-6">
+                <div class="bg-gray-50 rounded-lg p-6">
                   <h3 class="text-lg font-semibold text-gray-900 mb-4">예상 면접 질문</h3>
                   <div class="space-y-3">
                     <% analysis_data['expected_questions'].each_with_index do |question, index| %>
                       <div class="flex items-start gap-3">
-                        <span class="text-blue-600 font-bold">Q<%= index + 1 %></span>
+                        <span class="text-emerald-600 font-bold">Q<%= index + 1 %></span>
                         <p class="text-gray-700"><%= question %></p>
                       </div>
                     <% end %>
@@ -406,7 +399,7 @@
           <div class="job-tab-content hidden" id="insights-tab">
             <div class="space-y-6">
               <% if analysis_data['company_context'] %>
-                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-6">
+                <div class="bg-gray-50 rounded-lg p-6">
                   <h3 class="text-lg font-semibold text-gray-900 mb-4">기업 맥락 분석</h3>
                   <div class="prose prose-sm max-w-none text-gray-700">
                     <%= simple_format(analysis_data['company_context'].to_s.gsub(/\*\*(.*?)\*\*/, '<strong>\1</strong>').html_safe) %>
@@ -415,7 +408,7 @@
               <% end %>
               
               <% if analysis_data['differentiation_guide'] %>
-                <div class="bg-green-50 rounded-lg p-6">
+                <div class="bg-gray-50 rounded-lg p-6">
                   <h3 class="text-lg font-semibold text-gray-900 mb-4">차별화 전략</h3>
                   <div class="prose prose-sm max-w-none text-gray-700">
                     <%= simple_format(analysis_data['differentiation_guide'].gsub(/\*\*(.*?)\*\*/, '<strong>\1</strong>').html_safe) %>
@@ -424,7 +417,7 @@
               <% end %>
               
               <% if analysis_data['risks_and_warnings'] %>
-                <div class="bg-red-50 rounded-lg p-6">
+                <div class="bg-yellow-50 rounded-lg p-6">
                   <h3 class="text-lg font-semibold text-gray-900 mb-4">⚠️ 주의사항</h3>
                   <div class="prose prose-sm max-w-none text-gray-700">
                     <%= simple_format(analysis_data['risks_and_warnings'].gsub(/\*\*(.*?)\*\*/, '<strong>\1</strong>').html_safe) %>
@@ -438,10 +431,10 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="bg-white rounded-xl shadow-lg p-6">
+    <div class="bg-white rounded-lg border border-gray-100 p-6">
       <div class="flex flex-wrap gap-4 justify-center">
         <a href="/cover_letters/ontology_input?job_analysis_id=<%= @job_analysis.id %>" 
-           class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium px-6 py-3 rounded-lg transition-all transform hover:scale-105 flex items-center gap-2 shadow-lg">
+           class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
           </svg>
@@ -450,7 +443,7 @@
         
         <% if @job_analysis.url && @job_analysis.url != "text_input" %>
           <a href="<%= @job_analysis.url %>" target="_blank" 
-             class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
+             class="bg-gray-600 hover:bg-gray-700 text-white font-medium px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
             </svg>
@@ -459,7 +452,7 @@
         <% end %>
         
         <a href="/cover_letters/saved_job_analyses" 
-           class="bg-gray-600 hover:bg-gray-700 text-white font-medium px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
+           class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
           </svg>
@@ -495,8 +488,8 @@
   }
   
   .job-tab-btn.active {
-    border-bottom-color: #4F46E5;
-    color: #4F46E5;
+    border-bottom-color: #10b981;
+    color: #10b981;
   }
 </style>
 
@@ -512,11 +505,11 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Update button states
       tabButtons.forEach(btn => {
-        btn.classList.remove('active', 'border-indigo-600', 'text-indigo-600', 'border-b-2');
+        btn.classList.remove('active', 'border-emerald-500', 'text-emerald-600', 'border-b-2');
         btn.classList.add('text-gray-600');
       });
       
-      this.classList.add('active', 'border-indigo-600', 'text-indigo-600', 'border-b-2');
+      this.classList.add('active', 'border-emerald-500', 'text-emerald-600', 'border-b-2');
       this.classList.remove('text-gray-600');
       
       // Update content visibility

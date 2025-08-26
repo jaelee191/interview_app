@@ -1,9 +1,9 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
+<div class="min-h-screen bg-gray-50 py-12">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header -->
     <div class="mb-8">
       <h1 class="text-3xl font-bold text-gray-900 mb-2">
-        💾 저장된 채용공고 분석
+        저장된 채용공고 분석
       </h1>
       <p class="text-gray-600">
         분석한 채용공고를 다시 확인하고 자소서 작성에 활용해보세요
@@ -11,7 +11,7 @@
     </div>
 
     <!-- Filters and Actions -->
-    <div class="bg-white rounded-xl shadow-sm p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
+    <div class="bg-white rounded-lg border border-gray-100 p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-4">
         <span class="text-sm text-gray-500">
           총 <%= @job_analyses.total_count %>개의 분석 저장됨
@@ -19,7 +19,7 @@
       </div>
       <div class="flex items-center gap-3">
         <a href="/cover_letters/job_posting" 
-           class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+           class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
           </svg>
@@ -32,7 +32,7 @@
     <% if @job_analyses.any? %>
       <div class="space-y-4">
         <% @job_analyses.each do |analysis| %>
-          <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6">
+          <div class="bg-white rounded-lg border border-gray-100 hover:border-gray-200 transition-colors p-6">
             <div class="flex flex-col lg:flex-row items-start lg:justify-between gap-4">
               <div class="flex-1 w-full lg:w-auto">
                 <!-- Company and Position -->
@@ -50,7 +50,7 @@
                   <% if analysis.keywords.present? %>
                     <% keywords_array = analysis.keywords.is_a?(String) ? JSON.parse(analysis.keywords) : analysis.keywords %>
                     <% keywords_array.first(5).each do |keyword| %>
-                      <span class="inline-block bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">
+                      <span class="inline-block bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-sm">
                         <%= keyword %>
                       </span>
                     <% end %>
@@ -58,7 +58,7 @@
                   <% if analysis.required_skills.present? %>
                     <% skills_array = analysis.required_skills.is_a?(String) ? JSON.parse(analysis.required_skills) : analysis.required_skills %>
                     <% skills_array.first(3).each do |skill| %>
-                      <span class="inline-block bg-green-100 text-green-700 px-2 py-1 rounded text-sm">
+                      <span class="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm">
                         <%= skill %>
                       </span>
                     <% end %>
@@ -81,7 +81,7 @@
                     <%= time_ago_in_words(analysis.created_at) %>전 분석
                   </span>
                   <% if analysis.url && analysis.url != "text_input" %>
-                    <a href="<%= analysis.url %>" target="_blank" class="flex items-center gap-1 hover:text-blue-600">
+                    <a href="<%= analysis.url %>" target="_blank" class="flex items-center gap-1 hover:text-emerald-600">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                       </svg>
@@ -94,7 +94,7 @@
               <!-- Actions -->
               <div class="flex flex-row lg:flex-col gap-2 w-full lg:w-auto flex-shrink-0">
                 <a href="/cover_letters/view_job_analysis/<%= analysis.id %>" 
-                   class="flex-1 lg:flex-initial bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 lg:min-w-[120px]">
+                   class="flex-1 lg:flex-initial bg-gray-600 hover:bg-gray-700 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 lg:min-w-[120px]">
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -102,14 +102,14 @@
                   <span>상세보기</span>
                 </a>
                 <a href="/cover_letters/ontology_input?job_analysis_id=<%= analysis.id %>" 
-                   class="flex-1 lg:flex-initial bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 lg:min-w-[120px] shadow-sm hover:shadow-md">
+                   class="flex-1 lg:flex-initial bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 lg:min-w-[120px]">
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                   </svg>
                   <span>자소서 작성</span>
                 </a>
                 <button onclick="deleteJobAnalysis(<%= analysis.id %>)" 
-                        class="flex-1 lg:flex-initial bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 lg:min-w-[120px] shadow-sm hover:shadow-md">
+                        class="flex-1 lg:flex-initial bg-gray-400 hover:bg-gray-500 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 lg:min-w-[120px]">
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                   </svg>
@@ -127,7 +127,7 @@
       </div>
     <% else %>
       <!-- Empty State -->
-      <div class="bg-white rounded-xl shadow-sm p-12 text-center">
+      <div class="bg-white rounded-lg border border-gray-100 p-12 text-center">
         <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
@@ -138,7 +138,7 @@
           채용공고를 분석하고 저장하여 나중에 다시 확인해보세요
         </p>
         <a href="/cover_letters/job_posting" 
-           class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-colors">
+           class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-6 py-3 rounded-lg transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
           </svg>

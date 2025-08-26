@@ -3,23 +3,24 @@
   is_enhanced = ['enhanced_professional', 'job_seeker_focused'].include?(@company_analysis.metadata&.dig('analysis_type'))
 %>
 
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100">
-  <!-- Professional Header -->
-  <div class="bg-gradient-to-r from-indigo-900 to-purple-800 text-white">
-    <div class="max-w-7xl mx-auto px-4 py-8">
-      <div class="flex items-center justify-between mb-4">
+<!-- Company Analysis Result Page -->
+<div class="min-h-screen bg-white">
+  <!-- Header -->
+  <div class="bg-gray-50 border-b border-gray-100">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+      <div class="flex items-center justify-between">
         <div>
-          <div class="text-sm text-gray-300 mb-2">Enterprise Analysis Report</div>
-          <h1 class="text-4xl font-bold mb-2"><%= @company_analysis.company_name %></h1>
-          <div class="flex items-center gap-4 text-sm text-gray-300">
-            <span>📅 <%= @company_analysis.analysis_date.strftime("%Y년 %m월 %d일") %></span>
-            <span>📊 <%= @company_analysis.metadata&.dig('methodology') || 'McKinsey/BCG Framework' %></span>
+          <div class="text-xs text-gray-500 mb-2">Enterprise Analysis Report</div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @company_analysis.company_name %></h1>
+          <div class="flex items-center gap-4 text-sm text-gray-600">
+            <span><%= @company_analysis.analysis_date.strftime("%Y년 %m월 %d일") %></span>
+            <span><%= @company_analysis.metadata&.dig('methodology') || 'McKinsey/BCG Framework' %></span>
             <% if is_enhanced %>
-              <span class="px-2 py-1 bg-yellow-500/20 text-yellow-300 rounded">
+              <span class="px-2 py-1 bg-emerald-50 text-emerald-600 text-xs rounded">
                 Professional Edition
               </span>
             <% else %>
-              <span class="px-2 py-1 bg-blue-500/20 text-blue-300 rounded">
+              <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
                 Standard Edition  
               </span>
             <% end %>
@@ -27,48 +28,48 @@
         </div>
         <div class="text-right">
           <% if @company_analysis.cached_until.present? %>
-            <div class="text-xs text-gray-400">유효기간</div>
-            <div class="text-sm font-medium"><%= @company_analysis.cached_until.strftime("%Y-%m-%d") %></div>
+            <div class="text-xs text-gray-500">유효기간</div>
+            <div class="text-sm font-medium text-gray-700"><%= @company_analysis.cached_until.strftime("%Y-%m-%d") %></div>
           <% end %>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Quick Navigation (Sticky) -->
-    <div class="sticky top-0 z-40 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg mb-8 p-4">
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Quick Navigation -->
+    <div class="sticky top-0 z-40 bg-white border border-gray-100 rounded-lg mb-8 p-4">
       <div class="flex flex-wrap gap-2 justify-center">
-        <a href="#executive-summary" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors text-sm font-medium">
-          📋 Executive Summary
+        <a href="#executive-summary" class="px-3 py-1.5 bg-gray-50 text-gray-700 rounded-full hover:bg-gray-100 transition-colors text-sm">
+          Executive Summary
         </a>
-        <a href="#company-overview" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium">
-          🏢 기업 개요
+        <a href="#company-overview" class="px-3 py-1.5 bg-gray-50 text-gray-700 rounded-full hover:bg-gray-100 transition-colors text-sm">
+          기업 개요
         </a>
-        <a href="#industry-analysis" class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium">
-          📊 산업 분석
+        <a href="#industry-analysis" class="px-3 py-1.5 bg-gray-50 text-gray-700 rounded-full hover:bg-gray-100 transition-colors text-sm">
+          산업 분석
         </a>
-        <a href="#hiring-strategy" class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm font-medium">
-          🎯 채용 전략
+        <a href="#hiring-strategy" class="px-3 py-1.5 bg-gray-50 text-gray-700 rounded-full hover:bg-gray-100 transition-colors text-sm">
+          채용 전략
         </a>
-        <a href="#preparation" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors text-sm font-medium">
-          📝 자소서/면접
+        <a href="#preparation" class="px-3 py-1.5 bg-gray-50 text-gray-700 rounded-full hover:bg-gray-100 transition-colors text-sm">
+          자소서/면접
         </a>
-        <a href="#competitor" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium">
-          🔍 경쟁사 비교
+        <a href="#competitor" class="px-3 py-1.5 bg-gray-50 text-gray-700 rounded-full hover:bg-gray-100 transition-colors text-sm">
+          경쟁사 비교
         </a>
-        <a href="#career-advice" class="px-4 py-2 bg-cyan-100 text-cyan-700 rounded-lg hover:bg-cyan-200 transition-colors text-sm font-medium">
-          💡 취업 전략
+        <a href="#career-advice" class="px-3 py-1.5 bg-gray-50 text-gray-700 rounded-full hover:bg-gray-100 transition-colors text-sm">
+          취업 전략
         </a>
       </div>
     </div>
 
     <!-- Executive Summary -->
     <% if @company_analysis.metadata&.dig('executive_summary').present? %>
-      <div id="executive-summary" class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden scroll-mt-24">
-        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-4">
-          <h2 class="text-xl font-bold flex items-center gap-2">
-            <span>📋</span> Executive Summary
+      <div id="executive-summary" class="bg-white rounded-lg border border-gray-100 mb-8 overflow-hidden scroll-mt-24">
+        <div class="bg-gray-50 border-b border-gray-100 px-6 py-4">
+          <h2 class="text-lg font-semibold text-gray-900">
+            Executive Summary
           </h2>
         </div>
         <div class="p-6 content-area max-w-none text-gray-700">
@@ -78,10 +79,10 @@
     <% end %>
 
     <!-- Company Overview Section -->
-    <div id="company-overview" class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden scroll-mt-24">
-      <div class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-4">
-        <h2 class="text-xl font-bold flex items-center gap-2">
-          <span>🏢</span> 기업 개요
+    <div id="company-overview" class="bg-white rounded-lg border border-gray-100 mb-8 overflow-hidden scroll-mt-24">
+      <div class="bg-gray-50 border-b border-gray-100 px-6 py-4">
+        <h2 class="text-lg font-semibold text-gray-900">
+          기업 개요
         </h2>
       </div>
       <div class="p-6 content-area max-w-none text-gray-700">
@@ -100,10 +101,10 @@
     </div>
 
     <!-- Industry Analysis Section -->
-    <div id="industry-analysis" class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden scroll-mt-24">
-      <div class="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-4">
-        <h2 class="text-xl font-bold flex items-center gap-2">
-          <span>📊</span> 산업 분석
+    <div id="industry-analysis" class="bg-white rounded-lg border border-gray-100 mb-8 overflow-hidden scroll-mt-24">
+      <div class="bg-gray-50 border-b border-gray-100 px-6 py-4">
+        <h2 class="text-lg font-semibold text-gray-900">
+          산업 분석
         </h2>
       </div>
       <div class="p-6 content-area max-w-none text-gray-700">
@@ -123,10 +124,10 @@
     </div>
 
     <!-- Hiring Strategy Section -->
-    <div id="hiring-strategy" class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden scroll-mt-24">
-      <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-4">
-        <h2 class="text-xl font-bold flex items-center gap-2">
-          <span>🎯</span> 채용 전략
+    <div id="hiring-strategy" class="bg-white rounded-lg border border-gray-100 mb-8 overflow-hidden scroll-mt-24">
+      <div class="bg-gray-50 border-b border-gray-100 px-6 py-4">
+        <h2 class="text-lg font-semibold text-gray-900">
+          채용 전략
         </h2>
       </div>
       <div class="p-6 content-area max-w-none text-gray-700">
@@ -146,10 +147,10 @@
     </div>
 
     <!-- Preparation Section -->
-    <div id="preparation" class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden scroll-mt-24">
-      <div class="bg-gradient-to-r from-yellow-600 to-orange-600 text-white px-6 py-4">
-        <h2 class="text-xl font-bold flex items-center gap-2">
-          <span>📝</span> 자소서/면접 준비
+    <div id="preparation" class="bg-white rounded-lg border border-gray-100 mb-8 overflow-hidden scroll-mt-24">
+      <div class="bg-gray-50 border-b border-gray-100 px-6 py-4">
+        <h2 class="text-lg font-semibold text-gray-900">
+          자소서/면접 준비
         </h2>
       </div>
       <div class="p-6 content-area max-w-none text-gray-700">
@@ -164,10 +165,10 @@
     </div>
 
     <!-- Competitor Comparison Section -->
-    <div id="competitor" class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden scroll-mt-24">
-      <div class="bg-gradient-to-r from-red-600 to-rose-600 text-white px-6 py-4">
-        <h2 class="text-xl font-bold flex items-center gap-2">
-          <span>🔍</span> 경쟁사 비교
+    <div id="competitor" class="bg-white rounded-lg border border-gray-100 mb-8 overflow-hidden scroll-mt-24">
+      <div class="bg-gray-50 border-b border-gray-100 px-6 py-4">
+        <h2 class="text-lg font-semibold text-gray-900">
+          경쟁사 비교
         </h2>
       </div>
       <div class="p-6 content-area max-w-none text-gray-700">
@@ -187,10 +188,10 @@
     </div>
 
     <!-- Career Advice Section -->
-    <div id="career-advice" class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden scroll-mt-24">
-      <div class="bg-gradient-to-r from-cyan-600 to-teal-600 text-white px-6 py-4">
-        <h2 class="text-xl font-bold flex items-center gap-2">
-          <span>💡</span> 취업 전략 조언
+    <div id="career-advice" class="bg-white rounded-lg border border-gray-100 mb-8 overflow-hidden scroll-mt-24">
+      <div class="bg-gray-50 border-b border-gray-100 px-6 py-4">
+        <h2 class="text-lg font-semibold text-gray-900">
+          취업 전략 조언
         </h2>
       </div>
       <div class="p-6 content-area max-w-none text-gray-700">
@@ -210,26 +211,17 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="bg-white rounded-xl shadow-lg p-6 sticky bottom-4">
-      <div class="flex flex-wrap gap-4 justify-center">
-        <button onclick="window.print()" class="bg-gray-600 hover:bg-gray-700 text-white font-medium px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-          </svg>
+    <div class="bg-white rounded-lg border border-gray-100 p-6 sticky bottom-4">
+      <div class="flex flex-wrap gap-3 justify-center">
+        <button onclick="window.print()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-full transition-colors text-sm">
           인쇄하기
         </button>
         
-        <a href="/cover_letters/company_analysis" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-          </svg>
+        <a href="/cover_letters/company_analysis" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-full transition-colors text-sm">
           새 분석하기
         </a>
         
-        <a href="/cover_letters/saved_company_analyses" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-          </svg>
+        <a href="/cover_letters/saved_company_analyses" class="px-4 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-full transition-colors text-sm">
           저장된 분석 목록
         </a>
       </div>
@@ -245,15 +237,20 @@
   .content-area h1, .content-area h2, .content-area h3, 
   .content-area h4, .content-area h5, .content-area h6 {
     color: #111827 !important; /* text-gray-900 */
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
   }
   
   .content-area p {
     color: #4B5563 !important; /* text-gray-600 */
     line-height: 1.7;
+    margin-bottom: 1rem;
   }
   
   .content-area ul, .content-area ol {
     color: #4B5563 !important;
+    margin-bottom: 1rem;
   }
   
   .content-area strong {
@@ -272,7 +269,7 @@
   }
   
   @keyframes highlight {
-    0% { background-color: rgba(99, 102, 241, 0.1); }
+    0% { background-color: rgba(16, 185, 129, 0.1); }
     100% { background-color: transparent; }
   }
   
@@ -299,34 +296,10 @@ document.addEventListener('DOMContentLoaded', function() {
   
   navLinks.forEach(link => {
     link.addEventListener('click', function(e) {
-      // Remove active class from all links
-      navLinks.forEach(l => l.classList.remove('ring-2', 'ring-offset-2'));
-      // Add active class to clicked link
-      this.classList.add('ring-2', 'ring-offset-2');
+      navLinks.forEach(l => l.classList.remove('bg-emerald-100', 'text-emerald-700'));
+      this.classList.remove('bg-gray-50', 'text-gray-700');
+      this.classList.add('bg-emerald-100', 'text-emerald-700');
     });
-  });
-  
-  // Intersection Observer for highlighting current section
-  const sections = document.querySelectorAll('[id]');
-  const observerOptions = {
-    rootMargin: '-20% 0px -70% 0px'
-  };
-  
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const id = entry.target.getAttribute('id');
-        const link = document.querySelector(`a[href="#${id}"]`);
-        if (link) {
-          navLinks.forEach(l => l.classList.remove('ring-2', 'ring-offset-2', 'ring-indigo-600'));
-          link.classList.add('ring-2', 'ring-offset-2', 'ring-indigo-600');
-        }
-      }
-    });
-  }, observerOptions);
-  
-  sections.forEach(section => {
-    observer.observe(section);
   });
 });
 </script>

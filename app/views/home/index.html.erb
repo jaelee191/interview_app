@@ -1,527 +1,219 @@
 <!-- Hero Section -->
-<section class="relative min-h-[85vh] flex items-center bg-white">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
-    <div class="grid md:grid-cols-1 gap-8 items-center">
-      <!-- Main Content - Center Aligned -->
-      <div class="text-center max-w-4xl mx-auto">
-        <!-- Main Heading - Two lines with proper wrapping -->
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-gray-900 leading-tight">
-          합격의 열쇠는 완벽한 문장이 아니라<br>
-          <span class="text-blue-600">진정성 있는 당신의 이야기</span>입니다
-        </h1>
+<section class="min-h-screen flex items-center bg-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+    <div class="text-center">
+      <!-- Main Heading -->
+      <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-gray-900 leading-tight">
+        당신의 이야기가<br>
+        <span class="text-emerald-500">합격의 열쇠</span>입니다
+      </h1>
+      
+      <!-- Subheading -->
+      <p class="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto">
+        AI는 도구일 뿐, 진짜 이야기는 지원자 본인만이 쓸 수 있습니다.
+      </p>
+      
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+        <%= link_to "시작하기", job_posting_cover_letters_path, 
+            class: "px-8 py-4 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors font-medium text-lg" %>
         
-        <!-- Subheading -->
-        <p class="text-lg text-gray-600 mb-6 leading-relaxed">
-          우리는 자소서를 대신 써주지 않습니다.
-          <br>
-          당신이 가진 이야기를 발굴하고, 가장 설득력 있게 전달하도록 돕습니다.
-        </p>
-        
-        <!-- Alert Banner -->
-        <div class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-lg mb-6">
-          <svg class="w-5 h-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-          </svg>
-          <span class="text-sm text-yellow-800">
-            <strong>97%의 취준생이 자소서로 고민합니다.</strong> 당신만의 문제가 아닙니다. 함께 해결해요.
-          </span>
-        </div>
-        
-        <!-- CTA Buttons -->
-        <div class="flex justify-center gap-3 mb-8">
-          <%= link_to about_path, class: "px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium text-sm shadow-sm hover:shadow-md" do %>
-            서비스가 궁금하신가요? →
-          <% end %>
-          
-          <%= link_to job_posting_cover_letters_path, class: "px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium text-sm" do %>
-            바로 시작하기
-          <% end %>
-        </div>
-        
-        <!-- Stats -->
-        <div class="flex justify-center gap-8">
-          <div>
-            <div class="flex items-center gap-2">
-              <div class="w-2 h-2 bg-blue-600 rounded-full"></div>
-              <span class="text-sm text-gray-600">현재 작성 중인 자소서:</span>
-              <span class="font-bold text-gray-900">15개</span>
-            </div>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <div class="w-2 h-2 bg-green-600 rounded-full"></div>
-              <span class="text-sm text-gray-600">지난 달 평균 합격률:</span>
-              <span class="font-bold text-gray-900">85%</span>
-            </div>
-          </div>
-        </div>
+        <%= link_to "서비스 둘러보기", about_path, 
+            class: "px-8 py-4 bg-white border border-gray-200 text-gray-700 rounded-full hover:bg-gray-50 transition-colors font-medium text-lg" %>
       </div>
+      
     </div>
   </div>
 </section>
 
-<style>
-  @keyframes typing {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  @keyframes blink {
-    0%, 49% { opacity: 1; }
-    50%, 100% { opacity: 0; }
-  }
-  
-  .typing-animation {
-    animation: typing 0.5s ease-in-out;
-  }
-  
-  .typing-cursor {
-    animation: blink 1s infinite;
-    font-weight: normal;
-  }
-  
-  .progress-bar-animation {
-    animation: progressGrow 3s ease-in-out infinite;
-  }
-  
-  @keyframes progressGrow {
-    0% { width: 45%; }
-    50% { width: 75%; }
-    100% { width: 45%; }
-  }
-</style>
-
-<script>
-  // AI Writing Animation
-  (function() {
-    const textSamples = [
-      "저는 컴퓨터공학을 전공하며 <span class='inline-block bg-blue-100 text-blue-700 px-1 rounded'>알고리즘 문제해결</span>에 깊은 관심을 가지고 꾸준히 역량을 키워왔습니다.",
-      "대학 시절 <span class='inline-block bg-green-100 text-green-700 px-1 rounded'>오픈소스 프로젝트</span> 참여를 통해 실무 개발 프로세스를 경험했습니다.",
-      "특히 <span class='inline-block bg-purple-100 text-purple-700 px-1 rounded'>React Native</span>를 활용한 모바일 앱 개발 프로젝트에서 팀 리더로 활동하며...",
-      "<span class='inline-block bg-yellow-100 text-yellow-700 px-1 rounded'>사용자 중심 설계</span>를 바탕으로 UI/UX를 개선하여 사용성을 30% 향상시켰습니다.",
-      "삼성전자의 <span class='inline-block bg-red-100 text-red-700 px-1 rounded'>혁신적인 기술력</span>과 함께 성장하고 싶습니다."
-    ];
-    
-    let currentIndex = 0;
-    let currentText = "";
-    let charIndex = 0;
-    let isDeleting = false;
-    let progressValue = 45;
-    let timeValue = 120; // seconds
-    
-    function typeWriter() {
-      const element = document.getElementById('aiWritingText');
-      if (!element) return;
-      
-      const p2 = element.querySelector('.typing-animation');
-      if (!p2) return;
-      
-      const fullText = textSamples[currentIndex];
-      const textWithoutTags = fullText.replace(/<[^>]*>/g, '');
-      
-      if (!isDeleting) {
-        if (charIndex < textWithoutTags.length) {
-          // Typing
-          currentText = textWithoutTags.substring(0, charIndex + 1);
-          let displayText = currentText;
-          
-          // Add highlight tags if present in original
-          if (fullText.includes('<span')) {
-            const matches = fullText.match(/<span[^>]*>([^<]*)<\/span>/g);
-            if (matches) {
-              matches.forEach(match => {
-                const innerText = match.replace(/<[^>]*>/g, '');
-                if (currentText.includes(innerText)) {
-                  displayText = displayText.replace(innerText, match);
-                }
-              });
-            }
-          }
-          
-          p2.innerHTML = displayText + '<span class="typing-cursor">|</span>';
-          charIndex++;
-          setTimeout(typeWriter, 50);
-        } else {
-          // Pause before deleting
-          setTimeout(() => {
-            isDeleting = true;
-            typeWriter();
-          }, 2000);
-        }
-      } else {
-        if (charIndex > 0) {
-          // Deleting
-          currentText = textWithoutTags.substring(0, charIndex - 1);
-          p2.innerHTML = currentText + '<span class="typing-cursor">|</span>';
-          charIndex--;
-          setTimeout(typeWriter, 30);
-        } else {
-          // Move to next text
-          isDeleting = false;
-          currentIndex = (currentIndex + 1) % textSamples.length;
-          setTimeout(typeWriter, 500);
-        }
-      }
-    }
-    
-    // Progress animation
-    function animateProgress() {
-      const progressBar = document.getElementById('progressBar');
-      const progressPercent = document.getElementById('progressPercent');
-      const timeRemaining = document.getElementById('timeRemaining');
-      
-      if (!progressBar || !progressPercent || !timeRemaining) return;
-      
-      setInterval(() => {
-        progressValue = progressValue + (Math.random() * 3 - 1);
-        progressValue = Math.max(45, Math.min(85, progressValue));
-        
-        progressBar.style.width = progressValue + '%';
-        progressPercent.textContent = Math.round(progressValue) + '%';
-        
-        // Update time
-        timeValue = Math.max(0, timeValue - 1);
-        const minutes = Math.floor(timeValue / 60);
-        const seconds = timeValue % 60;
-        timeRemaining.textContent = minutes + '분 ' + seconds + '초';
-        
-        if (timeValue === 0) {
-          timeValue = 120; // Reset
-        }
-      }, 1000);
-    }
-    
-    // Start animations when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(typeWriter, 1000);
-      animateProgress();
-    });
-  })();
-</script>
-
-<!-- Core Differentiators Section -->
-<section class="py-20 bg-gradient-to-b from-gray-50 to-white">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-        JACHUI만의 차별화된 <span class="text-blue-600">4단계 코칭 시스템</span>
+<!-- Hook Section: 공감대 형성 -->
+<section class="py-24 bg-gray-50">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+        자기소개서, 왜 이렇게 어려울까요?
       </h2>
-      <div class="max-w-4xl mx-auto space-y-3">
-        <p class="text-lg text-gray-700 font-medium">
-          우리는 지원자가 가진 경험의 숨은 의미를 드러내고,<br>
-          이를 기업 맥락과 연결하여 설득력 있는 자기소개서로 발전시킵니다.
-        </p>
-        <p class="text-lg text-gray-600">
-          동시에 기계적인 문체를 제거하고,<br>
-          지원자의 언어와 감정을 살려 진정성 있는 문장으로 완성합니다.
-        </p>
-        <div class="pt-4 border-t border-gray-200 mt-6">
-          <p class="text-md text-gray-500">
-            채용공고 분석 + 기업 이슈 해석 + 지원자 경험 발굴 + 온톨로지 기반 스토리텔링
-          </p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="grid md:grid-cols-4 gap-6">
-      <!-- Step 1: 채용공고 심층 분석 -->
-      <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-        <div class="absolute -top-3 -left-3 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">1</div>
-        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-          <span class="text-xl">📊</span>
-        </div>
-        <h3 class="text-lg font-bold text-gray-900 mb-2">채용공고 심층 분석</h3>
-        <p class="text-sm text-gray-600 mb-3">
-          단순 텍스트가 아닌 채용 배경 파악
-        </p>
-        <div class="space-y-2">
-          <div class="flex items-start gap-2">
-            <div class="w-1 h-1 bg-blue-600 rounded-full mt-1.5"></div>
-            <span class="text-xs text-gray-700">경영 전략 분석</span>
-          </div>
-          <div class="flex items-start gap-2">
-            <div class="w-1 h-1 bg-blue-600 rounded-full mt-1.5"></div>
-            <span class="text-xs text-gray-700">업계 트렌드 파악</span>
-          </div>
-          <div class="flex items-start gap-2">
-            <div class="w-1 h-1 bg-blue-600 rounded-full mt-1.5"></div>
-            <span class="text-xs text-gray-700">경쟁사 동향 비교</span>
-          </div>
-        </div>
-        <div class="mt-3 p-2 bg-blue-50 rounded-lg">
-          <p class="text-xs font-medium text-blue-700">
-            "왜 지금 이 인재가 필요한가?"
-          </p>
-        </div>
-      </div>
-      
-      <!-- Step 2: 기업 현안 분석 -->
-      <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-        <div class="absolute -top-3 -left-3 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-sm">2</div>
-        <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
-          <span class="text-xl">🏢</span>
-        </div>
-        <h3 class="text-lg font-bold text-gray-900 mb-2">기업 현안 분석</h3>
-        <p class="text-sm text-gray-600 mb-3">
-          기업의 현재 과제와 미래 전략 이해
-        </p>
-        <div class="space-y-2">
-          <div class="flex items-start gap-2">
-            <div class="w-1 h-1 bg-purple-600 rounded-full mt-1.5"></div>
-            <span class="text-xs text-gray-700">성장 전략 파악</span>
-          </div>
-          <div class="flex items-start gap-2">
-            <div class="w-1 h-1 bg-purple-600 rounded-full mt-1.5"></div>
-            <span class="text-xs text-gray-700">ESG 정책 분석</span>
-          </div>
-          <div class="flex items-start gap-2">
-            <div class="w-1 h-1 bg-purple-600 rounded-full mt-1.5"></div>
-            <span class="text-xs text-gray-700">신사업 방향 확인</span>
-          </div>
-        </div>
-        <div class="mt-3 p-2 bg-purple-50 rounded-lg">
-          <p class="text-xs font-medium text-purple-700">
-            "기업이 직면한 과제는 무엇인가?"
-          </p>
-        </div>
-      </div>
-      
-      <!-- Step 3: 지원자 역량 발굴 -->
-      <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-        <div class="absolute -top-3 -left-3 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm">3</div>
-        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
-          <span class="text-xl">💎</span>
-        </div>
-        <h3 class="text-lg font-bold text-gray-900 mb-2">지원자 역량 발굴</h3>
-        <p class="text-sm text-gray-600 mb-3">
-          숨겨진 경험의 가치 재발견
-        </p>
-        <div class="space-y-2">
-          <div class="flex items-start gap-2">
-            <div class="w-1 h-1 bg-green-600 rounded-full mt-1.5"></div>
-            <span class="text-xs text-gray-700">대화형 코칭</span>
-          </div>
-          <div class="flex items-start gap-2">
-            <div class="w-1 h-1 bg-green-600 rounded-full mt-1.5"></div>
-            <span class="text-xs text-gray-700">작은 경험도 가치화</span>
-          </div>
-          <div class="flex items-start gap-2">
-            <div class="w-1 h-1 bg-green-600 rounded-full mt-1.5"></div>
-            <span class="text-xs text-gray-700">직무 연결 스토리</span>
-          </div>
-        </div>
-        <div class="mt-3 p-2 bg-green-50 rounded-lg">
-          <p class="text-xs font-medium text-green-700">
-            "내 경험의 숨은 의미는?"
-          </p>
-        </div>
-      </div>
-      
-      <!-- Step 4: 온톨로지 스토리텔링 -->
-      <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-        <div class="absolute -top-3 -left-3 w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold text-sm">4</div>
-        <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
-          <span class="text-xl">📖</span>
-        </div>
-        <h3 class="text-lg font-bold text-gray-900 mb-2">온톨로지 스토리텔링</h3>
-        <p class="text-sm text-gray-600 mb-3">
-          일관된 성장 스토리 구축
-        </p>
-        <div class="space-y-2">
-          <div class="flex items-start gap-2">
-            <div class="w-1 h-1 bg-orange-600 rounded-full mt-1.5"></div>
-            <span class="text-xs text-gray-700">경험-역량 매핑</span>
-          </div>
-          <div class="flex items-start gap-2">
-            <div class="w-1 h-1 bg-orange-600 rounded-full mt-1.5"></div>
-            <span class="text-xs text-gray-700">논리적 구조화</span>
-          </div>
-          <div class="flex items-start gap-2">
-            <div class="w-1 h-1 bg-orange-600 rounded-full mt-1.5"></div>
-            <span class="text-xs text-gray-700">진정성 있는 문체</span>
-          </div>
-        </div>
-        <div class="mt-3 p-2 bg-orange-50 rounded-lg">
-          <p class="text-xs font-medium text-orange-700">
-            "왜 우리 회사에 필요한가?"
-          </p>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Core Message -->
-    <div class="mt-12 max-w-4xl mx-auto">
-      <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-100">
-        <div class="text-center mb-6">
-          <div class="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm mb-4">
-            <span class="text-sm font-semibold text-blue-600">우리의 핵심 가치</span>
-          </div>
-          <h3 class="text-xl md:text-2xl font-bold text-gray-900 mb-4">
-            AI는 단순한 생성기가 아니라 <span class="text-blue-600">코칭 파트너</span>입니다
-          </h3>
-        </div>
-        
-        <div class="space-y-4 text-center">
-          <div class="mt-6 p-4 bg-white rounded-xl border border-blue-200">
-            <p class="text-lg font-semibold text-gray-900 mb-2">
-              우리가 만드는 것은
-            </p>
-            <p class="text-gray-700">
-              <span class="line-through text-gray-400">"AI가 대신 써준 글"</span>이 아니라,<br>
-              <span class="text-blue-600 font-bold">지원자 본인만이 말할 수 있는 진짜 이야기</span>입니다.
-            </p>
-            <p class="text-sm text-gray-600 mt-3">
-              합격을 좌우하는 것은 완벽한 문장이 아니라,<br>
-              <strong>기업과 연결된 진정성 있는 스토리</strong>이기 때문입니다.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Statistics & Problem -->
-    <div class="mt-12 grid md:grid-cols-2 gap-8">
-      <!-- 취준생 현실 -->
-      <div class="bg-red-50 rounded-2xl p-6 border border-red-100">
-        <h3 class="text-lg font-bold text-gray-900 mb-4">
-          <span class="text-red-600">97%</span>의 취준생이 겪는 문제
-        </h3>
-        <div class="space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-600">"무엇을 써야할지 막막"</span>
-            <span class="text-sm font-bold text-gray-900">70.9%</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-600">"어떤 부분 강조할지 모름"</span>
-            <span class="text-sm font-bold text-gray-900">55.4%</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-600">"자신의 강점을 모름"</span>
-            <span class="text-sm font-bold text-gray-900">41.2%</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-600">"자소서로 지원 포기"</span>
-            <span class="text-sm font-bold text-red-600">60.7%</span>
-          </div>
-        </div>
-        <div class="mt-4 p-3 bg-white rounded-lg border border-red-200">
-          <p class="text-xs text-gray-700">
-            <strong class="text-red-600">64.1%</strong> 대기업이 AI 작성 자소서 감점/불합격
-          </p>
-        </div>
-      </div>
-      
-      <!-- JACHUI 솔루션 -->
-      <div class="bg-blue-50 rounded-2xl p-6 border border-blue-100">
-        <h3 class="text-lg font-bold text-gray-900 mb-4">
-          <span class="text-blue-600">JACHUI</span>가 해결하는 방법
-        </h3>
-        <div class="space-y-3">
-          <div class="flex items-center gap-3">
-            <div class="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0">
-              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-              </svg>
-            </div>
-            <span class="text-sm text-gray-700">경험 발굴 대화형 코칭</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0">
-              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-              </svg>
-            </div>
-            <span class="text-sm text-gray-700">기업 맥락 기반 매칭</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0">
-              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-              </svg>
-            </div>
-            <span class="text-sm text-gray-700">AI 티 92% 제거</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0">
-              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-              </svg>
-            </div>
-            <span class="text-sm text-gray-700">22초 내 심층 분석</span>
-          </div>
-        </div>
-        <div class="mt-4 p-3 bg-white rounded-lg border border-blue-200">
-          <p class="text-xs text-gray-700">
-            <strong class="text-blue-600">"생성"이 아닌 "코칭"</strong>으로 진짜 이야기 발굴
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<!-- Process Section -->
-<section class="py-20 bg-gradient-to-br from-blue-50 to-purple-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-        간단한 3단계로 합격까지
-      </h2>
-      <p class="text-lg text-gray-600">
-        당신의 이야기를 완벽한 자소서로 만드는 과정
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        여러분이 지금 느끼는 막막함, 두려움, 포기하고 싶은 마음까지<br>
+        모든 취준생이 겪는 보편적인 고민입니다.
       </p>
     </div>
-    
-    <div class="grid md:grid-cols-3 gap-8">
-      <div class="text-center">
-        <div class="w-20 h-20 mx-auto mb-6 bg-white rounded-full shadow-lg flex items-center justify-center">
-          <span class="text-3xl">📝</span>
-        </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">1. 당신의 경험을 입력하세요</h3>
-        <p class="text-gray-600">개인 맞춤형 시작 - 경력, 프로젝트, 활동 등 당신만의 스토리를 들려주세요</p>
+
+    <!-- 통계 카드 -->
+    <div class="grid md:grid-cols-2 gap-8 mb-16">
+      <div class="bg-white rounded-lg p-8 border border-gray-100">
+        <div class="text-4xl font-bold text-emerald-500 mb-2">97%</div>
+        <div class="text-gray-900 font-medium mb-2">취준생이 자소서 작성에 어려움을 겪습니다</div>
+        <p class="text-gray-600 text-sm">거의 모든 취준생이 겪는 공통적인 고민입니다</p>
       </div>
-      
-      <div class="text-center">
-        <div class="w-20 h-20 mx-auto mb-6 bg-white rounded-full shadow-lg flex items-center justify-center">
-          <span class="text-3xl">✨</span>
-        </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">2. AI가 완벽하게 다듬어드려요</h3>
-        <p class="text-gray-600">기술력 강조 - 기업 맞춤형 키워드와 구조로 전문적인 자소서 완성</p>
+      <div class="bg-white rounded-lg p-8 border border-gray-100">
+        <div class="text-4xl font-bold text-emerald-500 mb-2">60.7%</div>
+        <div class="text-gray-900 font-medium mb-2">자소서 부담으로 지원을 포기한 경험</div>
+        <p class="text-gray-600 text-sm">능력이 아닌 글쓰기 때문에 기회를 놓치는 현실</p>
       </div>
-      
-      <div class="text-center">
-        <div class="w-20 h-20 mx-auto mb-6 bg-white rounded-full shadow-lg flex items-center justify-center">
-          <span class="text-3xl">🎯</span>
+    </div>
+
+    <!-- 어려움 리스트 -->
+    <div class="bg-white rounded-lg border border-gray-100 p-8">
+      <h3 class="text-xl font-semibold text-gray-900 mb-6">취준생들이 가장 힘들어하는 것들</h3>
+      <div class="space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+          <span class="text-gray-700">무엇을 어떻게 써야 할지 막막함</span>
+          <span class="text-emerald-600 font-semibold">70.9%</span>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">3. 합격까지 함께 달려가요</h3>
-        <p class="text-gray-600">결과 지향성 - 면접 예상 질문까지 준비하여 최종 합격을 도와드려요</p>
+        <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+          <span class="text-gray-700">어떤 부분을 강조해야 할지 모름</span>
+          <span class="text-emerald-600 font-semibold">55.4%</span>
+        </div>
+        <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+          <span class="text-gray-700">지원 동기 작성</span>
+          <span class="text-emerald-600 font-semibold">54.6%</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-700">자신의 강점·장점을 잘 모름</span>
+          <span class="text-emerald-600 font-semibold">41.2%</span>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CTA Section -->
-<section class="py-20 bg-white">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-      지금 시작하면 <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">3분 후</span> 자소서 완성
-    </h2>
-    
-    <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-      더 이상 자소서 때문에 고민하지 마세요.<br>
-      자취가 당신의 합격을 도와드립니다.
-    </p>
-    
-    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <%= link_to about_path, class: "px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium shadow-sm hover:shadow-md" do %>
-        왜 JACHUI인지 알아보기 →
-      <% end %>
-      
-      <%= link_to job_posting_cover_letters_path, class: "px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium" do %>
-        지금 바로 시작하기
-      <% end %>
+<!-- Story Section: AI의 한계 -->
+<section class="py-24 bg-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+        AI가 만능일까요?
+      </h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        73%의 취준생이 AI를 사용하지만<br>
+        정작 기업은 AI 자소서를 선호하지 않습니다
+      </p>
     </div>
-    
+
+    <div class="grid md:grid-cols-3 gap-6 mb-12">
+      <div class="bg-gray-50 rounded-lg p-6">
+        <div class="text-red-500 text-2xl mb-3">⚠️</div>
+        <h4 class="font-semibold text-gray-900 mb-2">천편일률적 표현</h4>
+        <p class="text-gray-600 text-sm">
+          "귀사의 비전에 공감합니다"<br>
+          똑같은 문구의 반복
+        </p>
+      </div>
+      <div class="bg-gray-50 rounded-lg p-6">
+        <div class="text-red-500 text-2xl mb-3">⚠️</div>
+        <h4 class="font-semibold text-gray-900 mb-2">개인화 부족</h4>
+        <p class="text-gray-600 text-sm">
+          당신만의 고유한 경험을<br>
+          AI가 만들 수는 없습니다
+        </p>
+      </div>
+      <div class="bg-gray-50 rounded-lg p-6">
+        <div class="text-red-500 text-2xl mb-3">⚠️</div>
+        <h4 class="font-semibold text-gray-900 mb-2">진정성 결여</h4>
+        <p class="text-gray-600 text-sm">
+          AI 티가 나는 자소서<br>
+          인사담당자는 바로 알아봅니다
+        </p>
+      </div>
+    </div>
+
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center">
+      <p class="text-lg text-gray-900 font-medium mb-2">
+        국내 대기업의 64.1%가
+      </p>
+      <p class="text-2xl text-gray-900 font-bold mb-3">
+        AI 작성 자소서를 감점 또는 불합격 처리
+      </p>
+      <p class="text-gray-600">
+        편리한 도구일 수는 있지만, 당신을 대신할 수는 없습니다
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Offer Section: 우리의 해결책 -->
+<section class="py-24 bg-gray-50">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+        진정성 있는 <span class="text-emerald-500">연결</span>이 답입니다
+      </h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        저희는<br>
+        당신의 진짜 이야기를 발굴하고 다듬어 드립니다
+      </p>
+    </div>
+
+    <!-- 3단계 프로세스 -->
+    <div class="space-y-6 mb-16">
+      <div class="bg-white rounded-lg p-8 border border-gray-100 flex items-start gap-6">
+        <div class="flex-shrink-0 w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center font-bold text-lg">1</div>
+        <div>
+          <h4 class="text-lg font-semibold text-gray-900 mb-2">채용공고 심층 분석</h4>
+          <p class="text-gray-600">기업이 진짜로 원하는 인재상을 파악합니다. 단순 키워드가 아닌, '왜 지금 이 인재가 필요한지' 맥락을 읽어냅니다.</p>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-lg p-8 border border-gray-100 flex items-start gap-6">
+        <div class="flex-shrink-0 w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center font-bold text-lg">2</div>
+        <div>
+          <h4 class="text-lg font-semibold text-gray-900 mb-2">당신의 경험 발굴</h4>
+          <p class="text-gray-600">대화를 통해 당신도 몰랐던 숨겨진 강점을 찾아냅니다. 평범해 보이는 경험도 직무와 연결하면 특별해집니다.</p>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-lg p-8 border border-gray-100 flex items-start gap-6">
+        <div class="flex-shrink-0 w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center font-bold text-lg">3</div>
+        <div>
+          <h4 class="text-lg font-semibold text-gray-900 mb-2">진정성 있는 스토리텔링</h4>
+          <p class="text-gray-600">AI가 초안을 잡되, 최종적으로는 당신의 언어로 다듬습니다. 기업과 당신을 연결하는 진짜 이야기를 만듭니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 차별점 -->
+    <div class="bg-emerald-50 rounded-lg p-8 text-center">
+      <h3 class="text-xl font-semibold text-gray-900 mb-4">
+        jachui가 다른 이유
+      </h3>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div>
+          <div class="text-emerald-600 font-bold mb-2">코칭 파트너</div>
+          <p class="text-gray-700 text-sm">단순 생성기가 아닌<br>함께 발굴하고 다듬는 파트너</p>
+        </div>
+        <div>
+          <div class="text-emerald-600 font-bold mb-2">진정성 체크</div>
+          <p class="text-gray-700 text-sm">AI 티 제거<br>당신만의 언어로 변환</p>
+        </div>
+        <div>
+          <div class="text-emerald-600 font-bold mb-2">맥락 이해</div>
+          <p class="text-gray-700 text-sm">기업의 현재 상황과<br>채용 배경까지 분석</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA Section -->
+<section class="py-24 bg-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="bg-gray-50 rounded-lg p-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+        여러분의 이야기는 <span class="text-emerald-500">세상에 단 하나</span>뿐입니다
+      </h2>
+      <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+        그 특별한 이야기를 담은 자기소개서가<br>
+        결국 합격의 문을 열어줄 것입니다.
+      </p>
+      
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <%= link_to "지금 시작하기", job_posting_cover_letters_path, 
+            class: "px-8 py-4 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors font-medium text-lg" %>
+        
+        <%= link_to "예비합격자에게 드리는 글", letter_path, 
+            class: "px-8 py-4 bg-white border border-gray-200 text-gray-700 rounded-full hover:bg-gray-50 transition-colors font-medium text-lg" %>
+      </div>
+    </div>
   </div>
 </section>
