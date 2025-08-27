@@ -1,0 +1,71 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- 페이지 헤더 -->
+  <div class="bg-white rounded-lg border border-gray-100 p-6 mb-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <%= link_to "마이페이지", mypage_path, class: "text-gray-500 hover:text-gray-700" %>
+          <span class="text-gray-400">/</span>
+          <span class="text-gray-900 font-medium">내 자소서</span>
+        </div>
+        <h1 class="text-2xl font-semibold text-gray-900">내 자소서 관리</h1>
+        <p class="text-gray-600 mt-2">작성한 자소서를 관리하고 수정할 수 있습니다</p>
+      </div>
+      <%= link_to "새 자소서 작성", interactive_cover_letters_path, 
+          class: "px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors" %>
+    </div>
+  </div>
+  
+  <!-- 자소서 목록 -->
+  <% if @cover_letters.any? %>
+    <div class="grid grid-cols-1 gap-4">
+      <% @cover_letters.each do |letter| %>
+        <div class="bg-white rounded-lg border border-gray-100 p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <h3 class="text-lg font-medium text-gray-900 mb-2">
+                <%= letter.title.presence || "제목 없음" %>
+              </h3>
+              
+              <% if letter.content.present? %>
+                <p class="text-gray-600 text-sm line-clamp-2 mb-3">
+                  <%= truncate(strip_tags(letter.content), length: 150) %>
+                </p>
+              <% end %>
+              
+              <div class="flex items-center gap-4 text-sm text-gray-500">
+                <span>작성일: <%= letter.created_at.strftime("%Y년 %m월 %d일") %></span>
+                <% if letter.updated_at != letter.created_at %>
+                  <span>수정일: <%= letter.updated_at.strftime("%Y년 %m월 %d일") %></span>
+                <% end %>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-2 ml-4">
+              <%= link_to "보기", letter, 
+                  class: "px-3 py-1.5 text-sm text-gray-700 bg-white border border-gray-200 rounded hover:bg-gray-50 transition-colors" %>
+              <%= link_to "분석", advanced_cover_letters_path(letter_id: letter.id), 
+                  class: "px-3 py-1.5 text-sm text-emerald-600 bg-emerald-50 rounded hover:bg-emerald-100 transition-colors" %>
+              <%= link_to "삭제", letter, 
+                  data: { "turbo-method": :delete, turbo_confirm: "정말 삭제하시겠습니까?" },
+                  class: "px-3 py-1.5 text-sm text-red-600 hover:text-red-700 transition-colors" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-lg border border-gray-100 p-12 text-center">
+      <div class="text-gray-400 mb-4">
+        <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">아직 작성한 자소서가 없습니다</h3>
+      <p class="text-gray-600 mb-6">AI 코칭과 함께 첫 자소서를 작성해보세요</p>
+      <%= link_to "자소서 작성 시작하기", interactive_cover_letters_path, 
+          class: "inline-flex items-center px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors" %>
+    </div>
+  <% end %>
+</div>

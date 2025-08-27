@@ -13,6 +13,12 @@ Rails.application.routes.draw do
       post "update_inline"
     end
   end
+  
+  # Mypage routes
+  get "mypage", to: "mypage#index"
+  get "mypage/cover_letters", to: "mypage#cover_letters"
+  get "mypage/job_analyses", to: "mypage#job_analyses"
+  get "mypage/company_analyses", to: "mypage#company_analyses"
 
   # Pricing page
   get "pricing", to: "pricing#index"
@@ -89,6 +95,7 @@ Rails.application.routes.draw do
       post "save_company_analysis/:id", to: "cover_letters#save_company_analysis", as: "save_company_analysis"
       delete "delete_company_analysis/:id", to: "cover_letters#delete_company_analysis", as: "delete_company_analysis"
       get "saved_company_analyses", to: "cover_letters#saved_company_analyses"
+      get "guide", to: "cover_letters#guide"
     end
     member do
       # get 'deep_analysis_result' # GPT-5 심층 분석 - 사용하지 않음

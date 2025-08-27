@@ -1,5 +1,6 @@
 require 'net/http'
 require 'json'
+require 'open3'
 
 class AdvancedCoverLetterService
   OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions'
@@ -7,6 +8,37 @@ class AdvancedCoverLetterService
   def initialize
     @api_key = ENV['OPENAI_API_KEY']
     @model = ENV['OPENAI_MODEL'] || 'gpt-4.1'
+  end
+  
+  # Python NLP 분석 수행
+  def analyze_with_python(content, company_name = nil, position = nil)
+    script_path = Rails.root.join('python_analysis', 'advanced_analyzer.py')
+    
+    input_data = {
+      text: content,
+      company: company_name,
+      position: position
+    }.to_json
+    
+    stdout, stderr, status = Open3.capture3(
+      'python3', script_path.to_s,
+      stdin_data: input_data
+    )
+    
+    if status.success?
+      begin
+        JSON.parse(stdout)
+      rescue JSON::ParserError => e
+        Rails.logger.error "Python 분석 결과 파싱 오류: #{e.message}"
+        { error: "분석 결과 처리 오류" }
+      end
+    else
+      Rails.logger.error "Python 분석 실행 오류: #{stderr}"
+      { error: "Python 분석 실행 실패" }
+    end
+  rescue StandardError => e
+    Rails.logger.error "Python 분석 오류: #{e.message}"
+    { error: "분석 시스템 오류" }
   end
   
   # 자소서 분석만 수행 (기업 분석 제외)
@@ -51,6 +83,9 @@ class AdvancedCoverLetterService
   def analyze_complete(content, company_name, position)
     return { error: "API 키가 설정되지 않았습니다" } unless @api_key
     
+    # Python NLP 분석 수행
+    python_analysis = analyze_with_python(content, company_name, position)
+    
     # 1단계: 기업 분석 (선택적 - 현재는 스킵)
     # company_analysis = analyze_company(company_name)
     
@@ -69,6 +104,7 @@ class AdvancedCoverLetterService
       success: true,
       cover_letter_analysis: cover_letter_analysis,
       customized_letter: customized_letter,
+      python_analysis: python_analysis,
       full_analysis: format_full_analysis_simple(cover_letter_analysis, customized_letter)
     }
   rescue StandardError => e

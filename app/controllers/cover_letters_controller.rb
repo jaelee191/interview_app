@@ -520,15 +520,15 @@ class CoverLettersController < ApplicationController
       Rails.logger.info "URL: #{url}, Job Title: #{job_title}, Enhanced: #{use_enhanced}, Python: #{use_python}, MCP: #{use_mcp}"
 
       # 사람인 URL인 경우 MCP 스냅샷 방식 우선 사용
-      if url.include?('saramin.co.kr') && use_mcp
+      if url.include?("saramin.co.kr") && use_mcp
         begin
           Rails.logger.info "🎯 사람인 URL 감지 - MCP 스냅샷 분석 시작"
           mcp_service = McpJobAnalyzerService.new
           mcp_result = mcp_service.analyze_with_snapshot(url)
-          
+
           if mcp_result[:success]
             Rails.logger.info "✅ MCP 스냅샷 분석 성공"
-            
+
             # 분석 결과 저장
             job_analysis = JobAnalysis.create!(
               url: url,
@@ -539,7 +539,7 @@ class CoverLettersController < ApplicationController
               user_id: current_user&.id,
               session_id: current_user ? nil : session.id.to_s
             )
-            
+
             render json: {
               success: true,
               analysis: mcp_result[:data][:analysis_result],
@@ -759,7 +759,12 @@ class CoverLettersController < ApplicationController
         # deep_analysis_data에 PDF 구조화 분석 결과 저장
         deep_analysis_data = {}
         if pdf_analysis && pdf_analysis[:success]
-          deep_analysis_data = pdf_analysis
+          deep_analysis_data[:pdf_analysis] = pdf_analysis
+        end
+        
+        # Python NLP 분석 결과 추가
+        if result[:python_analysis].present?
+          deep_analysis_data[:python_analysis] = result[:python_analysis]
         end
 
         @cover_letter.update(
@@ -931,12 +936,17 @@ class CoverLettersController < ApplicationController
       final_content: result[:session_data]["final_content"]
     )
 
+    # Python 분석 결과 포함
+    quality_scores = result[:session_data]["quality_scores"] || []
+    latest_score = quality_scores.last
+
     render json: {
       success: true,
       current_step: result[:current_step],
       message: result[:response],
       progress: result[:progress],
-      final_content: result[:session_data]["final_content"]
+      final_content: result[:session_data]["final_content"],
+      quality_analysis: latest_score
     }
   end
 
@@ -1015,6 +1025,10 @@ class CoverLettersController < ApplicationController
   def destroy
     @cover_letter.destroy
     redirect_to cover_letters_path, notice: "\uC790\uAE30\uC18C\uAC1C\uC11C\uAC00 \uC0AD\uC81C\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
+  end
+
+  def guide
+    # 사용 가이드 페이지
   end
 
   private

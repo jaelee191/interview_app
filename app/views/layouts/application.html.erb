@@ -51,36 +51,29 @@
           
           <!-- Navigation Links -->
           <div class="hidden md:flex items-center space-x-6">
-            <%= link_to "서비스 소개", about_path, class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
-            <%= link_to "예비합격자에게", letter_path, class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
-            
-            <!-- 채용공고 분석 드롭다운 -->
+            <!-- 서비스 소개 드롭다운 -->
             <div class="relative group">
               <button class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium flex items-center">
-                채용공고 분석
+                서비스 소개
                 <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
               </button>
               <div class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <%= link_to "채용공고 분석", job_posting_cover_letters_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
-                <%= link_to "저장된 분석", saved_job_analyses_cover_letters_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
+                <%= link_to "서비스 철학", about_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
+                <%= link_to "예비합격자에게", letter_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
+                <%= link_to "자소서 작성 가이드", guide_cover_letters_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
+                <%= link_to "성공 사례", "#", class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
               </div>
             </div>
             
-            <!-- 기업 분석 드롭다운 -->
-            <div class="relative group">
-              <button class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium flex items-center">
-                기업 분석
-                <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </button>
-              <div class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <%= link_to "기업 분석", company_analysis_cover_letters_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
-                <%= link_to "저장된 분석", saved_company_analyses_cover_letters_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
-              </div>
-            </div>
+            <!-- 채용공고 분석 -->
+            <%= link_to "채용공고 분석", job_posting_cover_letters_path,
+                class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
+            
+            <!-- 기업 분석 -->
+            <%= link_to "기업 분석", company_analysis_cover_letters_path,
+                class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
             
             <!-- AI 자소서 작성 -->
             <%= link_to "AI 자소서 작성", interactive_cover_letters_path, 
@@ -90,25 +83,86 @@
             <%= link_to "심층 분석", advanced_cover_letters_path, 
                 class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
             
-            <%= link_to "이력 관리", cover_letters_path, class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
             <%= link_to "요금제", pricing_path, class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
           </div>
           
-          <!-- Auth Buttons -->
+          <!-- Auth Buttons & Mobile Menu -->
           <div class="flex items-center gap-4">
             <% if defined?(current_user) && current_user %>
-              <%= link_to user_profile_path(current_user.id), class: "text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors" do %>
-                프로필
-              <% end %>
-              <%= link_to "로그아웃", destroy_user_session_path, data: { "turbo-method": :delete }, class: "text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors" %>
+              <!-- 마이페이지 햄버거 메뉴 (데스크톱 & 모바일) -->
+              <div class="relative group">
+                <button class="p-2 text-gray-600 hover:text-gray-900 transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                  </svg>
+                </button>
+                <div class="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div class="px-4 py-3 border-b border-gray-100">
+                    <p class="text-sm font-medium text-gray-900">마이페이지</p>
+                  </div>
+                  <%= link_to "대시보드", mypage_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
+                  <%= link_to "내 프로필", user_profile_path(current_user.id), class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
+                  <%= link_to "저장된 채용공고", mypage_job_analyses_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
+                  <%= link_to "저장된 기업분석", mypage_company_analyses_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
+                  <%= link_to "내 자소서", mypage_cover_letters_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
+                  <%= link_to "계정 설정", edit_user_registration_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
+                  <div class="border-t border-gray-200 mt-2 pt-2">
+                    <%= link_to "로그아웃", destroy_user_session_path, data: { "turbo-method": :delete }, class: "block px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-b-lg" %>
+                  </div>
+                </div>
+              </div>
             <% else %>
-              <%= link_to "로그인", new_user_session_path, class: "text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors" %>
-              <%= link_to "시작하기", new_user_registration_path, class: "px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-full hover:bg-emerald-600 transition-colors" %>
+              <!-- 비로그인 시 버튼들 -->
+              <div class="hidden md:flex items-center gap-3">
+                <%= link_to "로그인", new_user_session_path, class: "text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors" %>
+                <%= link_to "시작하기", new_user_registration_path, class: "px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-full hover:bg-emerald-600 transition-colors" %>
+              </div>
+              <!-- 모바일 메뉴 버튼 (비로그인) -->
+              <button id="mobileMenuBtn" class="md:hidden p-2 text-gray-600 hover:text-gray-900">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+              </button>
             <% end %>
           </div>
         </div>
       </div>
     </nav>
+    
+    <!-- Mobile Menu (비로그인 사용자용) -->
+    <% unless defined?(current_user) && current_user %>
+      <div id="mobileMenu" class="hidden md:hidden fixed top-14 left-0 w-full bg-white border-b border-gray-100 shadow-lg z-40">
+        <div class="px-4 py-4 space-y-2">
+          <!-- 서비스 소개 섹션 -->
+          <div>
+            <button class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" onclick="toggleMobileSubmenu('serviceSubmenu')">
+              서비스 소개
+              <svg class="w-4 h-4 transform transition-transform" id="serviceArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div id="serviceSubmenu" class="hidden ml-4 mt-2 space-y-1">
+              <%= link_to "서비스 철학", about_path, class: "block px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded" %>
+              <%= link_to "예비합격자에게", letter_path, class: "block px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded" %>
+              <%= link_to "자소서 작성 가이드", guide_cover_letters_path, class: "block px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded" %>
+              <%= link_to "성공 사례", "#", class: "block px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded" %>
+            </div>
+          </div>
+          
+          <%= link_to "채용공고 분석", job_posting_cover_letters_path, class: "block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" %>
+          <%= link_to "기업 분석", company_analysis_cover_letters_path, class: "block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" %>
+          <%= link_to "AI 자소서 작성", interactive_cover_letters_path, class: "block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" %>
+          <%= link_to "심층 분석", advanced_cover_letters_path, class: "block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" %>
+          <%= link_to "요금제", pricing_path, class: "block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" %>
+          
+          <!-- Auth Links -->
+          <div class="border-t border-gray-100 pt-2 mt-2">
+            <%= link_to "로그인", new_user_session_path, class: "block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" %>
+            <%= link_to "시작하기", new_user_registration_path, class: "block px-3 py-2 text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg text-center" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
     
     <!-- Main Content -->
     <main class="pt-16">
@@ -167,5 +221,61 @@
         </div>
       </div>
     </footer>
+    <!-- JavaScript for Mobile Menu -->
+    <script>
+      // Mobile menu toggle
+      document.getElementById('mobileMenuBtn')?.addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        const isHidden = mobileMenu.classList.contains('hidden');
+        
+        if (isHidden) {
+          mobileMenu.classList.remove('hidden');
+          // Change hamburger to X
+          this.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+        } else {
+          mobileMenu.classList.add('hidden');
+          // Change X to hamburger
+          this.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>';
+        }
+      });
+      
+      // Mobile submenu toggle
+      function toggleMobileSubmenu(submenuId) {
+        const submenu = document.getElementById(submenuId);
+        const arrow = document.getElementById(submenuId.replace('Submenu', 'Arrow'));
+        
+        if (submenu.classList.contains('hidden')) {
+          // Close all other submenus first
+          document.querySelectorAll('[id$="Submenu"]').forEach(menu => {
+            if (menu.id !== submenuId) {
+              menu.classList.add('hidden');
+              const otherArrow = document.getElementById(menu.id.replace('Submenu', 'Arrow'));
+              if (otherArrow) otherArrow.classList.remove('rotate-180');
+            }
+          });
+          
+          // Open this submenu
+          submenu.classList.remove('hidden');
+          arrow.classList.add('rotate-180');
+        } else {
+          // Close this submenu
+          submenu.classList.add('hidden');
+          arrow.classList.remove('rotate-180');
+        }
+      }
+      
+      // Close mobile menu when clicking outside
+      document.addEventListener('click', function(e) {
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        
+        if (mobileMenu && mobileMenuBtn && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+          if (!mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
+            mobileMenuBtn.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>';
+          }
+        }
+      });
+    </script>
   </body>
 </html>

@@ -1,0 +1,172 @@
+<!-- Python NLP 분석 결과 표시 -->
+<% if @python_analysis.present? && !@python_analysis['error'] %>
+  <div class="mb-16">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">🔬 AI 품질 분석 결과</h2>
+    <div class="bg-white rounded-lg border-2 border-gray-200 p-8 shadow-sm">
+    
+      <!-- 종합 점수 -->
+      <div class="text-center mb-8 pb-8 border-b border-gray-200">
+        <h3 class="text-lg text-gray-600 mb-3">종합 품질 점수</h3>
+        <div class="text-5xl font-bold text-emerald-600 mb-4"><%= @python_analysis['quality_score'] %>점</div>
+        <div class="w-full max-w-md mx-auto bg-gray-200 rounded-full h-4">
+          <div class="bg-emerald-500 h-4 rounded-full transition-all duration-500" 
+               style="width: <%= @python_analysis['quality_score'] %>%"></div>
+        </div>
+      </div>
+    
+      <!-- 세부 분석 결과 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      
+        <!-- 가독성 -->
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-100">
+          <h4 class="font-semibold text-gray-900 mb-3 text-lg">📖 가독성</h4>
+        <div class="space-y-1 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-600">점수</span>
+            <span class="font-medium"><%= @python_analysis['readability']['score'] %>점</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">난이도</span>
+            <span class="font-medium"><%= @python_analysis['readability']['level'] %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">평균 문장 길이</span>
+            <span class="font-medium"><%= @python_analysis['readability']['avg_sentence_length'] %> 단어</span>
+          </div>
+        </div>
+      </div>
+      
+        <!-- AI 탐지 -->
+        <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-6 border border-purple-100">
+          <h4 class="font-semibold text-gray-900 mb-3 text-lg">🤖 AI 문체 탐지</h4>
+        <div class="space-y-1 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-600">AI 확률</span>
+            <span class="font-medium <%= @python_analysis['ai_detection']['ai_probability'] > 50 ? 'text-red-600' : 'text-green-600' %>">
+              <%= @python_analysis['ai_detection']['ai_probability'] %>%
+            </span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">위험도</span>
+            <span class="font-medium"><%= @python_analysis['ai_detection']['risk_level'] %></span>
+          </div>
+          <% if @python_analysis['ai_detection']['detected_patterns'].present? %>
+            <div class="mt-2">
+              <span class="text-gray-600">탐지된 패턴:</span>
+              <% @python_analysis['ai_detection']['detected_patterns'].first(3).each do |pattern| %>
+                <div class="text-xs text-gray-500 ml-2">• <%= pattern['pattern'] %> (<%= pattern['count'] %>회)</div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      
+        <!-- STAR 준수도 -->
+        <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg p-6 border border-yellow-100">
+          <h4 class="font-semibold text-gray-900 mb-3 text-lg">⭐ STAR 기법</h4>
+        <div class="space-y-1 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-600">전체 점수</span>
+            <span class="font-medium"><%= @python_analysis['star_compliance']['total_score'] %>점</span>
+          </div>
+          <% @python_analysis['star_compliance']['components'].each do |key, value| %>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 capitalize"><%= key %></span>
+              <span class="<%= value['found'] ? 'text-green-600' : 'text-red-600' %>">
+                <%= value['found'] ? '✓' : '✗' %>
+              </span>
+            </div>
+          <% end %>
+          <% if @python_analysis['star_compliance']['missing_components'].present? %>
+            <div class="text-xs text-red-600 mt-1">
+              누락: <%= @python_analysis['star_compliance']['missing_components'].join(', ') %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      
+        <!-- 진정성 -->
+        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg p-6 border border-emerald-100">
+          <h4 class="font-semibold text-gray-900 mb-3 text-lg">💎 진정성</h4>
+        <div class="space-y-1 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-600">점수</span>
+            <span class="font-medium"><%= @python_analysis['authenticity']['score'] %>점</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">수준</span>
+            <span class="font-medium"><%= @python_analysis['authenticity']['level'] %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">구체적 내용</span>
+            <span class="font-medium"><%= @python_analysis['authenticity']['specific_details'] %>개</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">개인 표현</span>
+            <span class="font-medium"><%= @python_analysis['authenticity']['personal_expressions'] %>개</span>
+          </div>
+        </div>
+      </div>
+      
+      </div>
+      
+      <!-- 기본 통계 -->
+      <div class="bg-gray-50 rounded-lg p-6">
+        <h4 class="font-semibold text-gray-900 mb-4 text-lg">📊 기본 통계</h4>
+        <div class="grid grid-cols-3 md:grid-cols-5 gap-4">
+          <div class="text-center bg-white rounded-lg p-3">
+            <div class="text-xs text-gray-600 mb-1">글자수</div>
+            <div class="font-bold text-lg text-gray-900"><%= @python_analysis['basic_stats']['char_count'] %></div>
+          </div>
+          <div class="text-center bg-white rounded-lg p-3">
+            <div class="text-xs text-gray-600 mb-1">단어수</div>
+            <div class="font-bold text-lg text-gray-900"><%= @python_analysis['basic_stats']['word_count'] %></div>
+          </div>
+          <div class="text-center bg-white rounded-lg p-3">
+            <div class="text-xs text-gray-600 mb-1">문장수</div>
+            <div class="font-bold text-lg text-gray-900"><%= @python_analysis['basic_stats']['sentence_count'] %></div>
+          </div>
+          <div class="text-center bg-white rounded-lg p-3">
+            <div class="text-xs text-gray-600 mb-1">문단수</div>
+            <div class="font-bold text-lg text-gray-900"><%= @python_analysis['basic_stats']['paragraph_count'] %></div>
+          </div>
+          <div class="text-center bg-white rounded-lg p-3">
+            <div class="text-xs text-gray-600 mb-1">진부표현</div>
+            <div class="font-bold text-lg <%= @python_analysis['keyword_analysis']['cliche_count'] > 5 ? 'text-red-600' : 'text-gray-900' %>">
+              <%= @python_analysis['keyword_analysis']['cliche_count'] %>개
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- 개선 제안 -->
+      <% if @python_analysis['suggestions'].present? && @python_analysis['suggestions'].any? %>
+        <div class="bg-amber-50 rounded-lg p-6 border border-amber-200">
+          <h4 class="font-semibold text-gray-900 mb-4 text-lg">💡 개선 제안</h4>
+          <ul class="space-y-3">
+            <% @python_analysis['suggestions'].each do |suggestion| %>
+              <li class="text-gray-700 flex items-start">
+                <span class="text-amber-600 mr-3 text-lg">▸</span>
+                <span class="leading-relaxed"><%= suggestion %></span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    
+      <!-- 주요 키워드 -->
+      <% if @python_analysis['keyword_analysis']['top_keywords'].present? %>
+        <div class="mt-6">
+          <h4 class="font-semibold text-gray-900 mb-4 text-lg">🔑 주요 키워드</h4>
+          <div class="flex flex-wrap gap-3">
+            <% @python_analysis['keyword_analysis']['top_keywords'].each do |keyword| %>
+              <span class="inline-block px-4 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full font-medium">
+                <%= keyword['word'] %> <span class="text-emerald-500">×<%= keyword['count'] %></span>
+              </span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

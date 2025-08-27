@@ -1,251 +1,159 @@
-<div class="min-h-screen bg-white">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Profile Header -->
-    <div class="bg-white rounded-lg border border-gray-100 p-8 mb-8">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- 페이지 헤더 -->
+  <div class="bg-white rounded-lg border border-gray-100 p-8 mb-8">
+    <div class="mb-6">
+      <div class="flex items-center gap-3 mb-2">
+        <%= link_to "마이페이지", mypage_path, class: "text-gray-500 hover:text-gray-700" %>
+        <span class="text-gray-400">/</span>
+        <span class="text-gray-900 font-medium">내 프로필</span>
+      </div>
       <div class="flex items-start justify-between">
-        <div class="flex items-center space-x-6">
-          <!-- Profile Avatar -->
-          <div class="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center">
-            <span class="text-white text-3xl font-bold">
-              <%= @user_profile.name.present? ? @user_profile.name[0].upcase : current_user.email[0].upcase %>
-            </span>
-          </div>
-          
-          <!-- Profile Info -->
-          <div>
-            <h1 class="text-3xl font-bold text-gray-900">
-              <%= @user_profile.name || "프로필을 완성해주세요" %>
-            </h1>
-            <p class="text-gray-600 mt-1"><%= current_user.email %></p>
-            <div class="flex items-center gap-4 mt-3">
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
-                <%= @user_profile.education || "학력 미입력" %>
-              </span>
-              <span class="text-sm text-gray-500">
-                가입일: <%= current_user.created_at.strftime("%Y년 %m월 %d일") %>
-              </span>
-            </div>
-          </div>
+        <div>
+          <h1 class="text-3xl font-semibold text-gray-900">
+            <%= @user_profile.name || "이름을 입력해주세요" %>
+          </h1>
+          <p class="text-gray-600 mt-2">자소서 작성에 필요한 기본 정보를 관리합니다</p>
         </div>
-        
-        <!-- Edit Button -->
-        <%= link_to edit_user_profile_path(@user_profile), class: "inline-flex items-center px-4 py-2 border border-gray-200 rounded-full text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" do %>
-          프로필 수정
+        <%= link_to "프로필 수정", edit_user_profile_path(@user_profile), 
+            class: "px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- 기본 정보 -->
+    <div class="bg-white rounded-lg border border-gray-100 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">기본 정보</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">이름</label>
+          <p class="text-gray-900"><%= @user_profile.name || "-" %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">이메일</label>
+          <p class="text-gray-900"><%= current_user.email %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">희망 직무</label>
+          <p class="text-gray-900"><%= @user_profile.desired_position || "-" %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">최종학력</label>
+          <p class="text-gray-900"><%= @user_profile.education || "-" %></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 경력 사항 -->
+    <div class="bg-white rounded-lg border border-gray-100 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-gray-900">경력 사항</h2>
+        <%= link_to "+ 추가", edit_user_profile_path(@user_profile), 
+            class: "text-sm text-emerald-600 hover:text-emerald-700" %>
+      </div>
+      
+      <% if @career_history.any? %>
+        <div class="space-y-3">
+          <% @career_history.each do |career| %>
+            <div class="pb-3 border-b border-gray-100 last:border-0">
+              <h3 class="font-medium text-gray-900"><%= career['company'] %></h3>
+              <p class="text-sm text-gray-600"><%= career['position'] %></p>
+              <p class="text-xs text-gray-500 mt-1"><%= career['duration'] %></p>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-sm text-gray-500 text-center py-8">경력사항을 추가해주세요</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- 핵심 역량 -->
+  <div class="bg-white rounded-lg border border-gray-100 p-6 mt-8">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-gray-900">보유 기술</h2>
+      <%= link_to "수정", edit_user_profile_path(@user_profile), 
+          class: "text-sm text-emerald-600 hover:text-emerald-700" %>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-2">프로그래밍 언어</label>
+        <% if @user_profile.programming_languages.present? %>
+          <div class="flex flex-wrap gap-2">
+            <% @user_profile.programming_languages.split(',').each do |lang| %>
+              <span class="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-sm">
+                <%= lang.strip %>
+              </span>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-sm text-gray-500">프로그래밍 언어를 추가해주세요</p>
+        <% end %>
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-2">프레임워크</label>
+        <% if @user_profile.frameworks.present? %>
+          <div class="flex flex-wrap gap-2">
+            <% @user_profile.frameworks.split(',').each do |framework| %>
+              <span class="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
+                <%= framework.strip %>
+              </span>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-sm text-gray-500">프레임워크를 추가해주세요</p>
         <% end %>
       </div>
     </div>
+  </div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-      <div class="bg-white rounded-lg border border-gray-100 p-6">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 p-3 bg-gray-50 rounded-lg">
-            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">작성한 자소서</p>
-            <p class="text-2xl font-bold text-gray-900"><%= @recent_analyses.count %></p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="bg-white rounded-lg border border-gray-100 p-6">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 p-3 bg-gray-50 rounded-lg">
-            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-            </svg>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">경력 사항</p>
-            <p class="text-2xl font-bold text-gray-900"><%= @career_history.size %></p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="bg-white rounded-lg border border-gray-100 p-6">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 p-3 bg-gray-50 rounded-lg">
-            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-            </svg>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">프로젝트</p>
-            <p class="text-2xl font-bold text-gray-900"><%= @projects.size %></p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="bg-white rounded-lg border border-gray-100 p-6">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 p-3 bg-gray-50 rounded-lg">
-            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">온톨로지 분석</p>
-            <p class="text-2xl font-bold text-gray-900"><%= @ontology_analyses.count %></p>
-          </div>
-        </div>
-      </div>
+  <!-- 자기소개 -->
+  <div class="bg-white rounded-lg border border-gray-100 p-6 mt-8">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-gray-900">자기소개</h2>
+      <%= link_to "수정", edit_user_profile_path(@user_profile), 
+          class: "text-sm text-emerald-600 hover:text-emerald-700" %>
     </div>
+    
+    <% if @user_profile.introduction.present? %>
+      <p class="text-gray-700 leading-relaxed"><%= @user_profile.introduction %></p>
+    <% else %>
+      <p class="text-sm text-gray-500 text-center py-8">
+        간단한 자기소개를 작성해주세요.<br>
+        이 내용은 자소서 작성 시 AI가 참고합니다.
+      </p>
+    <% end %>
+  </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- Left Column: Career & Projects -->
-      <div class="lg:col-span-2 space-y-8">
-        <!-- Career History -->
-        <div class="bg-white rounded-lg border border-gray-100 p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-gray-900">경력 사항</h2>
-            <%= link_to edit_user_profile_path(@user_profile), class: "text-emerald-600 hover:text-emerald-700 text-sm font-medium" do %>
-              + 경력 추가
-            <% end %>
-          </div>
-          
-          <% if @career_history.any? %>
-            <div class="space-y-4">
-              <% @career_history.each do |career| %>
-                <div class="border-l-4 border-emerald-500 pl-4 py-2">
-                  <div class="flex items-start justify-between">
-                    <div>
-                      <h3 class="font-semibold text-gray-900"><%= career['company'] %></h3>
-                      <p class="text-gray-600"><%= career['position'] %></p>
-                      <p class="text-sm text-gray-500 mt-1"><%= career['duration'] %></p>
-                      <% if career['achievements'].present? %>
-                        <p class="text-sm text-gray-700 mt-2"><%= career['achievements'] %></p>
-                      <% end %>
-                    </div>
-                  </div>
-                </div>
-              <% end %>
-            </div>
-          <% else %>
-            <div class="text-center py-8">
-              <p class="mt-2 text-sm text-gray-500">아직 등록된 경력이 없습니다</p>
-              <%= link_to "경력 추가하기", edit_user_profile_path(@user_profile), class: "mt-3 inline-flex items-center px-4 py-2 text-sm font-medium rounded-full text-white bg-emerald-500 hover:bg-emerald-600" %>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Projects -->
-        <div class="bg-white rounded-lg border border-gray-100 p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-gray-900">프로젝트</h2>
-            <%= link_to edit_user_profile_path(@user_profile), class: "text-emerald-600 hover:text-emerald-700 text-sm font-medium" do %>
-              + 프로젝트 추가
-            <% end %>
-          </div>
-          
-          <% if @projects.any? %>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <% @projects.each do |project| %>
-                <div class="border border-gray-100 rounded-lg p-4 hover:border-gray-200 transition">
-                  <h3 class="font-semibold text-gray-900"><%= project['name'] %></h3>
-                  <p class="text-sm text-gray-600 mt-1"><%= project['role'] %> • <%= project['duration'] %></p>
-                  <% if project['description'].present? %>
-                    <p class="text-sm text-gray-700 mt-2"><%= project['description'] %></p>
-                  <% end %>
-                  <% if project['tech_stack'].present? %>
-                    <div class="mt-2 flex flex-wrap gap-1">
-                      <% project['tech_stack'].split(',').each do |tech| %>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
-                          <%= tech.strip %>
-                        </span>
-                      <% end %>
-                    </div>
-                  <% end %>
-                </div>
-              <% end %>
-            </div>
-          <% else %>
-            <div class="text-center py-8">
-              <p class="mt-2 text-sm text-gray-500">아직 등록된 프로젝트가 없습니다</p>
-              <%= link_to "프로젝트 추가하기", edit_user_profile_path(@user_profile), class: "mt-3 inline-flex items-center px-4 py-2 text-sm font-medium rounded-full text-white bg-emerald-500 hover:bg-emerald-600" %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-
-      <!-- Right Column: Skills & Recent Activities -->
-      <div class="space-y-8">
-        <!-- Technical Skills -->
-        <div class="bg-white rounded-lg border border-gray-100 p-6">
-          <h2 class="text-xl font-bold text-gray-900 mb-4">기술 스택</h2>
-          <% if @technical_skills.is_a?(Array) && @technical_skills.any? %>
-            <div class="flex flex-wrap gap-2">
-              <% @technical_skills.each do |skill| %>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
-                  <%= skill %>
-                </span>
-              <% end %>
-            </div>
-          <% elsif @technical_skills.is_a?(String) && @technical_skills.present? %>
-            <div class="flex flex-wrap gap-2">
-              <% @technical_skills.split(',').each do |skill| %>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
-                  <%= skill.strip %>
-                </span>
-              <% end %>
-            </div>
-          <% else %>
-            <p class="text-sm text-gray-500">기술 스택을 추가해주세요</p>
-          <% end %>
-        </div>
-
-        <!-- Recent Analyses -->
-        <div class="bg-white rounded-lg border border-gray-100 p-6">
-          <h2 class="text-xl font-bold text-gray-900 mb-4">최근 자소서 분석</h2>
-          <% if @recent_analyses.any? %>
-            <div class="space-y-3">
-              <% @recent_analyses.each do |analysis| %>
-                <%= link_to cover_letter_path(analysis), class: "block p-3 rounded-lg hover:bg-gray-50 transition" do %>
-                  <div class="flex items-start justify-between">
-                    <div>
-                      <p class="font-medium text-gray-900"><%= analysis.company_name || "제목 없음" %></p>
-                      <p class="text-sm text-gray-600"><%= analysis.position || "직무 미지정" %></p>
-                      <p class="text-xs text-gray-500 mt-1"><%= analysis.created_at.strftime("%Y.%m.%d") %></p>
-                    </div>
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                  </div>
-                <% end %>
-              <% end %>
-            </div>
-          <% else %>
-            <p class="text-sm text-gray-500">아직 분석한 자소서가 없습니다</p>
-          <% end %>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="bg-emerald-500 rounded-lg p-6 text-white">
-          <h2 class="text-xl font-bold mb-4">빠른 시작</h2>
-          <div class="space-y-3">
-            <%= link_to job_posting_cover_letters_path, class: "flex items-center justify-between p-3 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition" do %>
-              <span class="font-medium">채용공고 분석하기</span>
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            <% end %>
-            <%= link_to interactive_cover_letters_path, class: "flex items-center justify-between p-3 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition" do %>
-              <span class="font-medium">AI 자소서 작성</span>
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            <% end %>
-            <%= link_to ontology_input_cover_letters_path, class: "flex items-center justify-between p-3 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition" do %>
-              <span class="font-medium">온톨로지 분석</span>
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            <% end %>
-          </div>
-        </div>
-      </div>
+  <!-- 빠른 작업 -->
+  <div class="bg-gray-50 rounded-lg p-6 mt-8">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">자소서 작성 시작하기</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <%= link_to job_posting_cover_letters_path, 
+          class: "text-center p-4 bg-white rounded-lg hover:shadow-md transition-shadow" do %>
+        <div class="text-2xl mb-2">📋</div>
+        <div class="text-sm font-medium text-gray-700">채용공고 분석</div>
+      <% end %>
+      
+      <%= link_to company_analysis_cover_letters_path, 
+          class: "text-center p-4 bg-white rounded-lg hover:shadow-md transition-shadow" do %>
+        <div class="text-2xl mb-2">🏢</div>
+        <div class="text-sm font-medium text-gray-700">기업 분석</div>
+      <% end %>
+      
+      <%= link_to interactive_cover_letters_path, 
+          class: "text-center p-4 bg-white rounded-lg hover:shadow-md transition-shadow" do %>
+        <div class="text-2xl mb-2">✍️</div>
+        <div class="text-sm font-medium text-gray-700">AI 자소서 작성</div>
+      <% end %>
+      
+      <%= link_to advanced_cover_letters_path, 
+          class: "text-center p-4 bg-white rounded-lg hover:shadow-md transition-shadow" do %>
+        <div class="text-2xl mb-2">🔍</div>
+        <div class="text-sm font-medium text-gray-700">심층 분석</div>
+      <% end %>
     </div>
   </div>
 </div>

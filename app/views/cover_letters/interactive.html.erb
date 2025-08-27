@@ -1,4 +1,59 @@
 <!-- AI Interactive Cover Letter -->
+<style>
+  @keyframes blink {
+    0%, 60%, 100% { opacity: 1; }
+    30% { opacity: 0; }
+  }
+  
+  .typing-indicator .dot-1 { animation: blink 1.4s infinite 0.2s; }
+  .typing-indicator .dot-2 { animation: blink 1.4s infinite 0.4s; }
+  .typing-indicator .dot-3 { animation: blink 1.4s infinite 0.6s; }
+  
+  #messagesArea::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  #messagesArea::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 10px;
+  }
+  
+  #messagesArea::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 10px;
+  }
+  
+  #messagesArea::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+  
+  /* 메시지 가독성 향상 */
+  #messagesArea {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: #fafafa;
+  }
+  
+  /* 메시지 애니메이션 */
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  #messagesArea > div {
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  /* 입력 필드 포커스 스타일 */
+  #messageInput:focus {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  }
+</style>
 <div class="min-h-screen bg-white">
   <!-- Hero Section -->
   <div class="bg-gray-50 border-b border-gray-100 py-16">
@@ -73,20 +128,20 @@
         </div>
         
         <!-- Messages Area -->
-        <div id="messagesArea" class="p-6 max-h-96 overflow-y-auto space-y-4">
+        <div id="messagesArea" class="p-6 min-h-[400px] max-h-[500px] overflow-y-auto">
           <!-- Messages will appear here -->
         </div>
         
         <!-- Input Area -->
-        <div class="border-t border-gray-100 p-6">
+        <div class="border-t border-gray-100 p-6 bg-white">
           <div class="flex gap-3">
             <input type="text" 
                    id="messageInput" 
                    placeholder="여기에 답변을 입력하세요..."
-                   class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                   class="flex-1 px-5 py-3.5 text-base border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent placeholder-gray-400"
                    disabled>
             <button id="sendMessage" 
-                    class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+                    class="px-8 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-xl transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-base"
                     disabled>
               전송
             </button>
@@ -94,14 +149,31 @@
         </div>
       </div>
       
-      <!-- Progress Indicator -->
-      <div class="bg-white rounded-lg border border-gray-100 p-4 mb-6">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm font-medium text-gray-700">진행률</span>
-          <span id="progressText" class="text-sm text-gray-500">0/7 단계</span>
+      <!-- Progress and Quality Indicators -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <!-- Progress Indicator -->
+        <div class="bg-white rounded-lg border border-gray-100 p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-gray-700">진행률</span>
+            <span id="progressText" class="text-sm text-gray-500">0/7 단계</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div id="progressBar" class="bg-emerald-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
         </div>
-        <div class="w-full bg-gray-200 rounded-full h-2">
-          <div id="progressBar" class="bg-emerald-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+        
+        <!-- Quality Score Indicator -->
+        <div id="qualityIndicator" class="bg-white rounded-lg border border-gray-100 p-4 hidden">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-gray-700">답변 품질</span>
+            <span id="qualityScore" class="text-sm font-bold text-emerald-600">0점</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div id="qualityBar" class="bg-emerald-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div id="qualityTips" class="mt-2 text-xs text-gray-600 hidden">
+            <!-- Tips will be added here -->
+          </div>
         </div>
       </div>
       
@@ -179,6 +251,11 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   function startInteractiveSession() {
+    console.log('Starting interactive session with:', conversationData);
+    
+    // Show loading state
+    addMessage('ai', '대화를 준비하고 있습니다...');
+    
     fetch('/cover_letters/start_interactive', {
       method: 'POST',
       headers: {
@@ -190,26 +267,46 @@ document.addEventListener('DOMContentLoaded', function() {
         position: conversationData.position
       })
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        chatSession = data.session_id;
-        addMessage('ai', data.first_question);
-        enableInput();
+    .then(response => {
+      console.log('Response status:', response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Response data:', data);
+      if (data.success) {
+        // Clear loading message
+        messagesArea.innerHTML = '';
+        
+        chatSession = data.session_id || data.current_step;
+        addMessage('ai', data.message || data.first_question || '안녕하세요! 자소서 작성을 도와드리겠습니다.');
+        enableInput();
+        updateProgress();
+      } else {
+        throw new Error(data.error || '세션 시작 실패');
+      }
+    })
+    .catch(error => {
+      console.error('Error starting session:', error);
+      alert(`오류가 발생했습니다: ${error.message}`);
+      // Re-show start screen on error
+      startScreen.classList.remove('hidden');
+      chatInterface.classList.add('hidden');
     });
   }
   
   function addMessage(sender, content) {
     const messageDiv = document.createElement('div');
-    messageDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+    messageDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`;
     
     const messageContent = `
       <div class="${sender === 'user' 
         ? 'bg-emerald-500 text-white' 
-        : 'bg-gray-100 text-gray-900'} 
-        max-w-md px-4 py-3 rounded-lg">
-        <div class="text-sm">${content}</div>
+        : 'bg-gray-50 text-gray-900 border border-gray-200'} 
+        max-w-lg px-5 py-4 rounded-2xl shadow-sm">
+        <div class="text-base leading-relaxed whitespace-pre-wrap">${content}</div>
       </div>
     `;
     
@@ -248,10 +345,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const message = messageInput.value.trim();
     if (!message) return;
     
+    console.log('Sending message:', message);
+    
     // Add user message
     addMessage('user', message);
     messageInput.value = '';
     disableInput();
+    
+    // Show typing indicator
+    const typingIndicator = document.createElement('div');
+    typingIndicator.className = 'flex justify-start typing-indicator mb-4';
+    typingIndicator.innerHTML = `
+      <div class="bg-gray-50 text-gray-600 border border-gray-200 px-5 py-4 rounded-2xl shadow-sm max-w-[120px]">
+        <span class="inline-block text-base">작성 중</span>
+        <span class="inline-block ml-1 text-base">
+          <span class="dot-1">.</span>
+          <span class="dot-2">.</span>
+          <span class="dot-3">.</span>
+        </span>
+      </div>
+    `;
+    messagesArea.appendChild(typingIndicator);
+    messagesArea.scrollTop = messagesArea.scrollHeight;
     
     // Send to server
     fetch('/cover_letters/send_message', {
@@ -265,27 +380,95 @@ document.addEventListener('DOMContentLoaded', function() {
         message: message
       })
     })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
     .then(data => {
+      console.log('Response:', data);
+      
+      // Remove typing indicator
+      const indicator = messagesArea.querySelector('.typing-indicator');
+      if (indicator) indicator.remove();
+      
       if (data.success) {
         // Add AI response
-        addMessage('ai', data.ai_response);
+        addMessage('ai', data.ai_response || data.message || '응답을 받았습니다.');
         
         // Update progress
         updateProgress();
         
+        // Update quality analysis if available
+        if (data.quality_analysis) {
+          updateQualityIndicator(data.quality_analysis);
+        }
+        
         // Check if completed
-        if (data.completed) {
-          showFinalResult(data.cover_letter);
+        if (data.completed || data.final_content) {
+          showFinalResult(data.final_content || data.cover_letter);
         } else {
           enableInput();
         }
+      } else {
+        throw new Error(data.error || '메시지 전송 실패');
       }
     })
     .catch(error => {
-      console.error('Error:', error);
+      console.error('Error sending message:', error);
+      
+      // Remove typing indicator
+      const indicator = messagesArea.querySelector('.typing-indicator');
+      if (indicator) indicator.remove();
+      
+      addMessage('ai', '죄송합니다. 오류가 발생했습니다. 다시 시도해주세요.');
       enableInput();
     });
+  }
+  
+  function updateQualityIndicator(analysis) {
+    const qualityIndicator = document.getElementById('qualityIndicator');
+    const qualityScore = document.getElementById('qualityScore');
+    const qualityBar = document.getElementById('qualityBar');
+    const qualityTips = document.getElementById('qualityTips');
+    
+    if (!analysis) return;
+    
+    // Show quality indicator
+    qualityIndicator.classList.remove('hidden');
+    
+    // Update score
+    let score = 0;
+    if (analysis.quality_score && analysis.quality_score.overall) {
+      score = Math.round(analysis.quality_score.overall);
+    }
+    
+    qualityScore.textContent = `${score}점`;
+    qualityBar.style.width = `${score}%`;
+    
+    // Update bar color based on score
+    if (score < 60) {
+      qualityBar.className = 'bg-red-500 h-2 rounded-full transition-all duration-500';
+      qualityScore.className = 'text-sm font-bold text-red-600';
+    } else if (score < 80) {
+      qualityBar.className = 'bg-yellow-500 h-2 rounded-full transition-all duration-500';
+      qualityScore.className = 'text-sm font-bold text-yellow-600';
+    } else {
+      qualityBar.className = 'bg-emerald-500 h-2 rounded-full transition-all duration-500';
+      qualityScore.className = 'text-sm font-bold text-emerald-600';
+    }
+    
+    // Show improvement tips if available
+    if (analysis.improvement_tips && analysis.improvement_tips.length > 0) {
+      qualityTips.classList.remove('hidden');
+      qualityTips.innerHTML = analysis.improvement_tips
+        .slice(0, 2) // Show max 2 tips
+        .map(tip => `<div class="mb-1">${tip}</div>`)
+        .join('');
+    } else {
+      qualityTips.classList.add('hidden');
+    }
   }
   
   function showFinalResult(coverLetter) {

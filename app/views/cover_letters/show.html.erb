@@ -1,242 +1,165 @@
-<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-  <!-- Page Header -->
-  <div class="border-b border-gray-100 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-3xl font-bold text-gray-900">분석 결과</h1>
-          <p class="text-gray-600 mt-2"><%= @cover_letter.title %></p>
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <!-- 페이지 헤더 -->
+  <div class="text-center mb-12">
+    <h1 class="text-2xl font-semibold text-gray-900 mb-3">
+      자소서 분석 결과
+    </h1>
+    <p class="text-base text-gray-600">
+      당신의 경험과 역량을 분석했습니다
+    </p>
+        
+    
+  </div>
+
+  <!-- 분석 정보 카드 -->
+  <div class="bg-gray-50 rounded-lg border border-gray-100 p-6 mb-12">
+    <div class="flex flex-wrap items-center justify-center gap-6">
+      <% if @cover_letter.company_name.present? %>
+        <div class="flex items-center gap-2">
+          <span class="text-gray-500">지원 기업</span>
+          <span class="font-semibold text-gray-900"><%= @cover_letter.company_name %></span>
         </div>
-        <div class="flex space-x-3">
-          <%= link_to new_cover_letter_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium" do %>
-            새 분석
-          <% end %>
-          <%= link_to cover_letters_path, class: "inline-flex items-center text-sm font-medium text-gray-700 hover:text-black transition-colors" do %>
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
-            </svg>
-            목록
-          <% end %>
+      <% end %>
+      <% if @cover_letter.position.present? %>
+        <div class="flex items-center gap-2">
+          <span class="text-gray-500">지원 직무</span>
+          <span class="font-semibold text-gray-900"><%= @cover_letter.position %></span>
         </div>
+      <% end %>
+      <div class="flex items-center gap-2">
+        <span class="text-gray-500">분석일</span>
+        <span class="font-semibold text-gray-900"><%= @cover_letter.created_at.strftime("%Y.%m.%d") %></span>
       </div>
     </div>
   </div>
-  
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- PDF 분석인 경우 전체 너비 사용 -->
-    <% if @cover_letter.deep_analysis_data && @cover_letter.deep_analysis_data['structured_content'] %>
-      <div class="space-y-6">
-        <!-- PDF 구조화 분석 결과 (있을 경우) -->
-        <% if @cover_letter.deep_analysis_data && @cover_letter.deep_analysis_data['structured_content'] %>
-          <% structured = @cover_letter.deep_analysis_data['structured_content'] %>
-          <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200 p-6">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">📄 PDF 구조 분석</h3>
-            <div class="grid grid-cols-2 gap-4">
-              <div class="bg-white rounded-lg p-4">
-                <h4 class="font-semibold text-gray-700 mb-2">📋 이력서 섹션</h4>
-                <p class="text-sm text-gray-600">
-                  페이지: <%= structured['resume']['pages'].join(', ') rescue '미확인' %><br>
-                  단어 수: <%= structured['resume']['word_count'] rescue 0 %>개
-                </p>
-              </div>
-              <div class="bg-white rounded-lg p-4">
-                <h4 class="font-semibold text-gray-700 mb-2">✍️ 자기소개서 섹션</h4>
-                <p class="text-sm text-gray-600">
-                  페이지: <%= structured['cover_letter']['pages'].join(', ') rescue '미확인' %><br>
-                  단어 수: <%= structured['cover_letter']['word_count'] rescue 0 %>개
-                </p>
-              </div>
-            </div>
+
+  <!-- Python NLP 분석 결과 -->
+  <% if @cover_letter.deep_analysis_data && @cover_letter.deep_analysis_data['python_analysis'] %>
+    <% @python_analysis = @cover_letter.deep_analysis_data['python_analysis'] %>
+    <%= render 'python_analysis_result' %>
+  <% end %>
+
+  <!-- 메인 분석 결과 -->
+  <% if @cover_letter.analysis_result.present? %>
+    <!-- AI 분석 결과 섹션별 표시 -->
+    <% sections = parse_analysis_sections(@cover_letter.analysis_result) %>
+    
+    <% if sections[:first_impression].present? %>
+      <div class="mb-16">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">🎯 첫인상 & 전체 평가</h2>
+        <div class="bg-white rounded-xl shadow-sm p-8">
+          <div class="text-gray-700 leading-loose space-y-4">
+            <%= TextFormatterService.new.format_full_analysis(sections[:first_impression]) %>
           </div>
-          
-          <!-- 이력서 분석 -->
-          <% if @cover_letter.deep_analysis_data['analysis'] && @cover_letter.deep_analysis_data['analysis']['resume'] %>
-            <div class="bg-white rounded-xl border border-gray-100 p-8">
-              <h3 class="text-xl font-bold text-gray-900 mb-4">📋 이력서 분석</h3>
-              <div class="prose prose-sm max-w-none">
-                <div class="bg-blue-50 rounded-lg p-6">
-                  <pre class="whitespace-pre-wrap text-gray-800 text-sm leading-relaxed font-sans"><%= @cover_letter.deep_analysis_data['analysis']['resume'] %></pre>
-                </div>
-              </div>
-            </div>
-          <% end %>
-          
-          <!-- 자기소개서 분석 -->
-          <% if @cover_letter.deep_analysis_data['analysis'] && @cover_letter.deep_analysis_data['analysis']['cover_letter'] %>
-            <div class="bg-white rounded-xl border border-gray-100 p-8">
-              <h3 class="text-xl font-bold text-gray-900 mb-4">✍️ 자기소개서 분석</h3>
-              <div class="prose prose-sm max-w-none">
-                <div class="bg-green-50 rounded-lg p-6">
-                  <pre class="whitespace-pre-wrap text-gray-800 text-sm leading-relaxed font-sans"><%= @cover_letter.deep_analysis_data['analysis']['cover_letter'] %></pre>
-                </div>
-              </div>
-            </div>
-          <% end %>
-        <% end %>
-        
-        <!-- 기존 분석 결과 -->
-        <% if @cover_letter.analysis_result.present? %>
-          <div class="bg-white rounded-xl border border-gray-100 p-8">
-            <div class="flex items-center justify-between mb-6">
-              <h2 class="text-2xl font-bold text-gray-900">AI 종합 분석</h2>
-              <% if @analysis_sections && @analysis_sections[:overall_score] %>
-                <div class="flex items-center">
-                  <span class="text-3xl font-bold <%= score_color(@analysis_sections[:overall_score]) %>">
-                    <%= @analysis_sections[:overall_score] %>
-                  </span>
-                  <span class="text-lg text-gray-500 ml-1">/100</span>
-                </div>
-              <% end %>
-            </div>
-            
-            <!-- 분석 내용 -->
-            <div class="prose prose-lg max-w-none">
-              <div class="bg-gray-50 rounded-lg p-6 mb-6">
-                <pre class="whitespace-pre-wrap text-gray-800 text-sm leading-relaxed font-sans"><%= @cover_letter.analysis_result %></pre>
-              </div>
-            </div>
-            
-            <!-- 액션 버튼 -->
-            <div class="mt-8 pt-6 border-t border-gray-200">
-              <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                  <%= button_to rewrite_with_feedback_cover_letter_path(@cover_letter), 
-                      method: :post,
-                      class: "inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all font-medium shadow-lg" do %>
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
-                    피드백 반영하여 자소서 리라이트하기
-                  <% end %>
-                  <p class="text-sm text-gray-500">
-                    AI 피드백을 바탕으로 개선된 자기소개서를 자동 생성합니다
-                  </p>
-                </div>
-                <div class="flex space-x-3">
-                  <button class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all text-sm font-medium">
-                    도움됨
-                  </button>
-                  <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-sm font-medium">
-                    보통
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        <% else %>
-          <!-- 분석 중 또는 실패 -->
-          <div class="bg-white rounded-xl border border-gray-100 p-16 text-center">
-            <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg class="w-10 h-10 text-yellow-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">분석 중입니다</h3>
-            <p class="text-gray-600">AI가 자기소개서를 분석하고 있습니다. 잠시만 기다려주세요...</p>
-          </div>
-        <% end %>
-      </div>
-    <!-- 일반 분석인 경우 - 전체 너비로 분석 결과만 표시 -->
-    <% else %>
-      <div class="space-y-6">
-          <!-- 간단한 정보 표시 -->
-          <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-6">
-                <% if @cover_letter.company_name.present? %>
-                  <div>
-                    <span class="text-sm text-gray-600">지원 기업:</span>
-                    <span class="font-semibold text-gray-900 ml-1"><%= @cover_letter.company_name %></span>
-                  </div>
-                <% end %>
-                <% if @cover_letter.position.present? %>
-                  <div>
-                    <span class="text-sm text-gray-600">지원 직무:</span>
-                    <span class="font-semibold text-gray-900 ml-1"><%= @cover_letter.position %></span>
-                  </div>
-                <% end %>
-                <div>
-                  <span class="text-sm text-gray-600">분석 일시:</span>
-                  <span class="font-semibold text-gray-900 ml-1"><%= @cover_letter.created_at.strftime("%Y.%m.%d %H:%M") %></span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <% if @cover_letter.analysis_result.present? %>
-            <div class="bg-white rounded-xl border border-gray-100 p-8">
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-gray-900">AI 분석 결과</h2>
-                <% if @analysis_sections && @analysis_sections[:overall_score] %>
-                  <div class="flex items-center">
-                    <span class="text-3xl font-bold <%= score_color(@analysis_sections[:overall_score]) %>">
-                      <%= @analysis_sections[:overall_score] %>
-                    </span>
-                    <span class="text-lg text-gray-500 ml-1">/100</span>
-                  </div>
-                <% end %>
-              </div>
-              
-              <!-- 분석 내용 -->
-              <div class="prose prose-lg max-w-none">
-                <div class="bg-gray-50 rounded-lg p-6 mb-6">
-                  <pre class="whitespace-pre-wrap text-gray-800 text-sm leading-relaxed font-sans"><%= @cover_letter.analysis_result %></pre>
-                </div>
-              </div>
-              
-              <!-- 액션 버튼 -->
-              <div class="mt-8 pt-6 border-t border-gray-200">
-                <div class="flex justify-between items-center">
-                  <div class="flex items-center space-x-3">
-                    <%= button_to rewrite_with_feedback_cover_letter_path(@cover_letter), 
-                        method: :post,
-                        class: "inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all font-medium shadow-lg" do %>
-                      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                      </svg>
-                      피드백 반영하여 자소서 리라이트하기
-                    <% end %>
-                    <p class="text-sm text-gray-500">
-                      AI 피드백을 바탕으로 개선된 자기소개서를 자동 생성합니다
-                    </p>
-                  </div>
-                  <div class="flex space-x-3">
-                    <button class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all text-sm font-medium">
-                      도움됨
-                    </button>
-                    <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-sm font-medium">
-                      보통
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          <% else %>
-            <!-- 분석 중 또는 실패 -->
-            <div class="bg-white rounded-xl border border-gray-100 p-16 text-center">
-              <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg class="w-10 h-10 text-yellow-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-              </div>
-              <h3 class="text-xl font-semibold text-gray-900 mb-2">분석 중입니다</h3>
-              <p class="text-gray-600">AI가 자기소개서를 분석하고 있습니다. 잠시만 기다려주세요...</p>
-            </div>
-          <% end %>
+        </div>
       </div>
     <% end %>
-    </div>
-  </div>
-</div>
 
-<% def score_color(score) %>
-  <% if score >= 80 %>
-    <% "text-green-600" %>
-  <% elsif score >= 60 %>
-    <% "text-blue-600" %>
-  <% elsif score >= 40 %>
-    <% "text-yellow-600" %>
+    <% if sections[:strengths].present? %>
+      <div class="mb-16">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">✨ 잘 쓴 부분</h2>
+        <p class="text-sm text-gray-600 mb-6">발견한 강점들입니다</p>
+        
+        <div class="space-y-6">
+          <% parse_numbered_items(sections[:strengths]).each_with_index do |item, index| %>
+            <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+              <div class="flex items-start">
+                <div class="w-8 h-8 bg-emerald-50 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                  <span class="text-emerald-600 font-medium text-sm"><%= item[:number] %></span>
+                </div>
+                <div class="flex-1">
+                  <% if item[:title].present? && item[:title] != '' %>
+                    <h3 class="font-semibold text-gray-900 mb-2"><%= item[:title] %></h3>
+                  <% end %>
+                  <div class="text-gray-700 text-sm leading-relaxed"><%= TextFormatterService.new.format_section_text(item[:content]) %></div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if sections[:improvements].present? %>
+      <div class="mb-16">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">🎨 개선이 필요한 부분</h2>
+        <p class="text-sm text-gray-600 mb-6">개선 포인트입니다</p>
+        
+        <div class="space-y-6">
+          <% parse_numbered_items(sections[:improvements]).each do |item| %>
+            <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+              <div class="flex items-start">
+                <div class="w-8 h-8 bg-amber-50 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                  <span class="text-amber-600 font-medium text-sm"><%= item[:number] %></span>
+                </div>
+                <div class="flex-1">
+                  <% if item[:title].present? && item[:title] != '' %>
+                    <h3 class="font-semibold text-gray-900 mb-2"><%= item[:title] %></h3>
+                  <% end %>
+                  <div class="text-gray-700 text-sm leading-relaxed"><%= TextFormatterService.new.format_section_text(item[:content]) %></div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+
+    <% if sections[:encouragement].present? %>
+      <div class="mb-16">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">💚 격려와 응원</h2>
+        <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-8">
+          <div class="text-emerald-800 leading-loose">
+            <%= TextFormatterService.new.format_section_text(sections[:encouragement]) %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- 전체 분석 원문 -->
+    <div class="mb-12">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">📄 전체 분석 내용</h2>
+      <div class="bg-gray-50 rounded-xl p-8">
+        <% if @cover_letter.analysis_result.present? %>
+          <div class="text-gray-700 leading-loose space-y-6">
+            <%= TextFormatterService.new.format_full_analysis(@cover_letter.analysis_result) %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 액션 버튼 섹션 -->
+    <div class="text-center">
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">다음 단계</h3>
+        <p class="text-sm text-gray-600">피드백을 반영해 개선해보세요</p>
+      </div>
+      
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <%= button_to rewrite_with_feedback_cover_letter_path(@cover_letter), 
+            method: :post,
+            class: "px-6 py-3 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors font-medium" do %>
+          피드백 반영하여 리라이트
+        <% end %>
+        
+        <%= link_to advanced_cover_letters_path, 
+            class: "px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-full hover:bg-gray-50 transition-colors font-medium" do %>
+          새 분석 시작
+        <% end %>
+      </div>
+    </div>
+    
   <% else %>
-    <% "text-red-600" %>
+    <!-- 분석 중 -->
+    <div class="bg-white rounded-lg border border-gray-100 p-12 text-center">
+      <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-emerald-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-2">분석 중입니다</h3>
+      <p class="text-gray-600">AI가 자소서를 분석하고 있습니다. 잠시만 기다려주세요...</p>
+    </div>
   <% end %>
-<% end %>
+</div>

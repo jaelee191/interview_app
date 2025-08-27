@@ -8,6 +8,7 @@ class User < ApplicationRecord
   has_one :user_profile, dependent: :destroy
   has_many :cover_letters, dependent: :destroy
   has_many :job_analyses, dependent: :destroy
+  has_many :company_analyses, dependent: :destroy
   
   # Create user profile after user creation
   after_create :create_default_profile

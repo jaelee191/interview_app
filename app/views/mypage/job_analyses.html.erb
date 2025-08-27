@@ -1,0 +1,69 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- 페이지 헤더 -->
+  <div class="bg-white rounded-lg border border-gray-100 p-6 mb-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <%= link_to "마이페이지", mypage_path, class: "text-gray-500 hover:text-gray-700" %>
+          <span class="text-gray-400">/</span>
+          <span class="text-gray-900 font-medium">저장된 채용공고</span>
+        </div>
+        <h1 class="text-2xl font-semibold text-gray-900">저장된 채용공고 분석</h1>
+        <p class="text-gray-600 mt-2">분석했던 채용공고를 다시 확인할 수 있습니다</p>
+      </div>
+      <%= link_to "새 공고 분석", job_posting_cover_letters_path, 
+          class: "px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors" %>
+    </div>
+  </div>
+  
+  <!-- 채용공고 목록 -->
+  <% if @job_analyses.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <% @job_analyses.each do |analysis| %>
+        <div class="bg-white rounded-lg border border-gray-100 p-6 hover:shadow-md transition-shadow">
+          <div class="mb-4">
+            <h3 class="text-lg font-medium text-gray-900 mb-1">
+              <%= analysis.company_name.presence || "회사명 없음" %>
+            </h3>
+            <p class="text-emerald-600 font-medium">
+              <%= analysis.position.presence || "포지션 없음" %>
+            </p>
+          </div>
+          
+          <% if analysis.job_url.present? %>
+            <div class="mb-3">
+              <p class="text-xs text-gray-500 truncate" title="<%= analysis.job_url %>">
+                <%= analysis.job_url %>
+              </p>
+            </div>
+          <% end %>
+          
+          <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+            <span>분석일: <%= analysis.created_at.strftime("%Y.%m.%d") %></span>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <%= link_to "분석 결과 보기", view_job_analysis_cover_letters_path(analysis), 
+                class: "flex-1 text-center px-3 py-1.5 text-sm text-white bg-emerald-500 rounded hover:bg-emerald-600 transition-colors" %>
+            <%= link_to "삭제", delete_job_analysis_cover_letters_path(analysis), 
+                data: { "turbo-method": :delete, turbo_confirm: "정말 삭제하시겠습니까?" },
+                class: "px-3 py-1.5 text-sm text-red-600 hover:text-red-700 transition-colors" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-lg border border-gray-100 p-12 text-center">
+      <div class="text-gray-400 mb-4">
+        <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">저장된 채용공고가 없습니다</h3>
+      <p class="text-gray-600 mb-6">채용공고를 분석하고 저장해보세요</p>
+      <%= link_to "채용공고 분석하기", job_posting_cover_letters_path, 
+          class: "inline-flex items-center px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors" %>
+    </div>
+  <% end %>
+</div>

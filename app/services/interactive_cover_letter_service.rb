@@ -47,11 +47,23 @@ class InteractiveCoverLetterService
     # 전체 대화 컨텍스트 구성
     @conversation_history = build_conversation_history(session_data)
     
-    # AI에게 사용자 응답 처리 요청 (향상된 프롬프트)
+    # Python으로 사용자 응답 분석
+    python_analysis = analyze_with_python(
+      user_message,
+      session_data['position'] || session_data[:position],
+      session_data['messages'] || []
+    )
+    
+    # 분석 결과를 세션에 저장
+    session_data['quality_scores'] ||= []
+    session_data['quality_scores'] << python_analysis if python_analysis
+    
+    # AI에게 사용자 응답 처리 요청 (향상된 프롬프트 + Python 분석 결과 활용)
     ai_response = get_enhanced_ai_response(
       session_data,
       user_message,
-      current_step
+      current_step,
+      python_analysis
     )
     
     # 현재 단계의 내용 저장
@@ -171,7 +183,44 @@ class InteractiveCoverLetterService
     history
   end
   
-  def get_enhanced_ai_response(session_data, user_message, current_step)
+  def analyze_with_python(response, position, conversation_history)
+    begin
+      require 'open3'
+      require 'json'
+      
+      input_data = {
+        response: response,
+        position: position,
+        conversation_history: conversation_history
+      }.to_json
+      
+      script_path = Rails.root.join('python_analysis', 'interactive_analyzer.py')
+      
+      stdout, stderr, status = Open3.capture3(
+        'python3',
+        script_path.to_s,
+        input_data,
+        err: :out
+      )
+      
+      if status.success?
+        result = JSON.parse(stdout)
+        if result['success']
+          return result['analysis']
+        else
+          Rails.logger.error "Python analysis error: #{result['error']}"
+        end
+      else
+        Rails.logger.error "Python execution error: #{stderr}"
+      end
+    rescue => e
+      Rails.logger.error "Python integration error: #{e.message}"
+    end
+    
+    nil
+  end
+  
+  def get_enhanced_ai_response(session_data, user_message, current_step, python_analysis = nil)
     company_name = session_data['company_name'] || session_data[:company_name]
     position = session_data['position'] || session_data[:position]
     question_count = session_data['question_count'][current_step] || 1
@@ -182,18 +231,78 @@ class InteractiveCoverLetterService
     # 현재 단계별 맞춤 프롬프트
     step_info = STEPS.find { |s| s[:id] == current_step }
     
+    # Python 분석 결과를 프롬프트에 포함
+    analysis_context = ""
+    if python_analysis
+      analysis_context = build_analysis_context(python_analysis)
+    end
+    
     messages << {
       role: 'user',
-      content: "#{user_message}\n\n[현재: #{step_info[:title]} 단계, #{question_count}/#{step_info[:questions]}번째 질문]"
+      content: "#{user_message}\n\n#{analysis_context}[현재: #{step_info[:title]} 단계, #{question_count}/#{step_info[:questions]}번째 질문]"
     }
     
     response = make_enhanced_api_request(messages, current_step, question_count, step_info[:questions], company_name)
     
     if response[:success]
-      response[:content]
+      # Python 분석 기반 개선 팁 추가
+      enhanced_response = response[:content]
+      if python_analysis && python_analysis['improvement_tips'] && python_analysis['improvement_tips'].any?
+        enhanced_response += "\n\n💡 **답변 개선 팁:**\n"
+        python_analysis['improvement_tips'].each do |tip|
+          enhanced_response += "#{tip}\n"
+        end
+      end
+      enhanced_response
     else
       "답변을 잘 받았습니다. 계속 진행해주세요."
     end
+  end
+  
+  def build_analysis_context(analysis)
+    return "" unless analysis
+    
+    context = "\n[AI 분석 결과]\n"
+    
+    # 품질 점수
+    if analysis['quality_score']
+      score = analysis['quality_score']['overall'].to_i rescue 0
+      context += "• 답변 품질: #{score}점/100\n"
+      
+      if score < 60
+        context += "  → 더 구체적이고 자세한 답변이 필요합니다\n"
+      elsif score < 80
+        context += "  → 좋은 답변이지만 조금 더 개선 가능합니다\n"
+      else
+        context += "  → 훌륭한 답변입니다!\n"
+      end
+    end
+    
+    # STAR 준수
+    if analysis['star_compliance'] && analysis['star_compliance']['compliance_rate']
+      rate = analysis['star_compliance']['compliance_rate'].to_i
+      if rate < 75
+        context += "• STAR 기법: #{rate}% (보완 필요)\n"
+      end
+    end
+    
+    # 진정성
+    if analysis['authenticity'] && analysis['authenticity']['authenticity_score']
+      auth_score = analysis['authenticity']['authenticity_score'].to_i
+      if auth_score < 70
+        context += "• 진정성: 좀 더 개인적인 경험과 감정을 담아주세요\n"
+      end
+    end
+    
+    # 역량 커버리지
+    if analysis['competencies'] && analysis['competencies']['coverage']
+      coverage = analysis['competencies']['coverage'].to_i
+      if coverage < 60
+        context += "• 역량 표현: 직무 관련 역량을 더 명확히 표현해주세요\n"
+      end
+    end
+    
+    context + "\n"
   end
   
   def get_step_transition_message(next_step)
