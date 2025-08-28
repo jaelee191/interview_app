@@ -1,7 +1,7 @@
 require "base64"
 require "tempfile"
-
 class CoverLettersController < ApplicationController
+
   before_action :set_cover_letter, only: [ :show, :destroy ]
   skip_before_action :verify_authenticity_token, only: [ :start_interactive, :send_message, :save_interactive, :analyze_job_posting, :analyze_advanced ]
 
@@ -732,7 +732,17 @@ class CoverLettersController < ApplicationController
 
         # 분석 결과를 자소서에 추가
         if pdf_analysis[:success]
-          enhanced_content = "#{@cover_letter.content}\n\n--- PDF 분석 내용 ---\n#{pdf_analysis[:extracted_text][0..2000]}"
+          # Null byte 제거 및 안전한 텍스트 처리
+          safe_pdf_text = pdf_analysis[:extracted_text].to_s
+            .encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
+            .gsub(/\x00/, '')  # null byte 제거
+            .gsub(/[\r\n]+/, "\n")[0..2000]  # 줄바꿈 정규화 및 길이 제한
+          
+          safe_content = @cover_letter.content.to_s
+            .encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
+            .gsub(/\x00/, '')  # null byte 제거
+          
+          enhanced_content = "#{safe_content}\n\n--- PDF 분석 내용 ---\n#{safe_pdf_text}"
           @cover_letter.content = enhanced_content
         end
 
@@ -749,17 +759,16 @@ class CoverLettersController < ApplicationController
       result = service.analyze_cover_letter_only(@cover_letter.content)
 
       if result[:success]
-        analysis_with_pdf = result[:full_analysis]
+        # 자소서 분석 결과만 analysis_result에 저장
+        cover_letter_analysis = result[:full_analysis]
 
-        # PDF 분석 결과 추가
-        if pdf_analysis && pdf_analysis[:success]
-          analysis_with_pdf += "\n\n## PDF 이력서 분석 결과\n#{pdf_analysis[:analysis][:combined] rescue pdf_analysis[:analysis]}"
-        end
-
-        # deep_analysis_data에 PDF 구조화 분석 결과 저장
+        # deep_analysis_data에 PDF와 Python 분석 결과 별도 저장
         deep_analysis_data = {}
+        
+        # PDF 분석 결과는 deep_analysis_data에만 저장
         if pdf_analysis && pdf_analysis[:success]
           deep_analysis_data[:pdf_analysis] = pdf_analysis
+          deep_analysis_data[:has_pdf] = true
         end
         
         # Python NLP 분석 결과 추가
@@ -768,8 +777,8 @@ class CoverLettersController < ApplicationController
         end
 
         @cover_letter.update(
-          analysis_result: analysis_with_pdf,
-          deep_analysis_data: deep_analysis_data
+          analysis_result: cover_letter_analysis,  # 자소서 분석만 저장
+          deep_analysis_data: deep_analysis_data   # PDF와 기타 분석은 여기에
         )
         redirect_to @cover_letter, notice: "3\uB2E8\uACC4 \uC2EC\uCE35 \uBD84\uC11D\uC774 \uC644\uB8CC\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
       else
@@ -842,8 +851,8 @@ class CoverLettersController < ApplicationController
     # 기존 분석 결과에서 자소서 분석 부분만 추출 (기업 분석 제외)
     existing_analysis = @cover_letter.analysis_result || ""
 
-    # 피드백 기반 리라이트 실행 (기업 분석 제외)
-    result = service.rewrite_with_feedback_only(
+    # Python 향상 포함 리라이트 실행
+    result = service.rewrite_with_python_enhancement(
       @cover_letter.content,
       existing_analysis,  # 2단계 분석 결과를 피드백으로 사용
       @cover_letter.company_name,
@@ -851,9 +860,20 @@ class CoverLettersController < ApplicationController
     )
 
     if result[:success]
-      # 결과 저장 (advanced_analysis 필드에 저장)
+      # 결과와 메트릭스 저장
+      # deep_analysis_data에 메트릭스 저장 (rewrite_metrics 컬럼이 없으므로)
+      deep_data = @cover_letter.deep_analysis_data || {}
+      deep_data['rewrite_metrics'] = {
+        improvements: result[:metrics],
+        before: result[:before_metrics],
+        after: result[:after_metrics],
+        suggestions: result[:suggestions],
+        optimization_type: result[:optimization_type]
+      }
+      
       @cover_letter.update(
-        advanced_analysis: result[:rewritten_letter]
+        advanced_analysis: result[:rewritten_letter],
+        deep_analysis_data: deep_data
       )
 
       redirect_to rewrite_result_cover_letter_path(@cover_letter)

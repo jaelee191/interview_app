@@ -58,6 +58,56 @@ class AdvancedCoverLetterService
     { error: "분석 중 오류가 발생했습니다: #{e.message}" }
   end
   
+  # Python 품질 향상을 포함한 리라이트
+  def rewrite_with_python_enhancement(content, feedback_analysis, company_name = nil, position = nil)
+    Rails.logger.info "=== 최적화된 리라이트 시작 (GPT → Python 후처리) ==="
+    
+    # 1단계: GPT로 고품질 리라이트 생성
+    basic_result = rewrite_with_feedback_only(content, feedback_analysis, company_name, position)
+    
+    unless basic_result[:success]
+      return basic_result
+    end
+    
+    # 2단계: Python으로 품질 분석 및 미세 조정
+    python_service = PythonAnalysisService.new
+    
+    # 분석만 수행 (텍스트 보존)
+    analysis_result = python_service.analyze_text_quality(
+      basic_result[:rewritten_letter],
+      company_name
+    )
+    
+    # 3단계: Python 분석 기반 선택적 향상
+    if analysis_result[:success]
+      enhanced_text = basic_result[:rewritten_letter]
+      
+      # AI 패턴만 제거 (구조는 유지)
+      if analysis_result[:data]["ai_patterns_detected"] && analysis_result[:data]["ai_patterns_detected"] > 0
+        enhanced_text = python_service.remove_ai_patterns_only(enhanced_text)[:data]["text"] rescue enhanced_text
+      end
+      
+      # 메트릭스와 함께 반환
+      {
+        success: true,
+        rewritten_letter: enhanced_text,
+        original_rewrite: basic_result[:rewritten_letter],
+        metrics: analysis_result[:data]["improvements"],
+        before_metrics: analysis_result[:data]["before_metrics"],
+        after_metrics: analysis_result[:data]["after_metrics"],
+        suggestions: analysis_result[:data]["suggestions"],
+        optimization_type: "hybrid_gpt_python"
+      }
+    else
+      # Python 분석 실패시에도 GPT 결과는 보존
+      Rails.logger.warn "Python 분석 실패, GPT 리라이트만 사용: #{analysis_result[:error]}"
+      basic_result.merge(optimization_type: "gpt_only")
+    end
+  rescue => e
+    Rails.logger.error "최적화 오류: #{e.message}"
+    basic_result || { success: false, error: e.message }
+  end
+  
   # 피드백 기반 자소서 리라이트 (기업 분석 제외)
   def rewrite_with_feedback_only(content, feedback_analysis, company_name = nil, position = nil)
     return { error: "API 키가 설정되지 않았습니다" } unless @api_key
@@ -565,10 +615,23 @@ class AdvancedCoverLetterService
       위 분석 피드백을 충실히 반영한 **최종 자기소개서 리라이트 버전**을 작성해 주세요.
       원본의 항목 구성(지원동기/직무역량/장단점 등)은 유지하되, 내용은 완전히 새롭게 작성합니다.
       충분히 길고 구체적으로 작성하여 HR 담당자에게 강한 인상을 남기도록 합니다.
+      
+      ⚠️ 중요: 모든 항목을 빠짐없이 포함하고, 절대 중간에 끊기지 않도록 끝까지 완성해주세요.
     PROMPT
     
-    response = make_api_request(prompt, "자기소개서 리라이팅 HR 전문가", 8000)
-    parse_response(response)[:content]
+    # max_tokens를 충분히 크게 설정
+    response = make_api_request(prompt, "자기소개서 리라이팅 HR 전문가", 12000)
+    
+    # 응답에서 불필요한 메타 텍스트 제거
+    content = parse_response(response)[:content] || ""
+    
+    # 내용이 너무 짧으면 에러 로그
+    if content.length < 2000
+      Rails.logger.error "리라이트 결과가 너무 짧음: #{content.length}자"
+      Rails.logger.error "원본 응답의 첫 500자: #{content[0..500]}"
+    end
+    
+    content
   end
   
   # 자기소개서 분석 결과 포맷팅
