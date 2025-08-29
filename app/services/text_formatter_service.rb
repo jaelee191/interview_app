@@ -22,26 +22,88 @@ class TextFormatterService
     # Start with clean text
     formatted = text.to_s.dup
     
-    # First, escape HTML to prevent injection
-    formatted = CGI.escapeHTML(formatted)
+    # Handle markdown-style formatting before HTML escaping
+    # Store formatted parts temporarily
+    formatted_parts = []
     
-    # Apply formatting patterns safely
-    formatted = apply_separator_formatting(formatted)
-    formatted = apply_header_formatting(formatted)
-    formatted = apply_list_formatting(formatted)
-    formatted = apply_text_styling(formatted)
-    formatted = wrap_in_paragraphs(formatted)
+    # Process text line by line
+    formatted.split("\n").each do |line|
+      # Check for headers
+      if line =~ /^##\s*(\d+)\.\s*(.+)$/
+        number = CGI.escapeHTML($1)
+        heading = CGI.escapeHTML($2)
+        formatted_parts << %Q{<h4 class="text-lg font-semibold text-gray-900 mt-8 mb-4 flex items-center">
+          <span class="inline-flex items-center justify-center w-7 h-7 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mr-3">#{number}</span>
+          #{heading}
+        </h4>}
+      elsif line =~ /^##\s+(.+)$/
+        heading = CGI.escapeHTML($1)
+        formatted_parts << %Q{<h4 class="text-lg font-semibold text-gray-900 mt-8 mb-4">#{heading}</h4>}
+      elsif line =~ /^(\d+)\.\s*\*\*([^\*]+)\*\*:?\s*(.+)$/
+        number = CGI.escapeHTML($1)
+        title = CGI.escapeHTML($2)
+        description = CGI.escapeHTML($3)
+        formatted_parts << %Q{<div class="flex items-start mb-4">
+          <span class="inline-flex items-center justify-center w-6 h-6 bg-emerald-50 text-emerald-700 rounded-full text-xs font-semibold mr-3 flex-shrink-0 mt-1">#{number}</span>
+          <div class="flex-1">
+            <div class="font-semibold text-gray-900 mb-1">#{title}</div>
+            <div class="text-gray-700 leading-relaxed">#{description}</div>
+          </div>
+        </div>}
+      elsif line =~ /^(\d+)\.\s+(.+)$/
+        number = CGI.escapeHTML($1)
+        content = format_inline_text(CGI.escapeHTML($2))
+        formatted_parts << %Q{<div class="flex items-start mb-3">
+          <span class="inline-flex items-center justify-center w-6 h-6 bg-emerald-50 text-emerald-700 rounded-full text-xs font-semibold mr-3 flex-shrink-0 mt-1">#{number}</span>
+          <div class="flex-1 text-gray-700 leading-relaxed">#{content}</div>
+        </div>}
+      elsif line =~ /^[-─═]{3,}$/
+        formatted_parts << '<hr class="my-6 border-gray-200">'
+      elsif line.strip.empty?
+        formatted_parts << ''
+      else
+        # Regular paragraph
+        escaped_line = CGI.escapeHTML(line)
+        formatted_line = format_inline_text(escaped_line)
+        formatted_parts << %Q{<p class="text-gray-700 leading-relaxed mb-4">#{formatted_line}</p>}
+      end
+    end
     
-    formatted.html_safe
+    # Join all parts and return
+    formatted_parts.join("\n").html_safe
   end
 
   def format_section_text(text)
     return '' unless text.present?
     
-    # Simple inline formatting for sections
-    formatted = CGI.escapeHTML(text.to_s)
-    formatted = apply_text_styling(formatted)
-    formatted.html_safe
+    # Check if text already contains HTML tags (already formatted)
+    if text.include?('<') && text.include?('>')
+      # Already formatted, just ensure it's safe
+      text.html_safe
+    else
+      # Not formatted, apply formatting
+      formatted = CGI.escapeHTML(text.to_s)
+      formatted = format_inline_text(formatted)
+      formatted.html_safe
+    end
+  end
+  
+  def format_inline_text(text)
+    # Handle bold text
+    text = text.gsub(/\*\*([^\*]+)\*\*/) do
+      %Q{<strong class="font-semibold text-gray-900">#{$1}</strong>}
+    end
+    
+    # Handle quoted text - be careful not to match HTML attributes
+    text = text.gsub(/"([^"]+)"/) do
+      %Q{<span class="text-emerald-600">"#{$1}"</span>}
+    end
+    
+    text = text.gsub(/'([^']+)'/) do
+      %Q{<span class="text-emerald-600">'#{$1}'</span>}
+    end
+    
+    text
   end
 
   private

@@ -70,6 +70,117 @@ class PythonAnalysisService
     end
   end
 
+  # 리라이트 텍스트 품질 향상 (전체 향상)
+  def enhance_rewrite(text, company_name = nil)
+    Rails.logger.info "=== 파이썬 리라이트 향상 시작 ==="
+    
+    begin
+      # 줄바꿈 문자를 이스케이프 처리
+      clean_text = text.gsub("\n", " ").gsub("\r", " ").gsub("\"", "'")
+      
+      input_data = {
+        text: clean_text,
+        company: company_name || ""
+      }
+      
+      # 파이썬 스크립트 실행
+      json_input = input_data.to_json
+      result = execute_python_script("enhance_rewrite", json_input)
+      
+      # 결과 파싱
+      parsed_result = JSON.parse(result)
+      
+      if parsed_result["error"]
+        Rails.logger.error "파이썬 향상 오류: #{parsed_result['error']}"
+        return create_error_response(parsed_result["error"])
+      end
+      
+      Rails.logger.info "파이썬 리라이트 향상 완료"
+      create_success_response(parsed_result)
+      
+    rescue => e
+      Rails.logger.error "파이썬 향상 서비스 오류: #{e.message}"
+      create_error_response(e.message)
+    end
+  end
+  
+  # 텍스트 품질 분석만 수행 (텍스트 변경 없음)
+  def analyze_text_quality(text, company_name = nil)
+    Rails.logger.info "=== 파이썬 텍스트 품질 분석 ==="
+    
+    begin
+      # 텍스트 정제 (JSON 안전하게)
+      safe_text = text.to_s
+        .gsub(/[\r\n]+/, ' ')  # 줄바꿈 제거
+        .gsub(/\s+/, ' ')       # 연속 공백 제거
+        .gsub('"', "'")         # 큰따옴표를 작은따옴표로
+        .strip
+      
+      input_data = {
+        text: safe_text,
+        company: company_name || "",
+        mode: "analyze_only"
+      }
+      
+      # 파이썬 스크립트 실행
+      json_input = input_data.to_json
+      result = execute_python_script("analyze_quality", json_input)
+      
+      # 결과 파싱
+      parsed_result = JSON.parse(result)
+      
+      if parsed_result["error"]
+        Rails.logger.error "파이썬 분석 오류: #{parsed_result['error']}"
+        return create_error_response(parsed_result["error"])
+      end
+      
+      Rails.logger.info "파이썬 품질 분석 완료"
+      create_success_response(parsed_result)
+      
+    rescue => e
+      Rails.logger.error "파이썬 분석 오류: #{e.message}"
+      create_error_response(e.message)
+    end
+  end
+  
+  # AI 패턴만 제거 (최소한의 변경)
+  def remove_ai_patterns_only(text)
+    Rails.logger.info "=== AI 패턴 제거 ==="
+    
+    begin
+      # 텍스트 정제
+      safe_text = text.to_s
+        .gsub(/[\r\n]+/, ' ')
+        .gsub(/\s+/, ' ')
+        .gsub('"', "'")
+        .strip
+      
+      input_data = {
+        text: safe_text,
+        mode: "remove_ai_only"
+      }
+      
+      # 파이썬 스크립트 실행
+      json_input = input_data.to_json
+      result = execute_python_script("remove_ai_patterns", json_input)
+      
+      # 결과 파싱
+      parsed_result = JSON.parse(result)
+      
+      if parsed_result["error"]
+        Rails.logger.error "AI 패턴 제거 오류: #{parsed_result['error']}"
+        return create_error_response(parsed_result["error"])
+      end
+      
+      Rails.logger.info "AI 패턴 제거 완료"
+      create_success_response(parsed_result)
+      
+    rescue => e
+      Rails.logger.error "AI 패턴 제거 오류: #{e.message}"
+      create_error_response(e.message)
+    end
+  end
+  
   # 플레이라이트 MCP 데이터와 파이썬 분석 결합
   def analyze_job_posting_with_playwright(url)
     Rails.logger.info "=== 플레이라이트 + 파이썬 통합 분석 시작 ==="
@@ -148,10 +259,10 @@ class PythonAnalysisService
       temp_file.write(json_input)
       temp_file.close
 
-      # 파이썬 스크립트 실행
-      cmd = "cd #{scripts_path} && #{python_env_path} rails_integration.py #{command} '#{File.read(temp_file.path)}'"
-      Rails.logger.debug "실행 명령어: #{cmd}"
-
+      # 파이썬 스크립트 실행 - stdin으로 데이터 전달
+      cmd = "cd #{scripts_path} && echo '#{json_input.gsub("'", "\\'")}' | #{python_env_path} rails_integration.py #{command} -"
+      Rails.logger.debug "실행 명령어: #{cmd[0..200]}..." # 로그 축약
+      
       result = `#{cmd} 2>&1`
       exit_status = $?.exitstatus
 

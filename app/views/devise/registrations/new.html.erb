@@ -1,8 +1,8 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
   <div class="max-w-md w-full">
     <!-- Logo and Title -->
     <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-lg mb-4">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-2xl shadow-lg mb-4">
         <span class="text-white text-3xl font-bold">J</span>
       </div>
       <h1 class="text-3xl font-bold text-gray-900">취업 성공의 첫걸음</h1>
@@ -10,7 +10,7 @@
     </div>
 
     <!-- Sign Up Form Card -->
-    <div class="bg-white rounded-2xl shadow-xl p-8">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
       <h2 class="text-2xl font-bold text-gray-900 mb-6">회원가입</h2>
       
       <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-6" }) do |f| %>
@@ -29,7 +29,7 @@
                 autofocus: true, 
                 autocomplete: "email",
                 placeholder: "example@email.com",
-                class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" %>
+                class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" %>
           </div>
         </div>
 
@@ -48,7 +48,7 @@
             <%= f.password_field :password, 
                 autocomplete: "new-password",
                 placeholder: "••••••••",
-                class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" %>
+                class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" %>
           </div>
         </div>
 
@@ -64,23 +64,23 @@
             <%= f.password_field :password_confirmation, 
                 autocomplete: "new-password",
                 placeholder: "••••••••",
-                class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" %>
+                class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" %>
           </div>
         </div>
 
         <!-- Terms and Conditions -->
         <div class="flex items-start">
-          <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1" required>
+          <input type="checkbox" class="h-4 w-4 text-emerald-500 focus:ring-emerald-400 border-gray-300 rounded mt-1" required>
           <label class="ml-2 block text-sm text-gray-700">
-            <span><%= link_to "이용약관", "#", class: "text-blue-600 hover:text-blue-500" %></span> 및 
-            <span><%= link_to "개인정보처리방침", "#", class: "text-blue-600 hover:text-blue-500" %></span>에 동의합니다
+            <span><%= link_to "이용약관", "#", class: "text-emerald-600 hover:text-emerald-500" %></span> 및 
+            <span><%= link_to "개인정보처리방침", "#", class: "text-emerald-600 hover:text-emerald-500" %></span>에 동의합니다
           </label>
         </div>
 
         <!-- Submit Button -->
         <div>
           <%= f.submit "무료로 시작하기", 
-              class: "w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 font-semibold transition transform hover:-translate-y-0.5" %>
+              class: "w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-white bg-emerald-400 hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-400 font-semibold transition transform hover:-translate-y-0.5" %>
         </div>
       <% end %>
 
@@ -122,29 +122,29 @@
         <p class="text-sm text-gray-600">
           이미 계정이 있으신가요?
           <%= link_to "로그인", new_session_path(resource_name), 
-              class: "font-medium text-blue-600 hover:text-blue-500" %>
+              class: "font-medium text-emerald-600 hover:text-emerald-500" %>
         </p>
       </div>
     </div>
 
     <!-- Benefits -->
-    <div class="mt-8 bg-blue-50 rounded-xl p-6">
+    <div class="mt-8 bg-emerald-50 rounded-xl p-6">
       <h3 class="font-semibold text-gray-900 mb-3">무료 회원 혜택</h3>
       <ul class="space-y-2 text-sm text-gray-700">
         <li class="flex items-start">
-          <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <svg class="w-5 h-5 text-emerald-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
           </svg>
           월 3회 무료 자소서 분석
         </li>
         <li class="flex items-start">
-          <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <svg class="w-5 h-5 text-emerald-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
           </svg>
           채용공고 AI 분석 기능
         </li>
         <li class="flex items-start">
-          <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <svg class="w-5 h-5 text-emerald-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
           </svg>
           기본 자소서 템플릿 제공

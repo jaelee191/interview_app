@@ -101,6 +101,8 @@ Rails.application.routes.draw do
       # get 'deep_analysis_result' # GPT-5 심층 분석 - 사용하지 않음
       post "rewrite_with_feedback"
       get "rewrite_result"
+      post "save_analysis"
+      delete "unsave_analysis"
     end
   end
 end

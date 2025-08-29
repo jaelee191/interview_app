@@ -37,7 +37,7 @@
     <!-- 최근 자소서 -->
     <div class="bg-white rounded-lg border border-gray-100 p-6">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-semibold text-gray-900">최근 자소서</h2>
+        <h2 class="text-lg font-semibold text-gray-900">저장된 자소서</h2>
         <%= link_to "전체보기", mypage_cover_letters_path, 
             class: "text-sm text-emerald-600 hover:text-emerald-700" %>
       </div>
@@ -49,6 +49,11 @@
               <%= link_to letter, class: "block hover:bg-gray-50 -mx-2 px-2 py-1 rounded transition-colors" do %>
                 <div class="font-medium text-gray-900 text-sm truncate">
                   <%= letter.title.presence || "제목 없음" %>
+                  <% if letter.improved_letter_saved_at.present? %>
+                    <span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-700">
+                      개선본
+                    </span>
+                  <% end %>
                 </div>
                 <div class="text-xs text-gray-500 mt-1">
                   <%= letter.created_at.strftime("%Y.%m.%d") %>
@@ -58,7 +63,7 @@
           <% end %>
         </div>
       <% else %>
-        <p class="text-gray-500 text-sm">작성한 자소서가 없습니다</p>
+        <p class="text-gray-500 text-sm">저장된 자소서가 없습니다</p>
       <% end %>
     </div>
     

@@ -1,165 +1,387 @@
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-  <!-- 페이지 헤더 -->
-  <div class="text-center mb-12">
-    <h1 class="text-2xl font-semibold text-gray-900 mb-3">
-      자소서 분석 결과
-    </h1>
-    <p class="text-base text-gray-600">
-      당신의 경험과 역량을 분석했습니다
-    </p>
+<div class="min-h-screen bg-gradient-to-b from-white to-gray-50">
+  <!-- Header Section -->
+  <section class="py-16 bg-white">
+    <div class="max-w-4xl mx-auto px-4">
+      <div class="text-center">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full mb-6 shadow-lg">
+          <svg class="w-10 h-10 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          AI 자소서 분석 완료
+        </h1>
+        <p class="text-xl text-gray-600 mb-8">
+          15년차 HR 전문가가 꼼꼼히 검토한 맞춤형 피드백
+        </p>
         
-    
-  </div>
-
-  <!-- 분석 정보 카드 -->
-  <div class="bg-gray-50 rounded-lg border border-gray-100 p-6 mb-12">
-    <div class="flex flex-wrap items-center justify-center gap-6">
-      <% if @cover_letter.company_name.present? %>
-        <div class="flex items-center gap-2">
-          <span class="text-gray-500">지원 기업</span>
-          <span class="font-semibold text-gray-900"><%= @cover_letter.company_name %></span>
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap justify-center gap-3">
+          <% if current_user %>
+            <% if @cover_letter.saved? && @cover_letter.user_id == current_user.id %>
+              <%= button_to unsave_analysis_cover_letter_path(@cover_letter), 
+                  method: :delete,
+                  class: "inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-full hover:bg-gray-200 transition-all duration-200 shadow-md hover:shadow-lg" do %>
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                </svg>
+                저장됨
+              <% end %>
+            <% else %>
+              <%= button_to save_analysis_cover_letter_path(@cover_letter), 
+                  method: :post,
+                  class: "inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-400 to-emerald-500 text-white font-semibold rounded-full hover:from-emerald-500 hover:to-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg" do %>
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                </svg>
+                분석 결과 저장
+              <% end %>
+            <% end %>
+          <% else %>
+            <%= link_to new_user_session_path, 
+                class: "inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-400 to-emerald-500 text-white font-semibold rounded-full hover:from-emerald-500 hover:to-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg" do %>
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+              </svg>
+              로그인하고 저장하기
+            <% end %>
+          <% end %>
+          
+          <!-- Download as PDF -->
+          <button onclick="window.print()" class="inline-flex items-center px-6 py-3 bg-white text-gray-700 font-semibold rounded-full hover:bg-gray-50 transition-all duration-200 border-2 border-gray-200 shadow-md hover:shadow-lg">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            PDF로 저장
+          </button>
         </div>
-      <% end %>
-      <% if @cover_letter.position.present? %>
-        <div class="flex items-center gap-2">
-          <span class="text-gray-500">지원 직무</span>
-          <span class="font-semibold text-gray-900"><%= @cover_letter.position %></span>
-        </div>
-      <% end %>
-      <div class="flex items-center gap-2">
-        <span class="text-gray-500">분석일</span>
-        <span class="font-semibold text-gray-900"><%= @cover_letter.created_at.strftime("%Y.%m.%d") %></span>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Python NLP 분석 결과 -->
-  <% if @cover_letter.deep_analysis_data && @cover_letter.deep_analysis_data['python_analysis'] %>
-    <% @python_analysis = @cover_letter.deep_analysis_data['python_analysis'] %>
-    <%= render 'python_analysis_result' %>
-  <% end %>
-
-  <!-- 메인 분석 결과 -->
-  <% if @cover_letter.analysis_result.present? %>
-    <!-- AI 분석 결과 섹션별 표시 -->
-    <% sections = parse_analysis_sections(@cover_letter.analysis_result) %>
+  <!-- Main Content -->
+  <article class="max-w-4xl mx-auto px-4 py-12">
     
-    <% if sections[:first_impression].present? %>
-      <div class="mb-16">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">🎯 첫인상 & 전체 평가</h2>
-        <div class="bg-white rounded-xl shadow-sm p-8">
-          <div class="text-gray-700 leading-loose space-y-4">
-            <%= TextFormatterService.new.format_full_analysis(sections[:first_impression]) %>
-          </div>
-        </div>
-      </div>
-    <% end %>
-
-    <% if sections[:strengths].present? %>
-      <div class="mb-16">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">✨ 잘 쓴 부분</h2>
-        <p class="text-sm text-gray-600 mb-6">발견한 강점들입니다</p>
-        
-        <div class="space-y-6">
-          <% parse_numbered_items(sections[:strengths]).each_with_index do |item, index| %>
-            <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
-              <div class="flex items-start">
-                <div class="w-8 h-8 bg-emerald-50 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
-                  <span class="text-emerald-600 font-medium text-sm"><%= item[:number] %></span>
-                </div>
-                <div class="flex-1">
-                  <% if item[:title].present? && item[:title] != '' %>
-                    <h3 class="font-semibold text-gray-900 mb-2"><%= item[:title] %></h3>
-                  <% end %>
-                  <div class="text-gray-700 text-sm leading-relaxed"><%= TextFormatterService.new.format_section_text(item[:content]) %></div>
-                </div>
+    <!-- 분석 정보 카드 -->
+    <div class="prose prose-lg max-w-none">
+      <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <div class="flex flex-wrap items-center justify-center gap-8">
+          <% if @cover_letter.company_name.present? %>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+              </div>
+              <div>
+                <span class="text-sm text-gray-500 block">지원 기업</span>
+                <strong class="text-lg text-gray-900"><%= @cover_letter.company_name %></strong>
               </div>
             </div>
           <% end %>
-        </div>
-      </div>
-    <% end %>
-
-    <% if sections[:improvements].present? %>
-      <div class="mb-16">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">🎨 개선이 필요한 부분</h2>
-        <p class="text-sm text-gray-600 mb-6">개선 포인트입니다</p>
-        
-        <div class="space-y-6">
-          <% parse_numbered_items(sections[:improvements]).each do |item| %>
-            <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
-              <div class="flex items-start">
-                <div class="w-8 h-8 bg-amber-50 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
-                  <span class="text-amber-600 font-medium text-sm"><%= item[:number] %></span>
-                </div>
-                <div class="flex-1">
-                  <% if item[:title].present? && item[:title] != '' %>
-                    <h3 class="font-semibold text-gray-900 mb-2"><%= item[:title] %></h3>
-                  <% end %>
-                  <div class="text-gray-700 text-sm leading-relaxed"><%= TextFormatterService.new.format_section_text(item[:content]) %></div>
-                </div>
+          <% if @cover_letter.position.present? %>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <div>
+                <span class="text-sm text-gray-500 block">지원 직무</span>
+                <strong class="text-lg text-gray-900"><%= @cover_letter.position %></strong>
               </div>
             </div>
           <% end %>
-        </div>
-      </div>
-    <% end %>
-
-
-    <% if sections[:encouragement].present? %>
-      <div class="mb-16">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">💚 격려와 응원</h2>
-        <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-8">
-          <div class="text-emerald-800 leading-loose">
-            <%= TextFormatterService.new.format_section_text(sections[:encouragement]) %>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+              <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <div>
+              <span class="text-sm text-gray-500 block">분석일</span>
+              <strong class="text-lg text-gray-900"><%= @cover_letter.created_at.strftime("%Y년 %m월 %d일") %></strong>
+            </div>
           </div>
         </div>
-      </div>
-    <% end %>
-
-    <!-- 전체 분석 원문 -->
-    <div class="mb-12">
-      <h2 class="text-xl font-semibold text-gray-900 mb-4">📄 전체 분석 내용</h2>
-      <div class="bg-gray-50 rounded-xl p-8">
-        <% if @cover_letter.analysis_result.present? %>
-          <div class="text-gray-700 leading-loose space-y-6">
-            <%= TextFormatterService.new.format_full_analysis(@cover_letter.analysis_result) %>
-          </div>
-        <% end %>
       </div>
     </div>
 
-    <!-- 액션 버튼 섹션 -->
-    <div class="text-center">
-      <div class="mb-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">다음 단계</h3>
-        <p class="text-sm text-gray-600">피드백을 반영해 개선해보세요</p>
+    <!-- PDF 분석 결과 (있는 경우) -->
+    <% if @cover_letter.deep_analysis_data && @cover_letter.deep_analysis_data['has_pdf'] %>
+      <div class="prose prose-lg max-w-none mb-8">
+        <div class="bg-white rounded-lg border border-gray-100 p-8">
+          <details>
+            <summary class="cursor-pointer hover:text-emerald-600 transition-colors font-semibold">
+              📄 PDF 이력서 분석 결과 보기
+            </summary>
+            <div class="mt-4 pt-4 border-t border-gray-100">
+              <% pdf_data = @cover_letter.deep_analysis_data['pdf_analysis'] %>
+              <% if pdf_data && pdf_data['analysis'] %>
+                <%= markdown_to_html(pdf_data['analysis']['resume'] || pdf_data['analysis']['combined'] || '분석 결과가 없습니다.') %>
+              <% end %>
+            </div>
+          </details>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- 메인 자소서 분석 결과 -->
+    <% if @cover_letter.analysis_result.present? %>
+      <% sections = parse_analysis_sections(@cover_letter.analysis_result) %>
+      
+      <!-- 첫인상 & 전체 평가 -->
+      <% if sections[:first_impression].present? %>
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center mr-4">
+              <span class="text-2xl">🎯</span>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900">
+              첫인상 & 전체 평가
+            </h2>
+          </div>
+          
+          <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed pl-16">
+            <%= markdown_to_html(sections[:first_impression]) %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- 잘 쓴 부분 -->
+      <% if sections[:strengths].present? %>
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center mr-4">
+              <span class="text-2xl">✨</span>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900">
+              잘 쓴 부분 <span class="text-lg font-normal text-gray-500 ml-2">(발견한 <%= parse_numbered_items(sections[:strengths]).length %>가지 강점)</span>
+            </h2>
+          </div>
+          
+          <div class="space-y-4">
+            <% parse_numbered_items(sections[:strengths]).each_with_index do |item, index| %>
+              <div class="bg-gradient-to-r from-emerald-50 to-white rounded-xl p-6 border border-emerald-100">
+                <div class="flex items-start">
+                  <div class="w-8 h-8 bg-emerald-400 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">
+                    <%= item[:number] %>
+                  </div>
+                  <div class="flex-1">
+                    <% if item[:title].present? && item[:title] != '' %>
+                      <p class="font-bold text-gray-900 mb-3 text-lg">
+                        <%= strip_tags(item[:title]).gsub(/^강점 \d+: /, '') %>
+                      </p>
+                    <% end %>
+                    <div class="text-gray-700 leading-relaxed prose prose-lg max-w-none">
+                      <%= markdown_to_html(item[:content]) %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- 개선이 필요한 부분 -->
+      <% if sections[:improvements].present? %>
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-gradient-to-br from-amber-100 to-amber-200 rounded-full flex items-center justify-center mr-4">
+              <span class="text-2xl">💡</span>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900">
+              개선이 필요한 부분 <span class="text-lg font-normal text-gray-500 ml-2">(개선 포인트 <%= parse_numbered_items(sections[:improvements]).length %>가지)</span>
+            </h2>
+          </div>
+          
+          <div class="space-y-4">
+            <% parse_numbered_items(sections[:improvements]).each do |item| %>
+              <div class="bg-gradient-to-r from-amber-50 to-white rounded-xl p-6 border border-amber-100">
+                <div class="flex items-start">
+                  <div class="w-8 h-8 bg-amber-400 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">
+                    <%= item[:number] %>
+                  </div>
+                  <div class="flex-1">
+                    <% if item[:title].present? && item[:title] != '' %>
+                      <p class="font-bold text-gray-900 mb-3 text-lg">
+                        <%= strip_tags(item[:title]).gsub(/^개선점 \d+: /, '') %>
+                      </p>
+                    <% end %>
+                    <div class="text-gray-700 leading-relaxed prose prose-lg max-w-none">
+                      <%= markdown_to_html(item[:content]) %>
+                    </div>
+                    
+                    <!-- 개선 팁 박스 -->
+                    <div class="bg-gradient-to-r from-gray-50 to-white border-l-4 border-emerald-400 p-4 mt-4 rounded-lg">
+                      <p class="text-gray-800 font-semibold flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        개선 방법
+                      </p>
+                      <p class="text-gray-600 mt-2 ml-7">위 피드백을 바탕으로 구체적인 사례와 성과를 추가해보세요.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+      
+      <!-- 숨은 보석 -->
+      <% if sections[:hidden_gems].present? %>
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full flex items-center justify-center mr-4">
+              <span class="text-2xl">💎</span>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900">
+              숨은 보석 <span class="text-lg font-normal text-gray-500 ml-2">(놓치고 있던 강점 <%= parse_numbered_items(sections[:hidden_gems]).length %>가지)</span>
+            </h2>
+          </div>
+          
+          <div class="bg-gradient-to-r from-purple-50 to-purple-100 border-l-4 border-purple-400 p-6 mb-6 rounded-lg">
+            <p class="text-purple-800 font-semibold">
+              자신도 몰랐던 특별한 가치를 발견했습니다
+            </p>
+            <p class="text-purple-700 mt-2">
+              이 부분들을 적극 활용하면 다른 지원자와 차별화될 수 있습니다.
+            </p>
+          </div>
+          
+          <div class="space-y-4">
+            <% parse_numbered_items(sections[:hidden_gems]).each do |item| %>
+              <div class="bg-gradient-to-r from-purple-50 to-white rounded-xl p-6 border border-purple-100">
+                <div class="flex items-start">
+                  <div class="w-8 h-8 bg-purple-400 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">
+                    <%= item[:number] %>
+                  </div>
+                  <div class="flex-1">
+                    <% if item[:title].present? && item[:title] != '' %>
+                      <p class="font-bold text-gray-900 mb-3 text-lg">
+                        <%= strip_tags(item[:title]).gsub(/^숨은 보석 \d+: /, '') %>
+                      </p>
+                    <% end %>
+                    <div class="text-gray-700 leading-relaxed prose prose-lg max-w-none">
+                      <%= markdown_to_html(item[:content]) %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- 격려와 응원 -->
+      <% if sections[:encouragement].present? %>
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center mr-4">
+              <span class="text-2xl">💚</span>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900">
+              마지막 한마디
+            </h2>
+          </div>
+          
+          <div class="bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl p-6 border border-emerald-100">
+            <div class="text-gray-700 leading-relaxed prose prose-lg max-w-none">
+              <%= markdown_to_html(sections[:encouragement]) %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- CTA Section -->
+      <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl shadow-lg p-10 text-center border border-emerald-100">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">이제 피드백을 반영해볼까요?</h2>
+        <p class="text-lg text-gray-600 mb-8">
+          AI 코치가 분석한 내용을 바탕으로<br>
+          더 나은 자소서로 개선해보세요
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <%= button_to rewrite_with_feedback_cover_letter_path(@cover_letter), 
+              method: :post,
+              class: "px-8 py-4 bg-gradient-to-r from-emerald-400 to-emerald-500 text-white font-bold rounded-full hover:from-emerald-500 hover:to-emerald-600 transition-all duration-200 shadow-lg hover:shadow-xl text-lg" do %>
+            피드백 반영하여 리라이트 →
+          <% end %>
+          
+          <%= link_to advanced_cover_letters_path, 
+              class: "px-8 py-4 bg-white text-emerald-600 font-bold rounded-full hover:bg-gray-50 transition-all duration-200 border-2 border-emerald-300 shadow-lg hover:shadow-xl text-lg" do %>
+            새로운 자소서 분석하기
+          <% end %>
+        </div>
       </div>
       
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <%= button_to rewrite_with_feedback_cover_letter_path(@cover_letter), 
-            method: :post,
-            class: "px-6 py-3 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors font-medium" do %>
-          피드백 반영하여 리라이트
-        <% end %>
-        
-        <%= link_to advanced_cover_letters_path, 
-            class: "px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-full hover:bg-gray-50 transition-colors font-medium" do %>
-          새 분석 시작
-        <% end %>
+    <% else %>
+      <!-- 분석 중 -->
+      <div class="bg-white rounded-lg border border-gray-100 p-12 text-center">
+        <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-emerald-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">AI가 분석 중입니다</h3>
+        <p class="text-gray-600">자소서를 꼼꼼히 읽고 피드백을 준비하고 있어요. 잠시만 기다려주세요...</p>
       </div>
-    </div>
-    
-  <% else %>
-    <!-- 분석 중 -->
-    <div class="bg-white rounded-lg border border-gray-100 p-12 text-center">
-      <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <svg class="w-8 h-8 text-emerald-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-        </svg>
-      </div>
-      <h3 class="text-xl font-semibold text-gray-900 mb-2">분석 중입니다</h3>
-      <p class="text-gray-600">AI가 자소서를 분석하고 있습니다. 잠시만 기다려주세요...</p>
-    </div>
-  <% end %>
+    <% end %>
+  </article>
 </div>
+
+<style>
+  @media print {
+    /* 헤더 버튼 숨기기 */
+    nav,
+    header,
+    button,
+    .no-print {
+      display: none !important;
+    }
+    
+    /* 저장/다운로드 버튼 영역 숨기기 */
+    section > div > div > div.flex {
+      display: none !important;
+    }
+    
+    /* 본문만 표시 */
+    article {
+      max-width: 100% !important;
+      padding: 0 !important;
+    }
+    
+    /* 배경색 유지 */
+    .bg-emerald-50,
+    .bg-gray-50,
+    .bg-purple-50 {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    
+    /* 페이지 여백 설정 */
+    @page {
+      margin: 1.5cm;
+      size: A4;
+    }
+    
+    /* 제목 스타일 */
+    h1, h2, h3 {
+      page-break-after: avoid;
+      font-weight: bold;
+    }
+    
+    /* 분석 내용 페이지 분리 방지 */
+    .prose {
+      page-break-inside: avoid;
+    }
+    
+    /* 링크 스타일 제거 */
+    a {
+      text-decoration: none !important;
+      color: inherit !important;
+    }
+  }
+</style>

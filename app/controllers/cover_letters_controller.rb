@@ -1051,6 +1051,40 @@ class CoverLettersController < ApplicationController
     # 사용 가이드 페이지
   end
 
+  def save_analysis
+    @cover_letter = CoverLetter.find(params[:id])
+    
+    if current_user
+      # 개선된 자소서가 있으면 저장 시간도 함께 기록
+      update_params = { user_id: current_user.id, saved: true }
+      if @cover_letter.advanced_analysis.present?
+        update_params[:improved_letter_saved_at] = Time.current
+      end
+      
+      @cover_letter.update(update_params)
+      
+      # 리라이트 결과 페이지에서 저장한 경우
+      if request.referer&.include?('rewrite_result')
+        redirect_to rewrite_result_cover_letter_path(@cover_letter), notice: "개선된 자소서가 저장되었습니다."
+      else
+        redirect_to @cover_letter, notice: "분석 결과가 저장되었습니다."
+      end
+    else
+      redirect_to new_user_session_path, alert: "저장하려면 로그인이 필요합니다."
+    end
+  end
+
+  def unsave_analysis
+    @cover_letter = CoverLetter.find(params[:id])
+    
+    if current_user && @cover_letter.user_id == current_user.id
+      @cover_letter.update(saved: false)
+      redirect_to @cover_letter, notice: "저장이 취소되었습니다."
+    else
+      redirect_to @cover_letter, alert: "권한이 없습니다."
+    end
+  end
+
   private
 
   def set_cover_letter

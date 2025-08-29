@@ -1,8 +1,8 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
   <div class="max-w-md w-full">
     <!-- Logo and Title -->
     <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-lg mb-4">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-2xl shadow-lg mb-4">
         <span class="text-white text-3xl font-bold">J</span>
       </div>
       <h1 class="text-3xl font-bold text-gray-900">JACHUI에 오신 것을 환영합니다</h1>
@@ -10,7 +10,7 @@
     </div>
 
     <!-- Login Form Card -->
-    <div class="bg-white rounded-2xl shadow-xl p-8">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
       <h2 class="text-2xl font-bold text-gray-900 mb-6">로그인</h2>
       
       <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-6" }) do |f| %>
@@ -27,7 +27,7 @@
                 autofocus: true, 
                 autocomplete: "email",
                 placeholder: "example@email.com",
-                class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" %>
+                class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" %>
           </div>
         </div>
 
@@ -43,7 +43,7 @@
             <%= f.password_field :password, 
                 autocomplete: "current-password",
                 placeholder: "••••••••",
-                class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" %>
+                class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" %>
           </div>
         </div>
 
@@ -51,19 +51,19 @@
         <div class="flex items-center justify-between">
           <% if devise_mapping.rememberable? %>
             <div class="flex items-center">
-              <%= f.check_box :remember_me, class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
+              <%= f.check_box :remember_me, class: "h-4 w-4 text-emerald-500 focus:ring-emerald-400 border-gray-300 rounded" %>
               <%= f.label :remember_me, "로그인 상태 유지", class: "ml-2 block text-sm text-gray-700" %>
             </div>
           <% end %>
           
           <%= link_to "비밀번호를 잊으셨나요?", new_password_path(resource_name), 
-              class: "text-sm text-blue-600 hover:text-blue-500 font-medium" %>
+              class: "text-sm text-emerald-600 hover:text-emerald-500 font-medium" %>
         </div>
 
         <!-- Submit Button -->
         <div>
           <%= f.submit "로그인", 
-              class: "w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 font-semibold transition transform hover:-translate-y-0.5" %>
+              class: "w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-white bg-emerald-400 hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-400 font-semibold transition transform hover:-translate-y-0.5" %>
         </div>
       <% end %>
 
@@ -105,7 +105,7 @@
         <p class="text-sm text-gray-600">
           아직 계정이 없으신가요?
           <%= link_to "무료로 시작하기", new_registration_path(resource_name), 
-              class: "font-medium text-blue-600 hover:text-blue-500" %>
+              class: "font-medium text-emerald-600 hover:text-emerald-500" %>
         </p>
       </div>
     </div>

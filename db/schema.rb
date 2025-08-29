@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_16_071525) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_29_150009) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -102,6 +102,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_16_071525) do
     t.text "advanced_analysis"
     t.bigint "user_id"
     t.jsonb "deep_analysis_data"
+    t.boolean "saved", default: false
+    t.text "improved_letter"
+    t.datetime "improved_letter_saved_at"
+    t.index ["user_id", "saved"], name: "index_cover_letters_on_user_id_and_saved"
     t.index ["user_id"], name: "index_cover_letters_on_user_id"
   end
 

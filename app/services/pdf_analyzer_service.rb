@@ -27,7 +27,7 @@ class PdfAnalyzerService
       cover_letter_analysis = analyze_cover_letter_with_ai(separated_content[:cover_letter][:text])
     end
     
-    # 전체 텍스트 (기존 호환성)
+    # 전체 텍스트 (기존 호환성) - 이미 clean_text가 적용된 텍스트 사용
     full_text = pages_data.map { |p| p[:text] }.join("\n")
     
     {
@@ -79,10 +79,14 @@ class PdfAnalyzerService
     pages = []
     reader.pages.each_with_index do |page, index|
       page_text = page.text.strip
+      
+      # Null byte 및 안전하지 않은 문자 제거
+      safe_text = clean_text(page_text)
+      
       pages << {
         page_number: index + 1,
-        text: page_text,
-        word_count: page_text.split.length
+        text: safe_text,
+        word_count: safe_text.split.length
       }
     end
     
@@ -305,6 +309,20 @@ class PdfAnalyzerService
     sections
   end
   
+  # 텍스트 정리 메서드 추가
+  def clean_text(text)
+    return "" if text.nil?
+    
+    text.to_s
+      .encode('UTF-8', invalid: :replace, undef: :replace, replace: '')  # 잘못된 UTF-8 문자 대체
+      .gsub(/\x00/, '')  # null byte 제거
+      .gsub(/[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/, '')  # 기타 제어 문자 제거
+      .gsub(/\r\n/, "\n")  # Windows 줄바꿈 통일
+      .gsub(/\r/, "\n")    # Mac 줄바꿈 통일
+      .gsub(/\n+/, "\n")   # 연속된 줄바꿈 정리
+      .strip
+  end
+
   def call_openai_api(prompt)
     require 'net/http'
     require 'json'

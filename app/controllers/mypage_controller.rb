@@ -3,13 +3,13 @@ class MypageController < ApplicationController
   
   def index
     @user = current_user
-    @recent_cover_letters = current_user.cover_letters.order(created_at: :desc).limit(5)
+    @recent_cover_letters = current_user.cover_letters.where(saved: true).order(created_at: :desc).limit(5)
     @saved_job_analyses = current_user.job_analyses.order(created_at: :desc).limit(5)
     @saved_company_analyses = current_user.company_analyses.order(created_at: :desc).limit(5)
   end
   
   def cover_letters
-    @cover_letters = current_user.cover_letters.order(created_at: :desc)
+    @cover_letters = current_user.cover_letters.where(saved: true).order(created_at: :desc)
   end
   
   def job_analyses
