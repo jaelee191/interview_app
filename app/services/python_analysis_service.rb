@@ -109,11 +109,11 @@ class PythonAnalysisService
     Rails.logger.info "=== 파이썬 텍스트 품질 분석 ==="
     
     begin
-      # 텍스트 정제 (JSON 안전하게)
+      # 텍스트 정제 (JSON 안전하게, 줄바꿈은 유지)
       safe_text = text.to_s
-        .gsub(/[\r\n]+/, ' ')  # 줄바꿈 제거
-        .gsub(/\s+/, ' ')       # 연속 공백 제거
-        .gsub('"', "'")         # 큰따옴표를 작은따옴표로
+        .gsub(/\r\n/, "\n")    # Windows 줄바꿈을 Unix로 통일
+        .gsub(/ +/, ' ')       # 공백만 정리 (줄바꿈은 유지)
+        .gsub('"', "'")        # 큰따옴표를 작은따옴표로
         .strip
       
       input_data = {
@@ -148,10 +148,10 @@ class PythonAnalysisService
     Rails.logger.info "=== AI 패턴 제거 ==="
     
     begin
-      # 텍스트 정제
+      # 텍스트 정제 (줄바꿈은 유지!)
       safe_text = text.to_s
-        .gsub(/[\r\n]+/, ' ')
-        .gsub(/\s+/, ' ')
+        .gsub(/\r\n/, "\n")  # Windows 줄바꿈을 Unix로 통일
+        .gsub(/ +/, ' ')     # 공백만 정리 (줄바꿈은 유지)
         .gsub('"', "'")
         .strip
       

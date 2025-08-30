@@ -121,26 +121,34 @@
       <div class="p-8 lg:p-12">
         <% if @rewritten_content.present? %>
           <%
-            # 자소서를 섹션별로 나누기
-            sections = @rewritten_content.split(/(?=\d+\.\s+)/)
+            # 줄바꿈을 유지하면서 내용 처리
+            formatted_content = @rewritten_content.strip
+            
+            # 섹션별로 분리 (숫자. 형식을 찾아서 분리)
+            sections = formatted_content.split(/(?=^\d+\.\s+)/m)
             sections = sections.reject(&:blank?)
           %>
           
           <div class="space-y-8">
             <% sections.each_with_index do |section, index| %>
               <%
-                # 섹션 제목과 내용 분리
-                lines = section.strip.split("\n")
-                title_match = lines[0].match(/^(\d+)\.\s+(.+)/)
+                # 첫 번째 줄에서 번호와 제목 추출
+                lines = section.strip.split("\n", 2)
+                first_line = lines[0]
                 
-                if title_match
-                  section_number = title_match[1]
-                  section_title = title_match[2]
-                  content_lines = lines[1..-1]
+                # 번호와 제목 분리 (예: "1. 지원 동기")
+                if first_line.match(/^(\d+)\.\s+(.+)/)
+                  section_number = $1
+                  section_title = $2
+                  # 나머지 내용
+                  content = lines[1] || ""
                 else
                   section_title = nil
-                  content_lines = lines
+                  content = section.strip
                 end
+                
+                # 내용을 단락별로 분리
+                paragraphs = content.split(/\n\n+/)
               %>
               
               <% if section_title %>
@@ -155,27 +163,45 @@
                     </h3>
                   </div>
                   
-                  <div class="pl-14 space-y-4">
-                    <% content_lines.each do |line| %>
-                      <% next if line.strip.empty? %>
+                  <div class="pl-14 space-y-6">
+                    <% paragraphs.each do |paragraph| %>
+                      <% next if paragraph.strip.empty? %>
                       
-                      <% if line.strip.start_with?('[') && line.strip.end_with?(']') %>
-                        <!-- 소제목 -->
-                        <h4 class="text-lg font-semibold text-emerald-600 mt-6 mb-3">
-                          <%= line.strip.gsub(/[\[\]]/, '') %>
-                        </h4>
-                      <% elsif line.strip.start_with?('•') || line.strip.start_with?('-') %>
+                      <% if paragraph.strip.start_with?('[') && paragraph.strip.include?(']') %>
+                        <!-- 소제목이 포함된 단락 -->
+                        <%
+                          # [소제목] 형식 추출
+                          if paragraph.match(/^\[([^\]]+)\](.*)$/m)
+                            subtitle = $1
+                            subtitle_content = $2.strip
+                          %>
+                            <div>
+                              <h4 class="text-lg font-semibold text-emerald-600 mb-3">
+                                <%= subtitle %>
+                              </h4>
+                              <% if subtitle_content.present? %>
+                                <p class="text-gray-700 leading-relaxed text-base lg:text-lg">
+                                  <%= subtitle_content %>
+                                </p>
+                              <% end %>
+                            </div>
+                          <% else %>
+                            <p class="text-gray-700 leading-relaxed text-base lg:text-lg">
+                              <%= paragraph.strip %>
+                            </p>
+                          <% end %>
+                      <% elsif paragraph.strip.start_with?('•') || paragraph.strip.start_with?('-') %>
                         <!-- 불릿 포인트 -->
                         <div class="flex items-start ml-4">
                           <span class="text-emerald-500 mr-3 mt-1">•</span>
                           <p class="text-gray-700 leading-relaxed text-base lg:text-lg flex-1">
-                            <%= line.strip.gsub(/^[•\-]\s*/, '') %>
+                            <%= paragraph.strip.gsub(/^[•\-]\s*/, '') %>
                           </p>
                         </div>
                       <% else %>
-                        <!-- 본문 -->
+                        <!-- 일반 단락 -->
                         <p class="text-gray-700 leading-relaxed text-base lg:text-lg">
-                          <%= line.strip %>
+                          <%= paragraph.strip %>
                         </p>
                       <% end %>
                     <% end %>
@@ -184,25 +210,43 @@
               <% else %>
                 <!-- 제목이 없는 경우 -->
                 <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-8 border border-gray-100">
-                  <div class="space-y-4">
-                    <% content_lines.each do |line| %>
-                      <% next if line.strip.empty? %>
+                  <div class="space-y-6">
+                    <% paragraphs.each do |paragraph| %>
+                      <% next if paragraph.strip.empty? %>
                       
-                      <% if line.strip.start_with?('[') && line.strip.end_with?(']') %>
-                        <h4 class="text-lg font-semibold text-emerald-600 mt-6 mb-3">
-                          <%= line.strip.gsub(/[\[\]]/, '') %>
-                        </h4>
-                      <% elsif line.strip.start_with?('•') || line.strip.start_with?('-') %>
+                      <% if paragraph.strip.start_with?('[') && paragraph.strip.include?(']') %>
+                        <!-- 소제목이 포함된 단락 -->
+                        <%
+                          if paragraph.match(/^\[([^\]]+)\](.*)$/m)
+                            subtitle = $1
+                            subtitle_content = $2.strip
+                          %>
+                            <div>
+                              <h4 class="text-lg font-semibold text-emerald-600 mb-3">
+                                <%= subtitle %>
+                              </h4>
+                              <% if subtitle_content.present? %>
+                                <p class="text-gray-700 leading-relaxed text-base lg:text-lg">
+                                  <%= subtitle_content %>
+                                </p>
+                              <% end %>
+                            </div>
+                          <% else %>
+                            <p class="text-gray-700 leading-relaxed text-base lg:text-lg">
+                              <%= paragraph.strip %>
+                            </p>
+                          <% end %>
+                      <% elsif paragraph.strip.start_with?('•') || paragraph.strip.start_with?('-') %>
                         <!-- 불릿 포인트 -->
                         <div class="flex items-start ml-4">
                           <span class="text-emerald-500 mr-3 mt-1">•</span>
                           <p class="text-gray-700 leading-relaxed text-base lg:text-lg flex-1">
-                            <%= line.strip.gsub(/^[•\-]\s*/, '') %>
+                            <%= paragraph.strip.gsub(/^[•\-]\s*/, '') %>
                           </p>
                         </div>
                       <% else %>
                         <p class="text-gray-700 leading-relaxed text-base lg:text-lg">
-                          <%= line.strip %>
+                          <%= paragraph.strip %>
                         </p>
                       <% end %>
                     <% end %>
