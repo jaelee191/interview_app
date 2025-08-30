@@ -1,20 +1,13 @@
 <div class="min-h-screen bg-gradient-to-b from-white to-gray-50">
   <!-- Header Section -->
-  <section class="py-16 bg-gradient-to-b from-white to-emerald-50/30">
+  <section class="py-16 bg-gray-50 border-b border-gray-100">
     <div class="max-w-4xl mx-auto px-4">
       <div class="text-center">
-        <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full mb-8 shadow-2xl animate-pulse">
-          <svg class="w-14 h-14 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        </div>
-        <h1 class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-emerald-400 mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
           AI 자소서 분석 완료
         </h1>
-        <p class="text-2xl text-gray-700 font-medium mb-4">
-          15년차 HR 전문가의 상세 피드백
-        </p>
         <p class="text-lg text-gray-600">
+          15년차 HR 전문가가 꼼꼼히 검토한 맞춤형 피드백<br>
           강점 5개 · 개선점 5개 · 숨은 보석 3개 발견
         </p>
         
@@ -67,18 +60,18 @@
     
     <!-- 분석 정보 카드 -->
     <div class="prose prose-lg max-w-none">
-      <div class="bg-white rounded-3xl shadow-xl border border-emerald-100 p-10 mb-10">
-        <div class="flex flex-wrap items-center justify-center gap-10">
+      <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
+        <div class="flex flex-wrap items-center justify-center gap-8">
           <% if @cover_letter.company_name.present? %>
             <div class="flex items-center gap-3">
-              <div class="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center shadow-md">
-                <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                 </svg>
               </div>
               <div>
-                <span class="text-xs text-emerald-600 font-semibold uppercase tracking-wider">지원 기업</span>
-                <strong class="text-xl text-gray-900"><%= @cover_letter.company_name %></strong>
+                <span class="text-sm text-gray-500 block">지원 기업</span>
+                <strong class="text-lg text-gray-900"><%= @cover_letter.company_name %></strong>
               </div>
             </div>
           <% end %>
@@ -90,8 +83,8 @@
                 </svg>
               </div>
               <div>
-                <span class="text-xs text-emerald-600 font-semibold uppercase tracking-wider">지원 직무</span>
-                <strong class="text-xl text-gray-900"><%= @cover_letter.position %></strong>
+                <span class="text-sm text-gray-500 block">지원 직무</span>
+                <strong class="text-lg text-gray-900"><%= @cover_letter.position %></strong>
               </div>
             </div>
           <% end %>
@@ -102,8 +95,8 @@
               </svg>
             </div>
             <div>
-              <span class="text-xs text-emerald-600 font-semibold uppercase tracking-wider">분석일</span>
-              <strong class="text-xl text-gray-900"><%= @cover_letter.created_at.strftime("%Y년 %m월 %d일") %></strong>
+              <span class="text-sm text-gray-500 block">분석일</span>
+              <strong class="text-lg text-gray-900"><%= @cover_letter.created_at.strftime("%Y년 %m월 %d일") %></strong>
             </div>
           </div>
         </div>
@@ -135,20 +128,15 @@
       
       <!-- 첫인상 & 전체 평가 -->
       <% if sections[:first_impression].present? %>
-        <div class="bg-gradient-to-br from-white to-emerald-50/20 rounded-3xl shadow-xl border border-emerald-100 p-10 mb-10 hover:shadow-2xl transition-shadow duration-300">
-          <div class="flex items-center mb-8">
-            <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full flex items-center justify-center mr-5 shadow-lg">
-              <span class="text-3xl filter drop-shadow">🎯</span>
-            </div>
-            <div>
-              <h2 class="text-3xl font-black text-gray-900">
-                첫인상 & 전체 평가
-              </h2>
-              <p class="text-sm text-emerald-600 font-medium mt-1">15년 경력 HR 전문가의 진솔한 의견</p>
-            </div>
+        <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
+          <div class="mb-6">
+            <span class="text-sm font-medium text-gray-500">FIRST IMPRESSION</span>
+            <h2 class="text-2xl font-bold text-gray-900 mt-2">
+              첫인상 & 전체 평가
+            </h2>
           </div>
           
-          <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed pl-0 bg-white/80 rounded-2xl p-8 border border-gray-100">
+          <div class="prose prose-lg max-w-none text-gray-600">
             <%= markdown_to_html(sections[:first_impression]) %>
           </div>
         </div>
@@ -156,25 +144,23 @@
 
       <!-- 잘 쓴 부분 -->
       <% if sections[:strengths].present? %>
-        <div class="bg-gradient-to-br from-white to-emerald-50/20 rounded-3xl shadow-xl border border-emerald-100 p-10 mb-10 hover:shadow-2xl transition-shadow duration-300">
-          <div class="flex items-center mb-8">
-            <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full flex items-center justify-center mr-5 shadow-lg">
-              <span class="text-3xl filter drop-shadow">✨</span>
-            </div>
-            <div>
-              <h2 class="text-3xl font-black text-gray-900">
-                잘 쓴 부분
-              </h2>
-              <p class="text-sm text-emerald-600 font-medium mt-1">발견한 <%= parse_numbered_items(sections[:strengths]).length %>가지 강점을 적극 활용하세요</p>
-            </div>
+        <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
+          <div class="mb-6">
+            <span class="text-sm font-medium text-gray-500">STRENGTHS</span>
+            <h2 class="text-2xl font-bold text-gray-900 mt-2">
+              잘 쓴 부분
+            </h2>
+            <p class="text-gray-600 mt-2">
+              발견한 <%= parse_numbered_items(sections[:strengths]).length %>가지 강점을 적극 활용하세요
+            </p>
           </div>
           
           <div class="space-y-4">
             <% parse_numbered_items(sections[:strengths]).each_with_index do |item, index| %>
-              <div class="bg-gradient-to-r from-emerald-50 to-white rounded-2xl p-8 border-2 border-emerald-200 hover:border-emerald-300 hover:shadow-lg transition-all duration-300">
-                <div class="flex items-start">
-                  <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-500 text-white rounded-full flex items-center justify-center font-bold text-lg mr-5 flex-shrink-0 shadow-md">
-                    <%= item[:number] %>
+              <div class="bg-gray-50 rounded-lg p-5 border border-gray-100">
+                <div class="flex items-start gap-3">
+                  <div class="w-5 h-5 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
                   </div>
                   <div class="flex-1">
                     <% if item[:title].present? && item[:title] != '' %>
@@ -195,17 +181,15 @@
 
       <!-- 개선이 필요한 부분 -->
       <% if sections[:improvements].present? %>
-        <div class="bg-gradient-to-br from-white to-amber-50/20 rounded-3xl shadow-xl border border-amber-200 p-10 mb-10 hover:shadow-2xl transition-shadow duration-300">
-          <div class="flex items-center mb-8">
-            <div class="w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full flex items-center justify-center mr-5 shadow-lg">
-              <span class="text-3xl filter drop-shadow">💡</span>
-            </div>
-            <div>
-              <h2 class="text-3xl font-black text-gray-900">
-                개선이 필요한 부분
-              </h2>
-              <p class="text-sm text-amber-600 font-medium mt-1">개선 포인트 <%= parse_numbered_items(sections[:improvements]).length %>가지를 반영하면 더 좋아집니다</p>
-            </div>
+        <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
+          <div class="mb-6">
+            <span class="text-sm font-medium text-gray-500">IMPROVEMENTS</span>
+            <h2 class="text-2xl font-bold text-gray-900 mt-2">
+              개선이 필요한 부분
+            </h2>
+            <p class="text-gray-600 mt-2">
+              개선 포인트 <%= parse_numbered_items(sections[:improvements]).length %>가지를 반영하면 더 좋아집니다
+            </p>
           </div>
           
           <div class="space-y-4">
