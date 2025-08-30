@@ -1,9 +1,13 @@
 require 'pdf-reader'
+require 'open3'
+require 'tempfile'
 
 class PdfAnalyzerService
   def initialize(file_path)
     @file_path = file_path
+    @original_pdf_path = file_path  # Python 추출용
     @api_key = ENV['OPENAI_API_KEY']
+    @page_count = 0
   end
   
   def analyze_resume
@@ -104,8 +108,49 @@ class PdfAnalyzerService
     nil
   end
   
+  # Python 기반 추출 사용 여부
+  def use_python_extractor?
+    ENV.fetch('USE_PYTHON_PDF_EXTRACTOR', 'true') == 'true'
+  end
+  
+  # Python으로 추출 시도
+  def extract_with_python
+    return { success: false } unless use_python_extractor?
+    
+    begin
+      result = PdfExtractorService.extract_cover_letter(@original_pdf_path, is_file_path: true)
+      
+      if result[:has_cover_letter]
+        Rails.logger.info "Python extraction successful: #{result[:extraction_method]}, confidence: #{result[:confidence]}%"
+        {
+          success: true,
+          resume_pages: result[:resume_pages] || [],
+          cover_letter_pages: result[:cover_letter_pages] || [],
+          original_cover_letter: result[:cover_letter_text],
+          sections: result[:cover_letter_sections],
+          confidence: result[:confidence],
+          extraction_method: result[:extraction_method]
+        }
+      else
+        Rails.logger.info "No cover letter found by Python extractor"
+        { success: false }
+      end
+    rescue => e
+      Rails.logger.error "Python PDF extraction error: #{e.message}"
+      { success: false }
+    end
+  end
+  
   # 이력서와 자소서 부분 자동 구분
   def separate_resume_and_cover_letter(pages_data)
+    # Python 기반 추출 우선 시도
+    python_result = extract_with_python
+    if python_result[:success]
+      return python_result
+    end
+    
+    # Ruby 기반 폴백 로직
+    Rails.logger.info "Using Ruby fallback extraction"
     resume_pages = []
     cover_letter_pages = []
     
