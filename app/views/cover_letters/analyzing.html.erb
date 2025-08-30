@@ -1,0 +1,173 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 py-12">
+  <div class="max-w-3xl mx-auto px-4">
+    
+    <!-- 헤더 -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        AI 자소서 분석
+      </h1>
+      <p class="text-gray-600">
+        15년차 HR 전문가의 관점으로 자소서를 분석하고 있습니다
+      </p>
+    </div>
+    
+    <!-- 진행 상황 컨테이너 -->
+    <div id="analysis-progress-container" class="bg-white rounded-2xl shadow-lg p-8">
+      <!-- 초기 로딩 상태 -->
+      <div class="text-center">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">분석 준비 중...</h3>
+        <p class="text-gray-600">잠시만 기다려주세요</p>
+      </div>
+    </div>
+    
+    <!-- 추가 정보 -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-white rounded-lg p-4 text-center">
+        <div class="text-3xl mb-2">🎯</div>
+        <h4 class="font-semibold text-gray-900">첫인상 평가</h4>
+        <p class="text-sm text-gray-600">HR이 느끼는 첫 느낌</p>
+      </div>
+      
+      <div class="bg-white rounded-lg p-4 text-center">
+        <div class="text-3xl mb-2">💪</div>
+        <h4 class="font-semibold text-gray-900">강점 & 개선점</h4>
+        <p class="text-sm text-gray-600">각 5개씩 상세 분석</p>
+      </div>
+      
+      <div class="bg-white rounded-lg p-4 text-center">
+        <div class="text-3xl mb-2">💎</div>
+        <h4 class="font-semibold text-gray-900">숨은 보석</h4>
+        <p class="text-sm text-gray-600">놓친 강점 3개 발굴</p>
+      </div>
+    </div>
+    
+    <!-- 안내 메시지 -->
+    <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-blue-800">분석 시간 안내</h3>
+          <div class="mt-2 text-sm text-blue-700">
+            <ul class="list-disc list-inside space-y-1">
+              <li>평균 분석 시간: 20-30초</li>
+              <li>5가지 관점에서 동시 분석 진행</li>
+              <li>분석 중에도 진행 상황을 실시간으로 확인 가능</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<script>
+  // 페이지 로드 시 자동으로 분석 시작
+  document.addEventListener('DOMContentLoaded', function() {
+    const coverLetterId = <%= @cover_letter.id %>;
+    
+    // ActionCable 연결
+    const progressChannel = new AnalysisProgressChannel(coverLetterId, {
+      onStart: (data) => {
+        console.log('Analysis started:', data);
+      },
+      onStepStart: (data) => {
+        console.log('Step started:', data.step_name);
+      },
+      onStepComplete: (data) => {
+        console.log('Step completed:', data.step);
+      },
+      onComplete: (data) => {
+        console.log('Analysis completed!');
+        // 성공 사운드 재생 (옵션)
+        // playSuccessSound();
+      },
+      onError: (data) => {
+        console.error('Analysis error:', data.message);
+        // 에러 알림
+        alert('분석 중 오류가 발생했습니다: ' + data.message);
+      }
+    });
+    
+    progressChannel.connect();
+    
+    // 분석 Job 시작 (AJAX 요청)
+    fetch('/cover_letters/<%= @cover_letter.id %>/start_analysis', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        use_realtime: true
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        console.log('Analysis job started');
+      } else {
+        console.error('Failed to start analysis:', data.error);
+      }
+    })
+    .catch(error => {
+      console.error('Error starting analysis:', error);
+    });
+    
+    // 페이지 이탈 시 연결 해제
+    window.addEventListener('beforeunload', () => {
+      progressChannel.disconnect();
+    });
+  });
+</script>
+
+<style>
+  /* 애니메이션 효과 */
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .step-item {
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  .step-item.completed {
+    background: linear-gradient(to right, #f0fdf4, #ffffff);
+    border-color: #86efac;
+  }
+  
+  .step-item.completed .step-icon {
+    background: #22c55e;
+    color: white;
+  }
+  
+  /* 진행률 바 애니메이션 */
+  #analysis-progress-bar {
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* 로딩 스피너 */
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+</style>

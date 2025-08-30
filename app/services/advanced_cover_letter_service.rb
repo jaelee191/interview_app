@@ -314,7 +314,63 @@ class AdvancedCoverLetterService
     parse_response(response)[:content]
   end
   
-  # 병렬처리로 자소서 분석 실행
+  # 실시간 진행 상황과 함께 순차 분석
+  def analyze_cover_letter_with_progress(content, cover_letter_id)
+    Rails.logger.info "=== 실시간 진행 상황 분석 시작 ==="
+    
+    broadcaster = ProgressBroadcaster.new(cover_letter_id)
+    results = {}
+    errors = []
+    
+    begin
+      # 분석 시작 알림
+      broadcaster.broadcast_start
+      
+      # 1. 첫인상 분석
+      broadcaster.broadcast_step_start(:first_impression)
+      results[:first_impression] = analyze_first_impression(content)
+      broadcaster.broadcast_step_complete(:first_impression)
+      
+      # 2. 강점 분석
+      broadcaster.broadcast_step_start(:strengths)
+      results[:strengths] = analyze_strengths(content)
+      broadcaster.broadcast_step_complete(:strengths, 
+        { items: results[:strengths].scan(/\*\*강점/).size }
+      )
+      
+      # 3. 개선점 분석
+      broadcaster.broadcast_step_start(:improvements)
+      results[:improvements] = analyze_improvements(content)
+      broadcaster.broadcast_step_complete(:improvements,
+        { items: results[:improvements].scan(/\*\*개선/).size }
+      )
+      
+      # 4. 숨은 보석 발굴
+      broadcaster.broadcast_step_start(:hidden_gems)
+      results[:hidden_gems] = analyze_hidden_gems(content)
+      broadcaster.broadcast_step_complete(:hidden_gems,
+        { items: 3 }
+      )
+      
+      # 5. 격려 메시지
+      broadcaster.broadcast_step_start(:encouragement)
+      results[:encouragement] = generate_encouragement(content)
+      broadcaster.broadcast_step_complete(:encouragement)
+      
+      # 분석 완료
+      final_result = combine_analysis_results(results)
+      broadcaster.broadcast_complete(final_result)
+      
+      final_result
+      
+    rescue => e
+      Rails.logger.error "Analysis with progress failed: #{e.message}"
+      broadcaster.broadcast_error("분석 중 오류가 발생했습니다: #{e.message}")
+      raise
+    end
+  end
+  
+  # 병렬처리로 자소서 분석 실행 (기존 메서드)
   def analyze_cover_letter_parallel(content)
     results = {}
     threads = []

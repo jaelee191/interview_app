@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_29_150009) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_30_232822) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -105,6 +105,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_29_150009) do
     t.boolean "saved", default: false
     t.text "improved_letter"
     t.datetime "improved_letter_saved_at"
+    t.string "analysis_status"
+    t.datetime "analysis_started_at"
+    t.datetime "analysis_completed_at"
+    t.text "analysis_error"
     t.index ["user_id", "saved"], name: "index_cover_letters_on_user_id_and_saved"
     t.index ["user_id"], name: "index_cover_letters_on_user_id"
   end

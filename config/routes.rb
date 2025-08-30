@@ -103,6 +103,8 @@ Rails.application.routes.draw do
       get "rewrite_result"
       post "save_analysis"
       delete "unsave_analysis"
+      get "analyzing"
+      post "start_analysis"
     end
   end
 end

@@ -707,6 +707,42 @@ class CoverLettersController < ApplicationController
     end
   end
 
+  # 실시간 분석 시작 (AJAX)
+  def start_analysis
+    @cover_letter = CoverLetter.find(params[:id])
+    
+    # 분석 상태 초기화
+    @cover_letter.update(
+      analysis_status: 'processing',
+      analysis_started_at: Time.current
+    )
+    
+    # 백그라운드 Job 실행
+    use_realtime = params[:use_realtime] != false
+    CoverLetterAnalysisJob.perform_later(@cover_letter.id, use_realtime: use_realtime)
+    
+    render json: { 
+      success: true, 
+      message: '분석이 시작되었습니다',
+      cover_letter_id: @cover_letter.id 
+    }
+  rescue => e
+    render json: { 
+      success: false, 
+      error: e.message 
+    }, status: :unprocessable_entity
+  end
+  
+  # 분석 진행 페이지
+  def analyzing
+    @cover_letter = CoverLetter.find(params[:id])
+    
+    # 이미 분석 완료된 경우 결과 페이지로 리다이렉트
+    if @cover_letter.analysis_status == 'completed' && @cover_letter.analysis_result.present?
+      redirect_to @cover_letter
+    end
+  end
+  
   def analyze_advanced
     # pdf_content는 DB 필드가 아니므로 별도로 처리
     permitted_params = params.require(:cover_letter).permit(:title, :content, :company_name, :position, :user_name)
@@ -778,37 +814,17 @@ class CoverLettersController < ApplicationController
     end
 
     if @cover_letter.save
-      # 자소서 분석만 실행 (기업 분석 제외)
-      service = AdvancedCoverLetterService.new
-      result = service.analyze_cover_letter_only(@cover_letter.content)
-
-      if result[:success]
-        # 자소서 분석 결과만 analysis_result에 저장
-        cover_letter_analysis = result[:full_analysis]
-
-        # deep_analysis_data에 PDF와 Python 분석 결과 별도 저장
-        deep_analysis_data = {}
-        
-        # PDF 분석 결과는 deep_analysis_data에만 저장
-        if pdf_analysis && pdf_analysis[:success]
-          deep_analysis_data[:pdf_analysis] = pdf_analysis
-          deep_analysis_data[:has_pdf] = true
-        end
-        
-        # Python NLP 분석 결과 추가
-        if result[:python_analysis].present?
-          deep_analysis_data[:python_analysis] = result[:python_analysis]
-        end
-
-        @cover_letter.update(
-          analysis_result: cover_letter_analysis,  # 자소서 분석만 저장
-          deep_analysis_data: deep_analysis_data   # PDF와 기타 분석은 여기에
-        )
-        redirect_to @cover_letter, notice: "3\uB2E8\uACC4 \uC2EC\uCE35 \uBD84\uC11D\uC774 \uC644\uB8CC\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
-      else
-        @cover_letter.update(analysis_result: "분석 실패: #{result[:error]}")
-        redirect_to @cover_letter, alert: "분석 중 오류가 발생했습니다: #{result[:error]}"
+      # PDF 분석 결과가 있으면 저장
+      if pdf_analysis && pdf_analysis[:success]
+        deep_analysis_data = {
+          pdf_analysis: pdf_analysis,
+          has_pdf: true
+        }
+        @cover_letter.update(deep_analysis_data: deep_analysis_data)
       end
+      
+      # 실시간 진행 상황 표시 페이지로 리다이렉트
+      redirect_to analyzing_cover_letter_path(@cover_letter)
     else
       render :advanced
     end
