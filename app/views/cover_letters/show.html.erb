@@ -322,14 +322,68 @@
                 리라이트 결과 보기
               <% end %>
             <% else %>
-              <%= button_to rewrite_with_feedback_cover_letter_path(@cover_letter), 
-                  method: :post,
-                  class: "inline-flex items-center justify-center px-6 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition-colors" do %>
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-                피드백 반영하여 리라이트
-              <% end %>
+              <!-- 리라이트 옵션 선택 드롭다운 -->
+              <div class="relative inline-block" x-data="{ open: false }">
+                <button @click="open = !open" 
+                        @click.away="open = false"
+                        class="inline-flex items-center justify-center px-6 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition-colors">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                  피드백 반영하여 리라이트
+                  <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
+                
+                <!-- 드롭다운 메뉴 -->
+                <div x-show="open" 
+                     x-transition:enter="transition ease-out duration-100"
+                     x-transition:enter-start="transform opacity-0 scale-95"
+                     x-transition:enter-end="transform opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="transform opacity-100 scale-100"
+                     x-transition:leave-end="transform opacity-0 scale-95"
+                     class="absolute z-10 mt-2 w-72 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div class="py-1">
+                    <%= button_to rewrite_with_feedback_cover_letter_path(@cover_letter), 
+                        method: :post,
+                        params: { rewrite_mode: 'preserve' },
+                        class: "w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors" do %>
+                      <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-0.5">
+                          <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                          </svg>
+                        </div>
+                        <div class="ml-3">
+                          <p class="text-sm font-semibold text-gray-900">원본 구조 유지</p>
+                          <p class="text-xs text-gray-500 mt-1">현재 자소서의 항목을 그대로 유지하며 내용만 개선합니다</p>
+                        </div>
+                      </div>
+                    <% end %>
+                    
+                    <div class="border-t border-gray-100"></div>
+                    
+                    <%= button_to rewrite_with_feedback_cover_letter_path(@cover_letter), 
+                        method: :post,
+                        params: { rewrite_mode: 'optimize' },
+                        class: "w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors" do %>
+                      <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-0.5">
+                          <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                          </svg>
+                        </div>
+                        <div class="ml-3">
+                          <p class="text-sm font-semibold text-gray-900">AI 최적화</p>
+                          <p class="text-xs text-gray-500 mt-1">HR 전문가가 추천하는 최적의 구조로 재구성합니다</p>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
             <% end %>
             
             <%= link_to advanced_cover_letters_path, 

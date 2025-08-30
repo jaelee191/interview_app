@@ -101,7 +101,7 @@ class VerifiedCompanyAnalysisService
     
     response = @client.chat(
       parameters: {
-        model: ENV['OPENAI_MODEL'] || 'gpt-4o',
+        model: ENV['OPENAI_MODEL'] || 'gpt-4.1',
         messages: [
           {
             role: "system",

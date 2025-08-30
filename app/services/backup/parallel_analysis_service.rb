@@ -7,7 +7,7 @@ class ParallelAnalysisService
   
   def initialize
     @api_key = ENV['OPENAI_API_KEY']
-    @model = ENV['OPENAI_MODEL'] || 'gpt-4o'
+    @model = ENV['OPENAI_MODEL'] || 'gpt-4.1'
   end
   
   # ========== 방법 1: Thread 기반 병렬처리 ==========

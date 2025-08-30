@@ -3,7 +3,7 @@ class IntelligentCoverLetterGeneratorService
     @user_profile = user_profile
     @job_posting = job_posting_url_or_data
     @company_name = company_name
-    @parallel_service = ParallelOpenaiService.new(model: ENV["OPENAI_MODEL"] || "gpt-4o")
+    @parallel_service = ParallelOpenaiService.new(model: ENV["OPENAI_MODEL"] || "gpt-4.1")
   end
 
   def generate
@@ -167,7 +167,7 @@ class IntelligentCoverLetterGeneratorService
     end
   end
 
-  def call_openai_api(prompt, model: "gpt-4o")
+  def call_openai_api(prompt, model: "gpt-4.1")
     require "net/http"
     require "json"
 

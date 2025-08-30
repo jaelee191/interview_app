@@ -1,5 +1,12 @@
 module CoverLettersHelper
   def parse_analysis_sections(text)
+    # Python 기반 한글 분석 우선 시도
+    if use_python_analyzer?
+      result = KoreanTextAnalyzerService.extract_sections(text)
+      return result if result.present? && result != {}
+    end
+    
+    # Ruby 기반 폴백
     sections = {
       first_impression: nil,
       strengths: nil,
@@ -92,10 +99,32 @@ module CoverLettersHelper
   def parse_numbered_items(text)
     return [] unless text
     
+    # Python 기반 한글 분석 우선 시도
+    if use_python_analyzer?
+      result = KoreanTextAnalyzerService.parse_numbered_items(text)
+      return result if result.present? && !result.empty?
+    end
+    
+    # Ruby 기반 폴백 로직 계속...
+    
     items = []
     
+    # "### 강점 1:", "### 개선점 1:", "### 숨은 보석 1:" 등의 새로운 마크다운 헤더 패턴 처리
+    if text.match(/###\s+[가-힣]+\s*[가-힣]*\s+\d+:/)
+      # 각 항목별로 분리 (숨은 보석처럼 띄어쓰기가 있는 경우도 처리)
+      sections = text.scan(/###\s+([가-힣]+(?:\s+[가-힣]+)?\s+\d+:\s*[^\n]+)\n+([^#]+)/)
+      
+      sections.each do |title, content|
+        if match = title.match(/([가-힣]+(?:\s+[가-힣]+)?)\s+(\d+):\s*(.+)/)
+          items << {
+            number: match[2],
+            title: title.strip,
+            content: content.strip
+          }
+        end
+      end
     # "**강점 1:", "**개선점 1:" 등의 패턴 처리
-    if text.match(/\*\*[가-힣]+\s+\d+:/)
+    elsif text.match(/\*\*[가-힣]+\s+\d+:/)
       # 각 항목별로 분리
       sections = text.split(/(?=\*\*[가-힣]+\s+\d+:)/)
       
@@ -208,8 +237,28 @@ module CoverLettersHelper
     TextFormatterService.new.format_section_text(text)
   end
   
+  def normalize_korean_text(text)
+    return text unless text.present?
+    
+    # Python 기반 한글 정규화
+    if use_python_analyzer?
+      normalized = KoreanTextAnalyzerService.normalize_spacing(text)
+      return normalized if normalized.present?
+    end
+    
+    text
+  end
+  
+  def use_python_analyzer?
+    # 환경 변수로 Python 분석기 사용 여부 제어
+    ENV.fetch('USE_PYTHON_KOREAN_ANALYZER', 'true') == 'true'
+  end
+  
   def markdown_to_html(text)
     return '' unless text.present?
+    
+    # 한글 텍스트 정규화 적용
+    text = normalize_korean_text(text) if text.match?(/[가-힣]/)
     
     renderer = Redcarpet::Render::HTML.new(
       filter_html: false,

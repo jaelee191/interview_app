@@ -7,7 +7,7 @@ class ParallelOpenaiService
   
   def initialize(model: nil)
     @api_pool = OpenaiApiPool.instance
-    @model = model || ENV['OPENAI_MODEL'] || 'gpt-4o-mini'
+    @model = model || ENV['OPENAI_MODEL'] || 'gpt-4.1'
     @executor = Concurrent::ThreadPoolExecutor.new(
       min_threads: 2,
       max_threads: 10,

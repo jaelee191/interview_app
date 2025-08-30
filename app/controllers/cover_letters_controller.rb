@@ -869,18 +869,22 @@ class CoverLettersController < ApplicationController
   def rewrite_with_feedback
     @cover_letter = CoverLetter.find(params[:id])
 
+    # 리라이트 모드 파라미터 받기 (기본값: preserve)
+    rewrite_mode = params[:rewrite_mode] || 'preserve'
+    
     # 서비스 초기화
     service = AdvancedCoverLetterService.new
 
     # 기존 분석 결과에서 자소서 분석 부분만 추출 (기업 분석 제외)
     existing_analysis = @cover_letter.analysis_result || ""
 
-    # Python 향상 포함 리라이트 실행
+    # Python 향상 포함 리라이트 실행 (rewrite_mode 추가)
     result = service.rewrite_with_python_enhancement(
       @cover_letter.content,
       existing_analysis,  # 2단계 분석 결과를 피드백으로 사용
       @cover_letter.company_name,
-      @cover_letter.position
+      @cover_letter.position,
+      rewrite_mode
     )
 
     if result[:success]

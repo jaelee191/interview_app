@@ -16,7 +16,7 @@ class InteractiveCoverLetterService
   
   def initialize
     @api_key = ENV['OPENAI_API_KEY']
-    @model = ENV['OPENAI_MODEL'] || 'gpt-4o'
+    @model = ENV['OPENAI_MODEL'] || 'gpt-4.1'
     @conversation_history = []
   end
   

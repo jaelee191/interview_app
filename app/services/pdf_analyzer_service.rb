@@ -487,7 +487,7 @@ class PdfAnalyzerService
     request['Content-Type'] = 'application/json'
     
     request.body = {
-      model: ENV['OPENAI_MODEL'] || 'gpt-4o-mini',
+      model: ENV['OPENAI_MODEL'] || 'gpt-4.1',
       messages: [
         { 
           role: 'system', 
