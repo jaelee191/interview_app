@@ -732,18 +732,42 @@ class CoverLettersController < ApplicationController
 
         # 분석 결과를 자소서에 추가
         if pdf_analysis[:success]
-          # Null byte 제거 및 안전한 텍스트 처리
-          safe_pdf_text = pdf_analysis[:extracted_text].to_s
-            .encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
-            .gsub(/\x00/, '')  # null byte 제거
-            .gsub(/[\r\n]+/, "\n")[0..2000]  # 줄바꿈 정규화 및 길이 제한
+          # PDF에서 자소서가 있는지 확인
+          has_cover_letter = pdf_analysis[:metadata] && pdf_analysis[:metadata][:has_cover_letter]
+          original_cover_letter = pdf_analysis[:original_cover_letter]
           
-          safe_content = @cover_letter.content.to_s
-            .encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
-            .gsub(/\x00/, '')  # null byte 제거
-          
-          enhanced_content = "#{safe_content}\n\n--- PDF 분석 내용 ---\n#{safe_pdf_text}"
-          @cover_letter.content = enhanced_content
+          if has_cover_letter && original_cover_letter.present?
+            # 자소서가 있으면 자소서 텍스트를 사용
+            Rails.logger.info "PDF에서 자소서 발견, 자소서 텍스트 사용"
+            safe_cover_letter = original_cover_letter.to_s
+              .encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
+              .gsub(/\x00/, '')
+              .gsub(/[\r\n]+/, "\n")
+            
+            # 기존 content가 비어있으면 자소서로 대체, 있으면 병합
+            if @cover_letter.content.blank?
+              @cover_letter.content = safe_cover_letter
+            else
+              safe_content = @cover_letter.content.to_s
+                .encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
+                .gsub(/\x00/, '')
+              @cover_letter.content = "#{safe_content}\n\n--- 자기소개서 ---\n#{safe_cover_letter}"
+            end
+          else
+            # 자소서가 없으면 이력서 정보만 사용
+            Rails.logger.info "PDF에 자소서 없음, 이력서 정보만 사용"
+            safe_pdf_text = pdf_analysis[:extracted_text].to_s
+              .encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
+              .gsub(/\x00/, '')
+              .gsub(/[\r\n]+/, "\n")[0..2000]
+            
+            safe_content = @cover_letter.content.to_s
+              .encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
+              .gsub(/\x00/, '')
+            
+            enhanced_content = "#{safe_content}\n\n--- PDF 분석 내용 ---\n#{safe_pdf_text}"
+            @cover_letter.content = enhanced_content
+          end
         end
 
         temp_file.close
