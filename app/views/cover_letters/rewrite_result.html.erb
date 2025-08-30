@@ -1,40 +1,35 @@
 <div class="min-h-screen bg-gradient-to-b from-white to-gray-50">
   <!-- Header Section -->
-  <div class="bg-white border-b border-gray-100">
-    <div class="max-w-5xl mx-auto px-4 py-12">
+  <div class="bg-gray-50 border-b border-gray-100">
+    <div class="max-w-5xl mx-auto px-4 py-8">
       <div class="text-center">
-        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full mb-6 shadow-lg">
-          <svg class="w-10 h-10 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-          </svg>
-        </div>
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
           AI가 다듬은 자소서
         </h1>
-        <p class="text-xl text-gray-600 mb-6">
+        <p class="text-lg text-gray-600 mb-4">
           피드백을 100% 반영한 개선된 자기소개서
         </p>
         
         <!-- Success Badge -->
-        <div class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-full border border-emerald-200">
-          <svg class="w-5 h-5 text-emerald-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="inline-flex items-center px-4 py-2 bg-emerald-50 rounded-lg border border-emerald-200">
+          <svg class="w-4 h-4 text-emerald-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
-          <span class="text-emerald-700 font-semibold">리라이트 완료</span>
+          <span class="text-emerald-700 font-medium text-sm">리라이트 완료</span>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Action Buttons -->
-  <div class="max-w-5xl mx-auto px-4 py-8">
+  <div class="max-w-5xl mx-auto px-4 py-6">
     <div class="flex flex-wrap justify-center gap-3">
       <% if current_user %>
         <% if @cover_letter.saved? && @cover_letter.user_id == current_user.id %>
           <%= button_to unsave_analysis_cover_letter_path(@cover_letter), 
               method: :delete,
-              class: "inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-full hover:bg-gray-200 transition-all duration-200 shadow-md hover:shadow-lg" do %>
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              class: "inline-flex items-center px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors" do %>
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
               <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
             </svg>
             저장됨
@@ -42,8 +37,8 @@
         <% else %>
           <%= button_to save_analysis_cover_letter_path(@cover_letter), 
               method: :post,
-              class: "inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-400 to-emerald-500 text-white font-semibold rounded-full hover:from-emerald-500 hover:to-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg" do %>
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class: "inline-flex items-center px-5 py-2.5 bg-emerald-500 text-white font-medium rounded-lg hover:bg-emerald-600 transition-colors" do %>
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
             </svg>
             개선본 저장하기
@@ -51,16 +46,16 @@
         <% end %>
       <% else %>
         <%= link_to new_user_session_path, 
-            class: "inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-400 to-emerald-500 text-white font-semibold rounded-full hover:from-emerald-500 hover:to-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg" do %>
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class: "inline-flex items-center px-5 py-2.5 bg-emerald-500 text-white font-medium rounded-lg hover:bg-emerald-600 transition-colors" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
           </svg>
           로그인하고 저장하기
         <% end %>
       <% end %>
       
-      <button onclick="window.print()" class="inline-flex items-center px-6 py-3 bg-white text-gray-700 font-semibold rounded-full hover:bg-gray-50 transition-all duration-200 border-2 border-gray-200 shadow-md hover:shadow-lg">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <button onclick="window.print()" class="inline-flex items-center px-5 py-2.5 bg-white text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors border border-gray-300">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
         PDF로 저장
@@ -73,7 +68,7 @@
     
     <!-- Company Info Card -->
     <% if @cover_letter.company_name.present? || @cover_letter.position.present? %>
-      <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+      <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
         <div class="flex flex-wrap items-center justify-center gap-8">
           <% if @cover_letter.company_name.present? %>
             <div class="flex items-center gap-3">
@@ -106,19 +101,14 @@
     <% end %>
 
     <!-- Rewritten Content Card -->
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-      <div class="px-8 py-6 bg-gradient-to-r from-emerald-50 to-green-50 border-b border-emerald-200">
-        <h2 class="text-2xl font-bold text-gray-900 flex items-center">
-          <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-500 text-white rounded-full flex items-center justify-center mr-4">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
-            </svg>
-          </div>
+    <div class="bg-white rounded-lg border border-gray-100 mb-8">
+      <div class="px-6 py-4 bg-gray-50 border-b border-gray-100">
+        <h2 class="text-xl font-bold text-gray-900">
           개선된 자기소개서
         </h2>
       </div>
       
-      <div class="p-8 lg:p-12">
+      <div class="p-6 lg:p-8">
         <% if @rewritten_content.present? %>
           <%
             # 줄바꿈을 유지하면서 내용 처리
@@ -153,17 +143,17 @@
               
               <% if section_title %>
                 <!-- 섹션 구분 -->
-                <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-8 border border-gray-100 hover:shadow-lg transition-shadow duration-300">
-                  <div class="flex items-start mb-6">
-                    <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0 shadow-md">
+                <div class="bg-gray-50 rounded-lg p-6 border border-gray-100">
+                  <div class="flex items-start mb-4">
+                    <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center font-semibold mr-3 flex-shrink-0 text-emerald-700">
                       <%= section_number %>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 pt-2">
+                    <h3 class="text-lg font-bold text-gray-900 pt-1">
                       <%= section_title %>
                     </h3>
                   </div>
                   
-                  <div class="pl-14 space-y-6">
+                  <div class="pl-11 space-y-4">
                     <% paragraphs.each do |paragraph| %>
                       <% next if paragraph.strip.empty? %>
                       
@@ -209,8 +199,8 @@
                 </div>
               <% else %>
                 <!-- 제목이 없는 경우 -->
-                <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-8 border border-gray-100">
-                  <div class="space-y-6">
+                <div class="bg-gray-50 rounded-lg p-6 border border-gray-100">
+                  <div class="space-y-4">
                     <% paragraphs.each do |paragraph| %>
                       <% next if paragraph.strip.empty? %>
                       
@@ -257,14 +247,14 @@
           </div>
           
           <!-- Copy Button -->
-          <div class="mt-12 pt-8 border-t border-gray-200">
-            <button onclick="copyToClipboard()" class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-emerald-400 to-emerald-500 text-white font-semibold rounded-full hover:from-emerald-500 hover:to-emerald-600 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center mx-auto">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="mt-8 pt-6 border-t border-gray-200">
+            <button onclick="copyToClipboard()" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-500 text-white font-medium rounded-lg hover:bg-emerald-600 transition-colors flex items-center justify-center mx-auto">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
               </svg>
               전체 내용 복사하기
             </button>
-            <div id="copy-feedback" class="text-center mt-3 text-sm text-emerald-600 font-medium hidden">
+            <div id="copy-feedback" class="text-center mt-2 text-sm text-emerald-600 hidden">
               ✅ 클립보드에 복사되었습니다
             </div>
           </div>
@@ -283,50 +273,56 @@
 
     <!-- Key Improvements -->
     <% if @rewritten_content.present? %>
-      <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
-        <h3 class="text-2xl font-bold text-gray-900 mb-8 text-center">✨ 이렇게 개선했습니다</h3>
+      <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
+        <h3 class="text-xl font-bold text-gray-900 mb-6">이렇게 개선했습니다</h3>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6">
-            <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center mb-4">
-              <span class="font-bold text-lg">1</span>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-blue-50 rounded-lg p-4 border border-blue-100">
+            <div class="flex items-center mb-2">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                <span class="font-semibold text-blue-700">1</span>
+              </div>
+              <h4 class="font-semibold text-gray-900">맞춤형 스토리</h4>
             </div>
-            <h4 class="font-bold text-gray-900 mb-2">맞춤형 스토리</h4>
-            <p class="text-gray-600">기업이 원하는 인재상에 맞춰 경험을 재구성했습니다</p>
+            <p class="text-gray-600 text-sm ml-11">기업이 원하는 인재상에 맞춰 경험을 재구성했습니다</p>
           </div>
           
-          <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6">
-            <div class="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center mb-4">
-              <span class="font-bold text-lg">2</span>
+          <div class="bg-green-50 rounded-lg p-4 border border-green-100">
+            <div class="flex items-center mb-2">
+              <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                <span class="font-semibold text-green-700">2</span>
+              </div>
+              <h4 class="font-semibold text-gray-900">구체적 성과</h4>
             </div>
-            <h4 class="font-bold text-gray-900 mb-2">구체적 성과</h4>
-            <p class="text-gray-600">수치와 팩트로 역량을 명확하게 증명했습니다</p>
+            <p class="text-gray-600 text-sm ml-11">수치와 팩트로 역량을 명확하게 증명했습니다</p>
           </div>
           
-          <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6">
-            <div class="w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center mb-4">
-              <span class="font-bold text-lg">3</span>
+          <div class="bg-purple-50 rounded-lg p-4 border border-purple-100">
+            <div class="flex items-center mb-2">
+              <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                <span class="font-semibold text-purple-700">3</span>
+              </div>
+              <h4 class="font-semibold text-gray-900">진정성 강화</h4>
             </div>
-            <h4 class="font-bold text-gray-900 mb-2">진정성 강화</h4>
-            <p class="text-gray-600">AI 티를 제거하고 자연스러운 문체로 다듬었습니다</p>
+            <p class="text-gray-600 text-sm ml-11">AI 티를 제거하고 자연스러운 문체로 다듬었습니다</p>
           </div>
         </div>
       </div>
 
       <!-- Next Steps -->
-      <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl shadow-lg p-10 text-center border border-emerald-100">
-        <h3 class="text-2xl font-bold text-gray-900 mb-4">다음 단계</h3>
-        <p class="text-lg text-gray-600 mb-8">
+      <div class="bg-gray-50 rounded-lg border border-gray-100 p-8 text-center">
+        <h3 class="text-xl font-bold text-gray-900 mb-2">다음 단계</h3>
+        <p class="text-gray-600 mb-6">
           개선된 자소서를 한 번 더 검토하고 싶으신가요?
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
           <%= link_to @cover_letter, 
-              class: "px-8 py-4 bg-white text-emerald-600 font-bold rounded-full hover:bg-gray-50 transition-all duration-200 border-2 border-emerald-300 shadow-lg hover:shadow-xl" do %>
+              class: "px-6 py-3 bg-white text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors border border-gray-300" do %>
             분석 결과 다시 보기
           <% end %>
           
           <%= link_to advanced_cover_letters_path, 
-              class: "px-8 py-4 bg-gradient-to-r from-emerald-400 to-emerald-500 text-white font-bold rounded-full hover:from-emerald-500 hover:to-emerald-600 transition-all duration-200 shadow-lg hover:shadow-xl" do %>
+              class: "px-6 py-3 bg-emerald-500 text-white font-medium rounded-lg hover:bg-emerald-600 transition-colors" do %>
             새로운 자소서 분석하기
           <% end %>
         </div>

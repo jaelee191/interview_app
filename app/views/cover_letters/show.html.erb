@@ -1,6 +1,11 @@
-<div class="min-h-screen bg-gradient-to-b from-white to-gray-50">
+<% content_for :head do %>
+  <meta name="turbo-cache-control" content="no-cache">
+  <meta name="turbo-visit-control" content="reload">
+<% end %>
+
+<div class="min-h-screen bg-white">
   <!-- Header Section -->
-  <section class="py-16 bg-gray-50 border-b border-gray-100">
+  <section class="py-16 bg-white border-b border-gray-200">
     <div class="max-w-4xl mx-auto px-4">
       <div class="text-center">
         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -77,9 +82,9 @@
           <% end %>
           <% if @cover_letter.position.present? %>
             <div class="flex items-center gap-3">
-              <div class="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center shadow-md">
-                <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                 </svg>
               </div>
               <div>
@@ -89,9 +94,9 @@
             </div>
           <% end %>
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center shadow-md">
-              <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+              <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
               </svg>
             </div>
             <div>
@@ -157,7 +162,7 @@
           
           <div class="space-y-4">
             <% parse_numbered_items(sections[:strengths]).each_with_index do |item, index| %>
-              <div class="bg-gray-50 rounded-lg p-5 border border-gray-100">
+              <div class="bg-white rounded-lg p-5 border border-gray-200">
                 <div class="flex items-start gap-3">
                   <div class="w-5 h-5 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
@@ -179,9 +184,9 @@
         </div>
       <% end %>
 
-      <!-- 개선이 필요한 부분 -->
+      <!-- 개선이 필요한 부분 (updated: <%= Time.current.to_i %>) -->
       <% if sections[:improvements].present? %>
-        <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
+        <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8" data-updated="<%= Time.current.to_i %>">
           <div class="mb-6">
             <span class="text-sm font-medium text-gray-500">IMPROVEMENTS</span>
             <h2 class="text-2xl font-bold text-gray-900 mt-2">
@@ -194,10 +199,10 @@
           
           <div class="space-y-4">
             <% parse_numbered_items(sections[:improvements]).each do |item| %>
-              <div class="bg-gradient-to-r from-amber-50 to-white rounded-2xl p-8 border-2 border-amber-200 hover:border-amber-300 hover:shadow-lg transition-all duration-300">
-                <div class="flex items-start">
-                  <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-500 text-white rounded-full flex items-center justify-center font-bold text-lg mr-5 flex-shrink-0 shadow-md">
-                    <%= item[:number] %>
+              <div class="bg-white rounded-lg p-5 border border-gray-200">
+                <div class="flex items-start gap-3">
+                  <div class="w-5 h-5 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
                   </div>
                   <div class="flex-1">
                     <% if item[:title].present? && item[:title] != '' %>
@@ -210,14 +215,14 @@
                     </div>
                     
                     <!-- 개선 팁 박스 -->
-                    <div class="bg-gradient-to-r from-emerald-50 to-emerald-100/30 border-l-4 border-emerald-500 p-5 mt-6 rounded-xl">
-                      <p class="text-emerald-800 font-bold flex items-center mb-2">
-                        <svg class="w-6 h-6 mr-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <div class="bg-white border-l-4 border-gray-300 p-4 mt-4 rounded">
+                      <p class="text-gray-800 font-semibold flex items-center mb-1">
+                        <svg class="w-4 h-4 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         이렇게 개선해보세요
                       </p>
-                      <p class="text-emerald-700 ml-9">위 피드백을 바탕으로 구체적인 사례와 성과를 추가하면 훨씬 설득력 있는 자소서가 됩니다.</p>
+                      <p class="text-gray-600 text-sm ml-6">위 피드백을 바탕으로 구체적인 사례와 성과를 추가하면 훨씬 설득력 있는 자소서가 됩니다.</p>
                     </div>
                   </div>
                 </div>
@@ -229,34 +234,32 @@
       
       <!-- 숨은 보석 -->
       <% if sections[:hidden_gems].present? %>
-        <div class="bg-gradient-to-br from-white to-purple-50/20 rounded-3xl shadow-xl border border-purple-200 p-10 mb-10 hover:shadow-2xl transition-shadow duration-300">
-          <div class="flex items-center mb-8">
-            <div class="w-14 h-14 bg-gradient-to-br from-purple-400 to-purple-500 rounded-full flex items-center justify-center mr-5 shadow-lg">
-              <span class="text-3xl filter drop-shadow">💎</span>
-            </div>
-            <div>
-              <h2 class="text-3xl font-black text-gray-900">
-                숨은 보석
-              </h2>
-              <p class="text-sm text-purple-600 font-medium mt-1">놓치고 있던 강점 <%= parse_numbered_items(sections[:hidden_gems]).length %>가지를 발견했습니다</p>
-            </div>
+        <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
+          <div class="mb-6">
+            <span class="text-sm font-medium text-gray-500">HIDDEN GEMS</span>
+            <h2 class="text-2xl font-bold text-gray-900 mt-2">
+              숨은 보석
+            </h2>
+            <p class="text-gray-600 mt-2">
+              놓치고 있던 강점 <%= parse_numbered_items(sections[:hidden_gems]).length %>가지를 발견했습니다
+            </p>
           </div>
           
-          <div class="bg-gradient-to-r from-purple-100 to-purple-50 border-l-4 border-purple-500 p-8 mb-8 rounded-xl">
-            <p class="text-purple-900 font-bold text-lg mb-2">
-              🎆 자신도 몰랐던 특별한 가치를 발견했습니다
+          <div class="bg-white border-l-4 border-gray-300 p-4 mb-6 rounded">
+            <p class="text-gray-800 font-semibold mb-1">
+              자신도 몰랐던 특별한 가치를 발견했습니다
             </p>
-            <p class="text-purple-700">
+            <p class="text-gray-600 text-sm">
               이 부분들을 적극 활용하면 다른 지원자와 확실히 차별화될 수 있습니다.
             </p>
           </div>
           
           <div class="space-y-4">
             <% parse_numbered_items(sections[:hidden_gems]).each do |item| %>
-              <div class="bg-gradient-to-r from-purple-50 to-white rounded-2xl p-8 border-2 border-purple-200 hover:border-purple-300 hover:shadow-lg transition-all duration-300">
-                <div class="flex items-start">
-                  <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-500 text-white rounded-full flex items-center justify-center font-bold text-lg mr-5 flex-shrink-0 shadow-md">
-                    <%= item[:number] %>
+              <div class="bg-white rounded-lg p-5 border border-gray-200">
+                <div class="flex items-start gap-3">
+                  <div class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
                   </div>
                   <div class="flex-1">
                     <% if item[:title].present? && item[:title] != '' %>
@@ -277,17 +280,15 @@
 
       <!-- 격려와 응원 -->
       <% if sections[:encouragement].present? %>
-        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
-          <div class="flex items-center mb-6">
-            <div class="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center mr-4">
-              <span class="text-2xl">💚</span>
-            </div>
-            <h2 class="text-2xl font-bold text-gray-900">
+        <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
+          <div class="mb-6">
+            <span class="text-sm font-medium text-gray-500">ENCOURAGEMENT</span>
+            <h2 class="text-2xl font-bold text-gray-900 mt-2">
               마지막 한마디
             </h2>
           </div>
           
-          <div class="bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl p-6 border border-emerald-100">
+          <div class="bg-white rounded-lg p-5 border border-gray-200">
             <div class="text-gray-700 leading-relaxed prose prose-lg max-w-none">
               <%= markdown_to_html(sections[:encouragement]) %>
             </div>
@@ -296,48 +297,43 @@
       <% end %>
 
       <!-- CTA Section -->
-      <div class="relative overflow-hidden bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600 rounded-3xl shadow-2xl p-12 mb-10">
-        <!-- 배경 패턴 -->
-        <div class="absolute inset-0 opacity-10">
-          <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.4\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E'); background-size: 60px 60px;"></div>
-        </div>
-        
-        <div class="relative text-center">
-          <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur rounded-full mb-6 mx-auto">
-            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+      <div class="bg-white rounded-lg border border-gray-200 p-8 mb-10">
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-12 h-12 bg-emerald-100 rounded-full mb-4">
+            <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
             </svg>
           </div>
           
-          <h3 class="text-4xl font-black text-white mb-4">
+          <h3 class="text-2xl font-bold text-gray-900 mb-2">
             이제 피드백을 반영해볼까요?
           </h3>
-          <p class="text-emerald-100 text-xl mb-10 font-medium">
+          <p class="text-gray-600 mb-6">
             AI 코치가 분석한 내용을 바탕으로 더 나은 자소서로 개선해보세요
           </p>
           
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <div class="flex flex-col sm:flex-row gap-3 justify-center">
             <% if @cover_letter.advanced_analysis.present? %>
               <%= link_to rewrite_result_cover_letter_path(@cover_letter), 
-                  class: "inline-flex items-center justify-center px-10 py-5 bg-white text-emerald-600 font-black text-xl rounded-full hover:scale-105 transform transition-all duration-200 shadow-2xl" do %>
-                <svg class="w-7 h-7 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  class: "inline-flex items-center justify-center px-6 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition-colors" do %>
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 리라이트 결과 보기
               <% end %>
             <% else %>
               <%= button_to rewrite_with_feedback_cover_letter_path(@cover_letter), 
                   method: :post,
-                  class: "inline-flex items-center justify-center px-10 py-5 bg-white text-emerald-600 font-black text-xl rounded-full hover:scale-105 transform transition-all duration-200 shadow-2xl" do %>
-                <svg class="w-7 h-7 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  class: "inline-flex items-center justify-center px-6 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition-colors" do %>
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                 </svg>
                 피드백 반영하여 리라이트
               <% end %>
             <% end %>
             
             <%= link_to advanced_cover_letters_path, 
-                class: "inline-flex items-center justify-center px-10 py-5 bg-white/20 backdrop-blur text-white font-bold text-xl rounded-full hover:bg-white/30 transition-all duration-200 border-2 border-white/50" do %>
+                class: "inline-flex items-center justify-center px-6 py-3 bg-white text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors border border-gray-300" do %>
               새로운 자소서 분석하기
             <% end %>
           </div>
