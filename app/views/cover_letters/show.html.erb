@@ -3,68 +3,76 @@
   <meta name="turbo-visit-control" content="reload">
 <% end %>
 
-<div class="min-h-screen bg-white">
+<div class="min-h-screen bg-gradient-to-b from-white to-gray-50">
   <!-- Header Section -->
-  <section class="py-16 bg-white border-b border-gray-200">
-    <div class="max-w-4xl mx-auto px-4">
+  <div class="bg-gray-50 border-b border-gray-100">
+    <div class="max-w-5xl mx-auto px-4 py-8">
       <div class="text-center">
         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
           AI 자소서 분석 완료
         </h1>
-        <p class="text-lg text-gray-600">
-          15년차 HR 전문가가 꼼꼼히 검토한 맞춤형 피드백<br>
-          강점 5개 · 개선점 5개 · 숨은 보석 3개 발견
+        <p class="text-lg text-gray-600 mb-4">
+          15년차 HR 전문가가 꼼꼼히 검토한 맞춤형 피드백
         </p>
         
-        <!-- Action Buttons -->
-        <div class="flex flex-wrap justify-center gap-3">
-          <% if current_user %>
-            <% if @cover_letter.saved? && @cover_letter.user_id == current_user.id %>
-              <%= button_to unsave_analysis_cover_letter_path(@cover_letter), 
-                  method: :delete,
-                  class: "inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-full hover:bg-gray-200 transition-all duration-200 shadow-md hover:shadow-lg" do %>
-                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
-                </svg>
-                저장됨
-              <% end %>
-            <% else %>
-              <%= button_to save_analysis_cover_letter_path(@cover_letter), 
-                  method: :post,
-                  class: "inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-400 to-emerald-500 text-white font-semibold rounded-full hover:from-emerald-500 hover:to-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg" do %>
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
-                </svg>
-                분석 결과 저장
-              <% end %>
-            <% end %>
-          <% else %>
-            <%= link_to new_user_session_path, 
-                class: "inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-400 to-emerald-500 text-white font-semibold rounded-full hover:from-emerald-500 hover:to-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg" do %>
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
-              </svg>
-              로그인하고 저장하기
-            <% end %>
-          <% end %>
-          
-          <!-- Download as PDF -->
-          <button onclick="window.print()" class="inline-flex items-center px-6 py-3 bg-white text-gray-700 font-semibold rounded-full hover:bg-gray-50 transition-all duration-200 border-2 border-gray-200 shadow-md hover:shadow-lg">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-            PDF로 저장
-          </button>
+        <!-- Success Badge -->
+        <div class="inline-flex items-center px-4 py-2 bg-emerald-50 rounded-lg border border-emerald-200">
+          <svg class="w-4 h-4 text-emerald-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="text-emerald-700 font-medium text-sm">분석 완료</span>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="max-w-5xl mx-auto px-4 py-6">
+    <div class="flex flex-wrap justify-center gap-3">
+      <% if current_user %>
+        <% if @cover_letter.saved? && @cover_letter.user_id == current_user.id %>
+          <%= button_to unsave_analysis_cover_letter_path(@cover_letter), 
+              method: :delete,
+              class: "inline-flex items-center px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors" do %>
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+            </svg>
+            저장됨
+          <% end %>
+        <% else %>
+          <%= button_to save_analysis_cover_letter_path(@cover_letter), 
+              method: :post,
+              class: "inline-flex items-center px-5 py-2.5 bg-emerald-500 text-white font-medium rounded-lg hover:bg-emerald-600 transition-colors" do %>
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+            </svg>
+            분석 결과 저장
+          <% end %>
+        <% end %>
+      <% else %>
+        <%= link_to new_user_session_path, 
+            class: "inline-flex items-center px-5 py-2.5 bg-emerald-500 text-white font-medium rounded-lg hover:bg-emerald-600 transition-colors" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+          </svg>
+          로그인하고 저장하기
+        <% end %>
+      <% end %>
+      
+      <button onclick="window.print()" class="inline-flex items-center px-5 py-2.5 bg-white text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors border border-gray-300">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        PDF로 저장
+      </button>
+    </div>
+  </div>
 
   <!-- Main Content -->
-  <article class="max-w-4xl mx-auto px-4 py-12">
+  <div class="max-w-5xl mx-auto px-4 pb-20">
     
-    <!-- 분석 정보 카드 -->
-    <div class="prose prose-lg max-w-none">
+    <!-- Company Info Card -->
+    <% if @cover_letter.company_name.present? || @cover_letter.position.present? %>
       <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
         <div class="flex flex-wrap items-center justify-center gap-8">
           <% if @cover_letter.company_name.present? %>
@@ -93,372 +101,217 @@
               </div>
             </div>
           <% end %>
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-              <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Analysis Results -->
+    <div class="bg-white rounded-lg border border-gray-100 mb-8">
+      <div class="px-6 py-4 bg-gray-50 border-b border-gray-100">
+        <h2 class="text-xl font-bold text-gray-900">
+          HR 전문가 분석 결과
+        </h2>
+      </div>
+      
+      <div class="p-6 lg:p-8">
+        <% if @cover_letter.advanced_analysis_json.present? %>
+          <!-- JSON 구조 사용 (신규) -->
+          <% sections = @cover_letter.advanced_analysis_json['sections'] %>
+          
+          <div class="space-y-8">
+            <% sections.each do |section| %>
+              <div class="bg-gray-50 rounded-lg p-6 border border-gray-100">
+                <div class="flex items-start mb-4">
+                  <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center font-semibold mr-3 flex-shrink-0 text-emerald-700">
+                    <%= section['number'] %>
+                  </div>
+                  <h3 class="text-lg font-bold text-gray-900 pt-1">
+                    <%= section['title'] %>
+                  </h3>
+                </div>
+                
+                <div class="pl-11 space-y-4">
+                  <% if section['content'].present? %>
+                    <div class="text-gray-700 leading-relaxed text-base lg:text-lg">
+                      <%= simple_format(section['content'], class: "whitespace-pre-wrap") %>
+                    </div>
+                  <% end %>
+                  
+                  <% if section['items'].present? && section['items'].any? %>
+                    <% section['items'].each do |item| %>
+                      <div class="mb-6">
+                        <% if item['title'].present? %>
+                          <h4 class="text-lg font-semibold text-emerald-600 mb-3">
+                            <%= "#{section['title'].include?('강점') ? '강점' : section['title'].include?('개선') ? '개선점' : '보석'} #{item['number']}: #{item['title']}" %>
+                          </h4>
+                        <% end %>
+                        <p class="text-gray-700 leading-relaxed text-base">
+                          <%= simple_format(item['content'], class: "whitespace-pre-wrap") %>
+                        </p>
+                      </div>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          
+        <% elsif @cover_letter.analysis_result.present? || @cover_letter.advanced_analysis.present? %>
+          <!-- 텍스트 파싱 사용 (기존 호환성) -->
+          <% analysis_content = @cover_letter.advanced_analysis.present? ? @cover_letter.advanced_analysis : @cover_letter.analysis_result %>
+          <% sections = parse_analysis_sections(analysis_content) %>
+          
+          <div class="space-y-8">
+            <% if sections.is_a?(Array) %>
+              <% sections.each do |section| %>
+                <div class="bg-gray-50 rounded-lg p-6 border border-gray-100">
+                  <div class="flex items-start mb-4">
+                    <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center font-semibold mr-3 flex-shrink-0 text-emerald-700">
+                      <%= section[:number] %>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 pt-1">
+                      <%= section[:title] %>
+                    </h3>
+                  </div>
+                  
+                  <div class="pl-11 space-y-4">
+                    <div class="text-gray-700 leading-relaxed text-base lg:text-lg">
+                      <%= simple_format(section[:content], class: "whitespace-pre-wrap") %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            <% else %>
+              <!-- Fallback for the entire content if sections couldn't be parsed -->
+              <div class="text-gray-700 leading-relaxed">
+                <%= simple_format(analysis_content, class: "whitespace-pre-wrap") %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-12">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
               </svg>
             </div>
-            <div>
-              <span class="text-sm text-gray-500 block">분석일</span>
-              <strong class="text-lg text-gray-900"><%= @cover_letter.created_at.strftime("%Y년 %m월 %d일") %></strong>
-            </div>
+            <p class="text-gray-500">분석 결과를 준비 중입니다...</p>
           </div>
-        </div>
+        <% end %>
       </div>
     </div>
 
-    <!-- PDF 분석 결과 (있는 경우) -->
-    <% if @cover_letter.deep_analysis_data && @cover_letter.deep_analysis_data['has_pdf'] %>
-      <div class="prose prose-lg max-w-none mb-8">
-        <div class="bg-white rounded-lg border border-gray-100 p-8">
-          <details>
-            <summary class="cursor-pointer hover:text-emerald-600 transition-colors font-semibold">
-              📄 PDF 이력서 분석 결과 보기
-            </summary>
-            <div class="mt-4 pt-4 border-t border-gray-100">
-              <% pdf_data = @cover_letter.deep_analysis_data['pdf_analysis'] %>
-              <% if pdf_data && pdf_data['analysis'] %>
-                <%= markdown_to_html(pdf_data['analysis']['resume'] || pdf_data['analysis']['combined'] || '분석 결과가 없습니다.') %>
-              <% end %>
-            </div>
-          </details>
-        </div>
-      </div>
-    <% end %>
-
-    <!-- 메인 자소서 분석 결과 -->
-    <% if @cover_letter.analysis_result.present? %>
-      <% sections = parse_analysis_sections(@cover_letter.analysis_result) %>
-      
-      <!-- 첫인상 & 전체 평가 -->
-      <% if sections[:first_impression].present? %>
-        <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
-          <div class="mb-6">
-            <span class="text-sm font-medium text-gray-500">FIRST IMPRESSION</span>
-            <h2 class="text-2xl font-bold text-gray-900 mt-2">
-              첫인상 & 전체 평가
-            </h2>
-          </div>
-          
-          <div class="prose prose-lg max-w-none text-gray-600">
-            <%= markdown_to_html(sections[:first_impression]) %>
-          </div>
-        </div>
-      <% end %>
-
-      <!-- 잘 쓴 부분 -->
-      <% if sections[:strengths].present? %>
-        <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
-          <div class="mb-6">
-            <span class="text-sm font-medium text-gray-500">STRENGTHS</span>
-            <h2 class="text-2xl font-bold text-gray-900 mt-2">
-              잘 쓴 부분
-            </h2>
-            <p class="text-gray-600 mt-2">
-              발견한 <%= parse_numbered_items(sections[:strengths]).length %>가지 강점을 적극 활용하세요
-            </p>
-          </div>
-          
-          <div class="space-y-4">
-            <% parse_numbered_items(sections[:strengths]).each_with_index do |item, index| %>
-              <div class="bg-white rounded-lg p-5 border border-gray-200">
-                <div class="flex items-start gap-3">
-                  <div class="w-5 h-5 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                  </div>
-                  <div class="flex-1">
-                    <% if item[:title].present? && item[:title] != '' %>
-                      <p class="font-bold text-gray-900 mb-3 text-lg">
-                        <%= strip_tags(item[:title]).gsub(/^강점 \d+: /, '') %>
-                      </p>
-                    <% end %>
-                    <div class="text-gray-700 leading-relaxed prose prose-lg max-w-none">
-                      <%= markdown_to_html(item[:content]) %>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-
-      <!-- 개선이 필요한 부분 (updated: <%= Time.current.to_i %>) -->
-      <% if sections[:improvements].present? %>
-        <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8" data-updated="<%= Time.current.to_i %>">
-          <div class="mb-6">
-            <span class="text-sm font-medium text-gray-500">IMPROVEMENTS</span>
-            <h2 class="text-2xl font-bold text-gray-900 mt-2">
-              개선이 필요한 부분
-            </h2>
-            <p class="text-gray-600 mt-2">
-              개선 포인트 <%= parse_numbered_items(sections[:improvements]).length %>가지를 반영하면 더 좋아집니다
-            </p>
-          </div>
-          
-          <div class="space-y-4">
-            <% parse_numbered_items(sections[:improvements]).each do |item| %>
-              <div class="bg-white rounded-lg p-5 border border-gray-200">
-                <div class="flex items-start gap-3">
-                  <div class="w-5 h-5 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
-                  </div>
-                  <div class="flex-1">
-                    <% if item[:title].present? && item[:title] != '' %>
-                      <p class="font-bold text-gray-900 mb-3 text-lg">
-                        <%= strip_tags(item[:title]).gsub(/^개선점 \d+: /, '') %>
-                      </p>
-                    <% end %>
-                    <div class="text-gray-700 leading-relaxed prose prose-lg max-w-none">
-                      <%= markdown_to_html(item[:content]) %>
-                    </div>
-                    
-                    <!-- 개선 팁 박스 -->
-                    <div class="bg-white border-l-4 border-gray-300 p-4 mt-4 rounded">
-                      <p class="text-gray-800 font-semibold flex items-center mb-1">
-                        <svg class="w-4 h-4 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        이렇게 개선해보세요
-                      </p>
-                      <p class="text-gray-600 text-sm ml-6">위 피드백을 바탕으로 구체적인 사례와 성과를 추가하면 훨씬 설득력 있는 자소서가 됩니다.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-      
-      <!-- 숨은 보석 -->
-      <% if sections[:hidden_gems].present? %>
-        <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
-          <div class="mb-6">
-            <span class="text-sm font-medium text-gray-500">HIDDEN GEMS</span>
-            <h2 class="text-2xl font-bold text-gray-900 mt-2">
-              숨은 보석
-            </h2>
-            <p class="text-gray-600 mt-2">
-              놓치고 있던 강점 <%= parse_numbered_items(sections[:hidden_gems]).length %>가지를 발견했습니다
-            </p>
-          </div>
-          
-          <div class="bg-white border-l-4 border-gray-300 p-4 mb-6 rounded">
-            <p class="text-gray-800 font-semibold mb-1">
-              자신도 몰랐던 특별한 가치를 발견했습니다
-            </p>
-            <p class="text-gray-600 text-sm">
-              이 부분들을 적극 활용하면 다른 지원자와 확실히 차별화될 수 있습니다.
-            </p>
-          </div>
-          
-          <div class="space-y-4">
-            <% parse_numbered_items(sections[:hidden_gems]).each do |item| %>
-              <div class="bg-white rounded-lg p-5 border border-gray-200">
-                <div class="flex items-start gap-3">
-                  <div class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  </div>
-                  <div class="flex-1">
-                    <% if item[:title].present? && item[:title] != '' %>
-                      <p class="font-bold text-gray-900 mb-3 text-lg">
-                        <%= strip_tags(item[:title]).gsub(/^숨은 보석 \d+: /, '') %>
-                      </p>
-                    <% end %>
-                    <div class="text-gray-700 leading-relaxed prose prose-lg max-w-none">
-                      <%= markdown_to_html(item[:content]) %>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-
-      <!-- 격려와 응원 -->
-      <% if sections[:encouragement].present? %>
-        <div class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
-          <div class="mb-6">
-            <span class="text-sm font-medium text-gray-500">ENCOURAGEMENT</span>
-            <h2 class="text-2xl font-bold text-gray-900 mt-2">
-              마지막 한마디
-            </h2>
-          </div>
-          
-          <div class="bg-white rounded-lg p-5 border border-gray-200">
-            <div class="text-gray-700 leading-relaxed prose prose-lg max-w-none">
-              <%= markdown_to_html(sections[:encouragement]) %>
-            </div>
-          </div>
-        </div>
-      <% end %>
-
-      <!-- CTA Section -->
-      <div class="bg-white rounded-lg border border-gray-200 p-8 mb-10">
-        <div class="text-center">
-          <div class="inline-flex items-center justify-center w-12 h-12 bg-emerald-100 rounded-full mb-4">
-            <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+    <!-- Next Steps -->
+    <div class="bg-gray-50 rounded-lg border border-gray-100 p-8 text-center">
+      <h3 class="text-xl font-bold text-gray-900 mb-2">다음 단계</h3>
+      <p class="text-gray-600 mb-6">
+        분석 결과를 바탕으로 자소서를 개선해보세요
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <% if @cover_letter.improved_letter.present? %>
+          <%= link_to rewrite_result_cover_letter_path(@cover_letter), 
+              class: "inline-flex items-center justify-center px-6 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition-colors shadow-sm" do %>
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-          </div>
-          
-          <h3 class="text-2xl font-bold text-gray-900 mb-2">
-            이제 피드백을 반영해볼까요?
-          </h3>
-          <p class="text-gray-600 mb-6">
-            AI 코치가 분석한 내용을 바탕으로 더 나은 자소서로 개선해보세요
-          </p>
-          
-          <div class="flex flex-col sm:flex-row gap-3 justify-center">
-            <% if @cover_letter.advanced_analysis.present? %>
-              <%= link_to rewrite_result_cover_letter_path(@cover_letter), 
-                  class: "inline-flex items-center justify-center px-6 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition-colors" do %>
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                리라이트 결과 보기
-              <% end %>
-            <% else %>
-              <!-- 리라이트 옵션 선택 드롭다운 -->
-              <div class="relative inline-block" x-data="{ open: false }">
-                <button @click="open = !open" 
-                        @click.away="open = false"
-                        class="inline-flex items-center justify-center px-6 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition-colors">
-                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                  </svg>
-                  피드백 반영하여 리라이트
-                  <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </button>
-                
-                <!-- 드롭다운 메뉴 -->
-                <div x-show="open" 
-                     x-transition:enter="transition ease-out duration-100"
-                     x-transition:enter-start="transform opacity-0 scale-95"
-                     x-transition:enter-end="transform opacity-100 scale-100"
-                     x-transition:leave="transition ease-in duration-75"
-                     x-transition:leave-start="transform opacity-100 scale-100"
-                     x-transition:leave-end="transform opacity-0 scale-95"
-                     class="absolute z-10 mt-2 w-72 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <div class="py-1">
-                    <%= button_to rewrite_with_feedback_cover_letter_path(@cover_letter), 
-                        method: :post,
-                        params: { rewrite_mode: 'preserve' },
-                        class: "w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors" do %>
-                      <div class="flex items-start">
-                        <div class="flex-shrink-0 mt-0.5">
-                          <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                          </svg>
-                        </div>
-                        <div class="ml-3">
-                          <p class="text-sm font-semibold text-gray-900">원본 구조 유지</p>
-                          <p class="text-xs text-gray-500 mt-1">현재 자소서의 항목을 그대로 유지하며 내용만 개선합니다</p>
-                        </div>
-                      </div>
-                    <% end %>
-                    
-                    <div class="border-t border-gray-100"></div>
-                    
-                    <%= button_to rewrite_with_feedback_cover_letter_path(@cover_letter), 
-                        method: :post,
-                        params: { rewrite_mode: 'optimize' },
-                        class: "w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors" do %>
-                      <div class="flex items-start">
-                        <div class="flex-shrink-0 mt-0.5">
-                          <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                          </svg>
-                        </div>
-                        <div class="ml-3">
-                          <p class="text-sm font-semibold text-gray-900">AI 최적화</p>
-                          <p class="text-xs text-gray-500 mt-1">HR 전문가가 추천하는 최적의 구조로 재구성합니다</p>
-                        </div>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            <% end %>
+            리라이트 결과 보기
+          <% end %>
+        <% else %>
+          <!-- 리라이트 옵션 선택 드롭다운 -->
+          <div class="relative inline-block" x-data="{ open: false }">
+            <button @click="open = !open" 
+                    @click.away="open = false"
+                    class="inline-flex items-center justify-center px-6 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition-colors shadow-sm">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              피드백 반영하여 리라이트
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
             
-            <%= link_to advanced_cover_letters_path, 
-                class: "inline-flex items-center justify-center px-6 py-3 bg-white text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors border border-gray-300" do %>
-              새로운 자소서 분석하기
-            <% end %>
+            <!-- 드롭다운 메뉴 -->
+            <div x-show="open" 
+                 x-transition:enter="transition ease-out duration-100"
+                 x-transition:enter-start="transform opacity-0 scale-95"
+                 x-transition:enter-end="transform opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:leave-start="transform opacity-100 scale-100"
+                 x-transition:leave-end="transform opacity-0 scale-95"
+                 class="absolute z-10 mt-2 w-72 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <div class="py-1">
+                <%= button_to rewrite_with_feedback_cover_letter_path(@cover_letter), 
+                    method: :post,
+                    params: { rewrite_mode: 'preserve' },
+                    class: "w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors" do %>
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 mt-0.5">
+                      <div class="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center">
+                        <span class="text-xs font-bold text-emerald-600">1</span>
+                      </div>
+                    </div>
+                    <div class="ml-3">
+                      <p class="font-semibold text-gray-900">원문 스타일 유지</p>
+                      <p class="text-sm text-gray-500 mt-1">현재 문체와 어조를 최대한 보존하면서 개선</p>
+                    </div>
+                  </div>
+                <% end %>
+                
+                <%= button_to rewrite_with_feedback_cover_letter_path(@cover_letter), 
+                    method: :post,
+                    params: { rewrite_mode: 'optimize' },
+                    class: "w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors" do %>
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 mt-0.5">
+                      <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="text-xs font-bold text-blue-600">2</span>
+                      </div>
+                    </div>
+                    <div class="ml-3">
+                      <p class="font-semibold text-gray-900">자연스럽게 다듬기</p>
+                      <p class="text-sm text-gray-500 mt-1">AI 티 제거하고 읽기 편하게 최적화</p>
+                    </div>
+                  </div>
+                <% end %>
+                
+                <%= button_to rewrite_with_feedback_cover_letter_path(@cover_letter), 
+                    method: :post,
+                    params: { rewrite_mode: 'recreate' },
+                    class: "w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors rounded-b-lg" do %>
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 mt-0.5">
+                      <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
+                        <span class="text-xs font-bold text-purple-600">3</span>
+                      </div>
+                    </div>
+                    <div class="ml-3">
+                      <p class="font-semibold text-gray-900">전체 재작성</p>
+                      <p class="text-sm text-gray-500 mt-1">피드백 반영하여 완전히 새로 작성</p>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
           </div>
-        </div>
+        <% end %>
+        
+        <%= link_to advanced_cover_letters_path, 
+            class: "px-6 py-3 bg-white text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors border border-gray-300" do %>
+          새로운 자소서 분석하기
+        <% end %>
       </div>
-      
-    <% else %>
-      <!-- 분석 중 -->
-      <div class="bg-white rounded-lg border border-gray-100 p-12 text-center">
-        <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-emerald-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-          </svg>
-        </div>
-        <h3 class="text-xl font-semibold text-gray-900 mb-2">AI가 분석 중입니다</h3>
-        <p class="text-gray-600">자소서를 꼼꼼히 읽고 피드백을 준비하고 있어요. 잠시만 기다려주세요...</p>
-      </div>
-    <% end %>
-  </article>
+    </div>
+  </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 <style>
   @media print {
-    /* 헤더 버튼 숨기기 */
-    nav,
-    header,
-    button,
-    .no-print {
-      display: none !important;
-    }
-    
-    /* 저장/다운로드 버튼 영역 숨기기 */
-    section > div > div > div.flex {
-      display: none !important;
-    }
-    
-    /* 본문만 표시 */
-    article {
-      max-width: 100% !important;
-      padding: 0 !important;
-    }
-    
-    /* 배경색 유지 */
-    .bg-emerald-50,
-    .bg-gray-50,
-    .bg-purple-50 {
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-    
-    /* 페이지 여백 설정 */
-    @page {
-      margin: 1.5cm;
-      size: A4;
-    }
-    
-    /* 제목 스타일 */
-    h1, h2, h3 {
-      page-break-after: avoid;
-      font-weight: bold;
-    }
-    
-    /* 분석 내용 페이지 분리 방지 */
-    .prose {
-      page-break-inside: avoid;
-    }
-    
-    /* 링크 스타일 제거 */
-    a {
-      text-decoration: none !important;
-      color: inherit !important;
-    }
+    nav, header, button, .no-print { display: none !important; }
+    .bg-gradient-to-b { background: white !important; }
+    .shadow-sm { box-shadow: none !important; }
+    @page { margin: 1.5cm; size: A4; }
   }
 </style>

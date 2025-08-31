@@ -3,7 +3,7 @@ require "tempfile"
 class CoverLettersController < ApplicationController
 
   before_action :set_cover_letter, only: [ :show, :destroy ]
-  skip_before_action :verify_authenticity_token, only: [ :start_interactive, :send_message, :save_interactive, :analyze_job_posting, :analyze_advanced ]
+  skip_before_action :verify_authenticity_token, only: [ :start_interactive, :send_message, :save_interactive, :analyze_job_posting, :analyze_advanced, :start_analysis ]
 
   def index
     @cover_letters = CoverLetter.order(created_at: :desc)
@@ -733,12 +733,14 @@ class CoverLettersController < ApplicationController
     }, status: :unprocessable_entity
   end
   
+  
   # 분석 진행 페이지
   def analyzing
     @cover_letter = CoverLetter.find(params[:id])
     
     # 이미 분석 완료된 경우 결과 페이지로 리다이렉트
-    if @cover_letter.analysis_status == 'completed' && @cover_letter.analysis_result.present?
+    if @cover_letter.analysis_status == 'completed' && 
+       (@cover_letter.analysis_result.present? || @cover_letter.advanced_analysis.present?)
       redirect_to @cover_letter
     end
   end
@@ -765,9 +767,11 @@ class CoverLettersController < ApplicationController
         # PDF 분석
         pdf_service = PdfAnalyzerService.new(temp_file.path)
         pdf_analysis = pdf_service.analyze_resume
+        
+        Rails.logger.info "PDF 분석 결과: #{pdf_analysis.keys}"
 
-        # 분석 결과를 자소서에 추가
-        if pdf_analysis[:success]
+        # 분석 결과를 자소서에 추가 (에러가 있어도 처리)
+        if pdf_analysis && !pdf_analysis[:error]
           # PDF에서 자소서가 있는지 확인
           has_cover_letter = pdf_analysis[:metadata] && pdf_analysis[:metadata][:has_cover_letter]
           original_cover_letter = pdf_analysis[:original_cover_letter]
@@ -810,18 +814,38 @@ class CoverLettersController < ApplicationController
         temp_file.unlink
       rescue => e
         Rails.logger.error "PDF Processing Error: #{e.message}"
+        Rails.logger.error e.backtrace.join("\n")
+        # PDF 처리 실패해도 자소서는 저장되도록 함
       end
     end
 
     if @cover_letter.save
-      # PDF 분석 결과가 있으면 저장
-      if pdf_analysis && pdf_analysis[:success]
+      # PDF 분석 결과가 있으면 저장 (에러가 있어도 저장은 진행)
+      if pdf_analysis && !pdf_analysis[:error]
         deep_analysis_data = {
           pdf_analysis: pdf_analysis,
           has_pdf: true
         }
         @cover_letter.update(deep_analysis_data: deep_analysis_data)
       end
+      
+      # 분석 Job 시작 (개발 환경에서는 동기 실행)
+      if Rails.env.development?
+        # 백그라운드에서 실행
+        Thread.new do
+          Rails.application.executor.wrap do
+            CoverLetterAnalysisJob.perform_now(@cover_letter.id, use_realtime: true)
+          end
+        end
+      else
+        CoverLetterAnalysisJob.perform_later(@cover_letter.id, use_realtime: true)
+      end
+      
+      # 분석 상태 업데이트
+      @cover_letter.update(
+        analysis_status: 'in_progress',
+        analysis_started_at: Time.current
+      )
       
       # 실시간 진행 상황 표시 페이지로 리다이렉트
       redirect_to analyzing_cover_letter_path(@cover_letter)
@@ -916,7 +940,8 @@ class CoverLettersController < ApplicationController
       }
       
       @cover_letter.update(
-        advanced_analysis: result[:rewritten_letter],
+        improved_letter: result[:rewritten_letter],
+        improved_letter_saved_at: Time.current,
         deep_analysis_data: deep_data
       )
 
@@ -932,7 +957,7 @@ class CoverLettersController < ApplicationController
 
   def rewrite_result
     @cover_letter = CoverLetter.find(params[:id])
-    @rewritten_content = @cover_letter.advanced_analysis
+    @rewritten_content = @cover_letter.improved_letter
 
     unless @rewritten_content
       redirect_to @cover_letter, alert: "리라이트된 자기소개서가 없습니다."

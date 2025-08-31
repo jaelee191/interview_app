@@ -10,6 +10,67 @@ class AdvancedCoverLetterService
     @model = ENV['OPENAI_MODEL'] || 'gpt-4.1'
   end
   
+  # PUBLIC 메서드: 실시간 진행 상황과 함께 하이브리드 분석 (병렬+순차)
+  def analyze_cover_letter_with_progress(content, cover_letter_id)
+    Rails.logger.info "=== 실시간 진행 상황 분석 시작 ==="
+    
+    broadcaster = ProgressBroadcaster.new(cover_letter_id)
+    results = {}
+    errors = []
+    
+    begin
+      # 분석 시작 알림
+      broadcaster.broadcast_start
+      
+      # 1. 첫인상 분석
+      broadcaster.broadcast_step_start(:first_impression)
+      results[:first_impression] = analyze_first_impression(content)
+      broadcaster.broadcast_step_complete(:first_impression)
+      
+      # 2. 강점 분석
+      broadcaster.broadcast_step_start(:strengths)
+      results[:strengths] = analyze_strengths(content)
+      broadcaster.broadcast_step_complete(:strengths, 
+        { items: results[:strengths].scan(/\*\*강점/).size }
+      )
+      
+      # 3. 개선점 분석
+      broadcaster.broadcast_step_start(:improvements)
+      results[:improvements] = analyze_improvements(content)
+      broadcaster.broadcast_step_complete(:improvements,
+        { items: results[:improvements].scan(/\*\*개선/).size }
+      )
+      
+      # 4. 숨은 보석 발굴
+      broadcaster.broadcast_step_start(:hidden_gems)
+      results[:hidden_gems] = analyze_hidden_gems(content)
+      broadcaster.broadcast_step_complete(:hidden_gems,
+        { items: 3 }
+      )
+      
+      # 5. 격려 메시지
+      broadcaster.broadcast_step_start(:encouragement)
+      results[:encouragement] = generate_encouragement(content)
+      broadcaster.broadcast_step_complete(:encouragement)
+      
+      # 분석 완료 - JSON 구조로 생성
+      json_result = combine_analysis_results_to_json(results)
+      text_result = combine_analysis_results(results)
+      
+      broadcaster.broadcast_complete(text_result)
+      
+      {
+        text: text_result,
+        json: json_result
+      }
+      
+    rescue => e
+      Rails.logger.error "Analysis with progress failed: #{e.message}"
+      broadcaster.broadcast_error("분석 중 오류가 발생했습니다: #{e.message}")
+      raise
+    end
+  end
+  
   # Python NLP 분석 수행
   def analyze_with_python(content, company_name = nil, position = nil)
     script_path = Rails.root.join('python_analysis', 'advanced_analyzer.py')
@@ -164,10 +225,8 @@ class AdvancedCoverLetterService
     { error: "분석 중 오류가 발생했습니다: #{e.message}" }
   end
   
-  private
-  
-  # 원본 자소서에서 항목 추출
-  def extract_sections_from_content(content)
+  # 개별 분석 메서드들 (OptimizedAnalysisService에서 사용)
+  def analyze_first_impression(content)
     return [] unless content.present?
     
     # 숫자. 형식의 항목 찾기 (예: "1. 지원 동기", "2. 성장 과정")
@@ -314,61 +373,7 @@ class AdvancedCoverLetterService
     parse_response(response)[:content]
   end
   
-  # 실시간 진행 상황과 함께 순차 분석
-  def analyze_cover_letter_with_progress(content, cover_letter_id)
-    Rails.logger.info "=== 실시간 진행 상황 분석 시작 ==="
-    
-    broadcaster = ProgressBroadcaster.new(cover_letter_id)
-    results = {}
-    errors = []
-    
-    begin
-      # 분석 시작 알림
-      broadcaster.broadcast_start
-      
-      # 1. 첫인상 분석
-      broadcaster.broadcast_step_start(:first_impression)
-      results[:first_impression] = analyze_first_impression(content)
-      broadcaster.broadcast_step_complete(:first_impression)
-      
-      # 2. 강점 분석
-      broadcaster.broadcast_step_start(:strengths)
-      results[:strengths] = analyze_strengths(content)
-      broadcaster.broadcast_step_complete(:strengths, 
-        { items: results[:strengths].scan(/\*\*강점/).size }
-      )
-      
-      # 3. 개선점 분석
-      broadcaster.broadcast_step_start(:improvements)
-      results[:improvements] = analyze_improvements(content)
-      broadcaster.broadcast_step_complete(:improvements,
-        { items: results[:improvements].scan(/\*\*개선/).size }
-      )
-      
-      # 4. 숨은 보석 발굴
-      broadcaster.broadcast_step_start(:hidden_gems)
-      results[:hidden_gems] = analyze_hidden_gems(content)
-      broadcaster.broadcast_step_complete(:hidden_gems,
-        { items: 3 }
-      )
-      
-      # 5. 격려 메시지
-      broadcaster.broadcast_step_start(:encouragement)
-      results[:encouragement] = generate_encouragement(content)
-      broadcaster.broadcast_step_complete(:encouragement)
-      
-      # 분석 완료
-      final_result = combine_analysis_results(results)
-      broadcaster.broadcast_complete(final_result)
-      
-      final_result
-      
-    rescue => e
-      Rails.logger.error "Analysis with progress failed: #{e.message}"
-      broadcaster.broadcast_error("분석 중 오류가 발생했습니다: #{e.message}")
-      raise
-    end
-  end
+  # [삭제됨 - 위로 이동함]
   
   # 병렬처리로 자소서 분석 실행 (기존 메서드)
   def analyze_cover_letter_parallel(content)
@@ -426,13 +431,88 @@ class AdvancedCoverLetterService
       # 일부 실패해도 성공한 부분은 반환
     end
     
-    # 결과 조합
-    combine_analysis_results(results)
+    # 결과 조합 - JSON과 텍스트 모두 반환
+    {
+      text: combine_analysis_results(results),
+      json: combine_analysis_results_to_json(results)
+    }
+  end
+  
+  # JSON 구조로 분석 결과 변환
+  def combine_analysis_results_to_json(results)
+    {
+      sections: [
+        {
+          number: 1,
+          title: "첫인상 & 전체적인 느낌",
+          content: results[:first_impression] || "분석 중 오류가 발생했습니다.",
+          items: []
+        },
+        {
+          number: 2,
+          title: "잘 쓴 부분 (Top 5 강점)",
+          content: "",
+          items: parse_numbered_items(results[:strengths])
+        },
+        {
+          number: 3,
+          title: "아쉬운 부분 (Top 5 개선점)",
+          content: "",
+          items: parse_numbered_items(results[:improvements])
+        },
+        {
+          number: 4,
+          title: "놓치고 있는 숨은 보석들",
+          content: "",
+          items: parse_numbered_items(results[:hidden_gems])
+        },
+        {
+          number: 5,
+          title: "격려와 응원 메시지",
+          content: results[:encouragement] || "분석 중 오류가 발생했습니다.",
+          items: []
+        }
+      ],
+      analyzed_at: Time.current
+    }
+  end
+  
+  # 텍스트에서 번호 항목 파싱
+  def parse_numbered_items(text)
+    return [] if text.blank?
+    
+    items = []
+    # **강점 1: 제목** 또는 ### 1. 제목 형식 찾기
+    pattern = /(?:\*\*(?:강점|개선점|보석)\s*(\d+):\s*([^*]+)\*\*|###\s*(\d+)\.\s*([^\n]+))\n*(.*?)(?=\*\*(?:강점|개선점|보석)\s*\d+:|###\s*\d+\.|$)/m
+    
+    text.scan(pattern) do |num1, title1, num2, title2, content|
+      number = num1 || num2
+      title = title1 || title2
+      if number && title
+        items << {
+          number: number.to_i,
+          title: title.strip,
+          content: content.strip
+        }
+      end
+    end
+    
+    # 패턴이 없으면 전체 텍스트를 하나의 항목으로
+    if items.empty? && text.present?
+      items << {
+        number: 1,
+        title: "",
+        content: text.strip
+      }
+    end
+    
+    items
   end
   
   # 병렬 분석 결과 조합
   def combine_analysis_results(results)
-    <<~COMBINED
+    # 텍스트 형식 (기존 호환성 유지)
+    text_result = <<~COMBINED
       ## 1. 첫인상 & 전체적인 느낌
       
       #{results[:first_impression] || "분석 중 오류가 발생했습니다."}
@@ -861,5 +941,36 @@ class AdvancedCoverLetterService
     else
       { error: '예상치 못한 응답 형식입니다' }
     end
+  end
+
+  def extract_sections_from_content(content)
+    # 자소서 내용을 섹션별로 분리
+    sections = []
+    
+    # 숫자로 시작하는 섹션 패턴 (예: "1. 지원동기", "2. 성장과정" 등)
+    section_pattern = /^(\d+)\.\s*(.+?)(?=\n\d+\.\s+|\z)/m
+    
+    content.scan(section_pattern) do |number, section_content|
+      title_and_content = section_content.split("\n", 2)
+      title = title_and_content[0].strip
+      body = title_and_content[1]&.strip || ""
+      
+      sections << {
+        number: number,
+        title: title,
+        content: body
+      }
+    end
+    
+    # 섹션이 없으면 전체를 하나의 섹션으로 처리
+    if sections.empty?
+      sections << {
+        number: "1",
+        title: "자기소개서",
+        content: content.strip
+      }
+    end
+    
+    sections
   end
 end

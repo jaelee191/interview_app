@@ -146,7 +146,19 @@ class PdfAnalyzerService
     # Python 기반 추출 우선 시도
     python_result = extract_with_python
     if python_result[:success]
-      return python_result
+      # Python 결과를 표준 형식으로 변환
+      return {
+        resume: {
+          pages: python_result[:resume_pages] || [],
+          text: python_result[:resume_text] || "",
+          word_count: (python_result[:resume_text] || "").split.length
+        },
+        cover_letter: {
+          pages: python_result[:cover_letter_pages] || [],
+          text: python_result[:original_cover_letter] || "",
+          word_count: (python_result[:original_cover_letter] || "").split.length
+        }
+      }
     end
     
     # Ruby 기반 폴백 로직

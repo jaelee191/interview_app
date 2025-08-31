@@ -10,28 +10,51 @@ class AnalysisProgressChannel {
   }
   
   connect() {
-    this.subscription = consumer.subscriptions.create(
-      {
-        channel: "AnalysisProgressChannel",
-        cover_letter_id: this.coverLetterId
-      },
-      {
-        connected: () => {
-          console.log('Connected to analysis progress channel')
-          this.onConnected()
-        },
-        
-        disconnected: () => {
-          console.log('Disconnected from analysis progress channel')
-          this.cleanup()
-        },
-        
-        received: (data) => {
-          this.handleMessage(data)
-        }
-      }
-    )
+    // 연결 재시도 로직 추가
+    let retryCount = 0
+    const maxRetries = 3
     
+    const attemptConnection = () => {
+      this.subscription = consumer.subscriptions.create(
+        {
+          channel: "AnalysisProgressChannel",
+          cover_letter_id: this.coverLetterId
+        },
+        {
+          connected: () => {
+            console.log('Connected to analysis progress channel')
+            retryCount = 0  // 연결 성공 시 재시도 카운터 리셋
+            this.onConnected()
+          },
+          
+          disconnected: () => {
+            console.log('Disconnected from analysis progress channel')
+            this.cleanup()
+            
+            // 자동 재연결 시도
+            if (retryCount < maxRetries) {
+              retryCount++
+              console.log(`Attempting reconnection ${retryCount}/${maxRetries}...`)
+              setTimeout(attemptConnection, 2000 * retryCount)
+            }
+          },
+          
+          rejected: () => {
+            console.error('Connection rejected')
+            if (retryCount < maxRetries) {
+              retryCount++
+              setTimeout(attemptConnection, 2000 * retryCount)
+            }
+          },
+          
+          received: (data) => {
+            this.handleMessage(data)
+          }
+        }
+      )
+    }
+    
+    attemptConnection()
     return this
   }
   

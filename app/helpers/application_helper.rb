@@ -72,4 +72,107 @@ module ApplicationHelper
     
     html.html_safe
   end
+  
+  def parse_analysis_sections(analysis_text)
+    return [] if analysis_text.blank?
+    
+    sections = []
+    current_section = nil
+    current_content = []
+    
+    lines = analysis_text.split("\n")
+    
+    lines.each do |line|
+      # Check if this line starts a new section (## 1. Title format)
+      if line.match(/^##\s+(\d+)\.\s+(.+)/)
+        # Save previous section if exists
+        if current_section
+          sections << {
+            number: current_section[:number],
+            title: current_section[:title],
+            content: current_content.join("\n").strip
+          }
+        end
+        
+        # Start new section
+        match = line.match(/^##\s+(\d+)\.\s+(.+)/)
+        current_section = {
+          number: match[1].to_i,
+          title: match[2].strip
+        }
+        current_content = []
+      elsif current_section
+        # Add content to current section
+        current_content << line
+      end
+    end
+    
+    # Save last section
+    if current_section
+      sections << {
+        number: current_section[:number],
+        title: current_section[:title],
+        content: current_content.join("\n").strip
+      }
+    end
+    
+    # If no sections found, treat entire content as one section
+    if sections.empty? && analysis_text.present?
+      sections << {
+        number: 1,
+        title: "분석 내용",
+        content: analysis_text
+      }
+    end
+    
+    sections
+  end
+  
+  def parse_numbered_items(section_content)
+    return [] if section_content.blank?
+    
+    items = []
+    current_item = nil
+    current_content = []
+    
+    section_content.split("\n").each do |line|
+      # Look for numbered items like "### 1. Title" or "**1) Title**"
+      if line.match(/^###\s+(\d+)\.?\s*(.+)/) || line.match(/^\*\*(\d+)\)\s*(.+)\*\*/)
+        # Save previous item if exists
+        if current_item
+          items << {
+            title: current_item[:title],
+            content: current_content.join("\n").strip
+          }
+        end
+        
+        # Start new item
+        title = line.match(/^###\s+\d+\.?\s*(.+)/) ? line.match(/^###\s+\d+\.?\s*(.+)/)[1] : 
+                line.match(/^\*\*\d+\)\s*(.+)\*\*/)[1]
+        current_item = { title: title }
+        current_content = []
+      elsif current_item
+        # Add content to current item
+        current_content << line unless line.strip.empty? && current_content.empty?
+      end
+    end
+    
+    # Add the last item
+    if current_item && current_content.any?
+      items << {
+        title: current_item[:title],
+        content: current_content.join("\n").strip
+      }
+    end
+    
+    # If no numbered items found, treat entire content as single item
+    if items.empty? && section_content.present?
+      items << {
+        title: '',
+        content: section_content
+      }
+    end
+    
+    items
+  end
 end
