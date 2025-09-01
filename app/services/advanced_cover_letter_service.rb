@@ -480,16 +480,23 @@ class AdvancedCoverLetterService
     }
   end
 
-  # 텍스트에서 번호 항목 파싱 (새로운 통일된 출력 형식에 맞춤)
+  # 텍스트에서 번호 항목 파싱 (다양한 마크다운 형식 지원)
   def parse_numbered_items(text)
     return [] if text.blank?
 
-    # 통일된 출력 형식: ### 1. **[제목]**
+    # 다양한 형식 지원:
+    # 1. ### 1. **[제목]** 형식
+    # 2. ### 강점 1: **[제목]** 형식
+    # 3. ### 개선점 1: **[제목]** 형식
+    # 4. ### 보석 1: **[제목]** 형식
     # 패턴 설명:
-    # - ### 숫자. **제목** 형식 매칭
+    # - ### 으로 시작
+    # - (강점|개선점|보석)? 선택적 타입 키워드
+    # - 숫자 매칭
+    # - : 또는 . 구분자
+    # - **제목** 형식 또는 일반 텍스트 제목
     # - 내용은 다음 ### 또는 --- 구분선 또는 문서 끝까지 모두 캡처
-    # - [\s\S]*? 사용으로 줄바꿈 포함 모든 문자 캡처 (non-greedy)
-    section_pattern = /###\s*(\d+)\.\s*\*\*([^*]+)\*\*\s*\n([\s\S]*?)(?=\n###\s*\d+\.\s*\*\*|\n---|\z)/m
+    section_pattern = /###\s*(?:강점|개선점|보석)?\s*(\d+)[:：.]\s*\*\*([^*]+)\*\*\s*\n([\s\S]*?)(?=\n###|\n---|\z)/m
     matches = text.scan(section_pattern)
 
     if matches.any?
@@ -1248,81 +1255,88 @@ class AdvancedCoverLetterService
     end
   end
 
-  # 분석 결과 텍스트를 구조화된 JSON으로 파싱
+  # 분석 결과 텍스트를 구조화된 JSON으로 파싱 (개선된 버전)
   def parse_analysis_to_json(analysis_text)
     return nil if analysis_text.blank?
     
     sections = []
-    current_section = nil
-    current_item = nil
     
-    analysis_text.lines.each do |line|
-      line = line.strip
+    # 섹션 헤더 위치 찾기
+    section_headers = []
+    analysis_text.scan(/##\s*(\d+)\.\s*([^\n]+)/) do |match|
+      num, title = match
+      position = Regexp.last_match.offset(0)[0]
+      section_headers << {
+        number: num.to_i,
+        title: title.strip,
+        position: position
+      }
+    end
+    
+    # 각 섹션 처리
+    section_headers.each_with_index do |header, index|
+      # 섹션 범위 결정
+      start_pos = header[:position]
+      end_pos = section_headers[index + 1] ? section_headers[index + 1][:position] : analysis_text.length
       
-      # 메인 섹션 (## 으로 시작)
-      if line =~ /^##\s*(\d+)\.\s*(.+)$/
-        # 이전 항목 저장
-        if current_item && current_section
-          current_section['items'] ||= []
-          current_section['items'] << current_item
-          current_item = nil
+      # 섹션 전체 텍스트 추출
+      section_text = analysis_text[start_pos...end_pos]
+      
+      # 섹션 헤더 이후의 내용만 추출
+      content_match = section_text.match(/##\s*\d+\.\s*[^\n]+\n([\s\S]*)/)
+      section_content = content_match ? content_match[1] : ""
+      
+      section = {
+        number: header[:number],
+        title: header[:title],
+        content: "",
+        items: []
+      }
+      
+      # 섹션 타입에 따라 처리
+      if header[:title].include?("강점") || header[:title].include?("개선") || header[:title].include?("보석")
+        # 항목 찾기 - 다양한 형식 지원
+        item_patterns = [
+          /###\s*(?:강점|개선점|보석)\s*(\d+):\s*\*\*([^*]+)\*\*/,  # ### 강점 1: **제목**
+          /###\s*(\d+)\.\s*\*\*([^*]+)\*\*/,                        # ### 1. **제목**
+          /###\s*(?:강점|개선점|보석)\s*(\d+):\s*([^\n]+)/         # ### 강점 1: 제목
+        ]
+        
+        items_found = false
+        item_patterns.each do |pattern|
+          # 전체 항목 찾기 (내용 포함)
+          full_pattern = Regexp.new(pattern.source + '\n([\s\S]*?)(?=###|\z)', Regexp::MULTILINE)
+          matches = section_content.scan(full_pattern)
+          
+          if matches.any?
+            matches.each do |match|
+              item_num, item_title, item_content = match
+              section[:items] << {
+                number: item_num.to_i,
+                title: item_title.strip.gsub(/^\*+|\*+$/, ''),
+                content: item_content.strip
+              }
+            end
+            items_found = true
+            break
+          end
         end
         
-        # 이전 섹션 저장
-        sections << current_section if current_section
-        
-        current_section = {
-          'number' => $1,
-          'title' => $2.strip,
-          'content' => '',
-          'items' => []
-        }
-        
-      # 서브 항목 (### 으로 시작 - 강점, 개선점, 보석)
-      elsif line =~ /^###\s*(강점|개선점|보석)\s*(\d+)[:：]\s*(.+)$/
-        # 이전 항목 저장
-        if current_item && current_section
-          current_section['items'] << current_item
+        # 항목이 없으면 전체를 content로
+        unless items_found
+          section[:content] = section_content.strip
         end
-        
-        current_item = {
-          'type' => $1.strip,
-          'number' => $2,
-          'title' => $3.strip,
-          'content' => ''
-        }
-        
-      # 대괄호로 시작하는 소제목
-      elsif line =~ /^\[(.+)\]$/ && current_item
-        current_item['content'] += "\n" unless current_item['content'].empty?
-        current_item['content'] += line
-        
-      # 빈 줄이 아닌 일반 내용
-      elsif !line.empty?
-        if current_item
-          # 항목에 내용 추가
-          current_item['content'] += "\n" unless current_item['content'].empty?
-          current_item['content'] += line
-        elsif current_section
-          # 섹션에 내용 추가
-          current_section['content'] += "\n" unless current_section['content'].empty?
-          current_section['content'] += line
-        end
+      else
+        # 일반 텍스트 섹션
+        section[:content] = section_content.strip
       end
+      
+      sections << section
     end
-    
-    # 마지막 항목과 섹션 저장
-    if current_item && current_section
-      current_section['items'] << current_item
-    end
-    sections << current_section if current_section
     
     {
-      'sections' => sections,
-      'parsed_at' => Time.current.iso8601
+      sections: sections,
+      analyzed_at: Time.current
     }
-  rescue => e
-    Rails.logger.error "Analysis parsing error: #{e.message}"
-    nil
   end
 end
