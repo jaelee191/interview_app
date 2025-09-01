@@ -37,19 +37,36 @@ class CoverLetterAnalysisJob < ApplicationJob
     
     # 결과 저장
     if result.present?
-      # 새로운 형식: text와 json 구조를 모두 포함
-      if result.is_a?(Hash) && result[:text] && result[:json]
+      # result가 Hash 형태인 경우 (새 방식)
+      if result.is_a?(Hash) && result[:full_text]
+        # 분석 텍스트를 JSON으로 파싱
+        parsed_json = service.parse_analysis_to_json(result[:full_text])
+        
         cover_letter.update!(
-          advanced_analysis: result[:text],
-          advanced_analysis_json: result[:json],
+          analysis_result: result[:full_text],  # 원본 텍스트 저장
+          advanced_analysis_json: parsed_json,   # 파싱된 JSON 구조 저장
+          deep_analysis_data: (cover_letter.deep_analysis_data || {}).merge(
+            'analysis_result' => result,
+            'analyzed_at' => Time.current
+          ),
+          analysis_completed_at: Time.current,
+          analysis_status: 'completed'
+        )
+      # result가 String인 경우 (구 방식 호환)
+      elsif result.is_a?(String)
+        # 분석 텍스트를 JSON으로 파싱
+        parsed_json = service.parse_analysis_to_json(result)
+        
+        cover_letter.update!(
+          analysis_result: result,               # 원본 텍스트 저장
+          advanced_analysis_json: parsed_json,   # 파싱된 JSON 구조 저장
           analysis_completed_at: Time.current,
           analysis_status: 'completed'
         )
       else
-        # 구형식 호환성 유지
-        full_analysis = result.is_a?(String) ? result : result.to_json
+        # 기타 형식
         cover_letter.update!(
-          advanced_analysis: full_analysis,
+          analysis_result: result.to_s,
           analysis_completed_at: Time.current,
           analysis_status: 'completed'
         )
