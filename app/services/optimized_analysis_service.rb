@@ -84,11 +84,18 @@ class OptimizedAnalysisService
     total_time = (Time.current - start_time).to_i
     
     # 최종 결과 조합 및 완료 알림
-    final_result = @service.combine_analysis_results(results)
-    broadcaster.broadcast_complete(final_result)
+    final_text = @service.combine_analysis_results(results)
+    final_json = @service.combine_analysis_results_to_json(results)
+    
+    broadcaster.broadcast_complete(final_text)
     
     Rails.logger.info "Analysis completed in #{total_time} seconds"
-    final_result
+    
+    # 다른 서비스와 동일한 형식으로 반환
+    {
+      text: final_text,
+      json: final_json
+    }
   end
   
   private

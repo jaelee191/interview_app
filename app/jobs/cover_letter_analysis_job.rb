@@ -38,12 +38,14 @@ class CoverLetterAnalysisJob < ApplicationJob
     # 결과 저장
     if result.present?
       # result가 Hash 형태인 경우 (새 방식)
-      if result.is_a?(Hash) && result[:full_text]
+      if result.is_a?(Hash) && (result[:text] || result[:full_text])
+        # text 또는 full_text 키 모두 처리
+        full_text = result[:text] || result[:full_text]
         # 분석 텍스트를 JSON으로 파싱
-        parsed_json = service.parse_analysis_to_json(result[:full_text])
+        parsed_json = result[:json] || service.parse_analysis_to_json(full_text)
         
         cover_letter.update!(
-          analysis_result: result[:full_text],  # 원본 텍스트 저장
+          analysis_result: full_text,            # 원본 텍스트 저장
           advanced_analysis_json: parsed_json,   # 파싱된 JSON 구조 저장
           deep_analysis_data: (cover_letter.deep_analysis_data || {}).merge(
             'analysis_result' => result,
