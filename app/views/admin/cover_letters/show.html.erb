@@ -1,0 +1,76 @@
+<div class="space-y-6">
+  <!-- 헤더 -->
+  <div class="admin-card p-6">
+    <div class="flex items-center justify-between">
+      <div class="min-w-0">
+        <h1 class="text-xl font-semibold text-gray-900 truncate">
+          <%= @cover_letter.company_name || "미지정" %> - <%= @cover_letter.position || "미지정" %>
+        </h1>
+        <p class="text-sm text-gray-500 mt-1">
+          사용자: <%= @cover_letter.user&.email || "비회원" %> · 작성: <%= @cover_letter.created_at.strftime("%Y-%m-%d %H:%M") %>
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <% if @cover_letter.improved_letter.present? %>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">리라이트 완료</span>
+        <% elsif @cover_letter.analysis_result.present? %>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">분석 완료</span>
+        <% else %>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">대기</span>
+        <% end %>
+        <%= link_to "목록", admin_cover_letters_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50" %>
+        <%= button_to "삭제", admin_cover_letter_path(@cover_letter), method: :delete, form: { class: "inline-block" }, data: { turbo_confirm: "정말 삭제하시겠습니까?" }, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- 내용 섹션 -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- 분석 결과 -->
+    <div class="admin-card p-6">
+      <h3 class="text-lg font-semibold text-gray-900">분석 결과</h3>
+      <div class="mt-4 text-sm text-gray-800 whitespace-pre-line">
+        <% if @cover_letter.analysis_result.present? %>
+          <%= @cover_letter.analysis_result %>
+        <% else %>
+          <p class="text-gray-500">분석 결과가 없습니다</p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 리라이트 결과 -->
+    <div class="admin-card p-6">
+      <h3 class="text-lg font-semibold text-gray-900">리라이트</h3>
+      <div class="mt-4 text-sm text-gray-800 whitespace-pre-line">
+        <% if @cover_letter.improved_letter.present? %>
+          <%= @cover_letter.improved_letter %>
+        <% else %>
+          <p class="text-gray-500">리라이트 결과가 없습니다</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- 메타 정보 -->
+  <div class="admin-card p-6">
+    <h3 class="text-lg font-semibold text-gray-900">메타 정보</h3>
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      <div class="flex items-center justify-between border border-gray-100 rounded-lg p-3">
+        <span class="text-gray-600">ID</span>
+        <span class="font-medium text-gray-900">#<%= @cover_letter.id %></span>
+      </div>
+      <div class="flex items-center justify-between border border-gray-100 rounded-lg p-3">
+        <span class="text-gray-600">작성일</span>
+        <span class="font-medium text-gray-900"><%= @cover_letter.created_at.strftime("%Y-%m-%d %H:%M") %></span>
+      </div>
+      <div class="flex items-center justify-between border border-gray-100 rounded-lg p-3">
+        <span class="text-gray-600">회사</span>
+        <span class="font-medium text-gray-900"><%= @cover_letter.company_name || "미지정" %></span>
+      </div>
+      <div class="flex items-center justify-between border border-gray-100 rounded-lg p-3">
+        <span class="text-gray-600">직무</span>
+        <span class="font-medium text-gray-900"><%= @cover_letter.position || "미지정" %></span>
+      </div>
+    </div>
+  </div>
+</div>

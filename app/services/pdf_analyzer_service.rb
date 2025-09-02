@@ -23,7 +23,10 @@ class PdfAnalyzerService
     resume_analysis = nil
     cover_letter_analysis = nil
     
+    # 이력서를 구조화된 형식으로 파싱
+    structured_resume = nil
     if separated_content[:resume][:text].present?
+      structured_resume = parse_resume_to_json(separated_content[:resume][:text])
       resume_analysis = analyze_resume_with_ai(separated_content[:resume][:text])
     end
     
@@ -43,8 +46,11 @@ class PdfAnalyzerService
     {
       success: true,
       extracted_text: full_text,
+      raw_pdf_text: full_text,  # 원본 PDF 텍스트 추가
       structured_content: separated_content,
       original_cover_letter: separated_content[:cover_letter][:text],  # 자소서 원문 명시적 추가
+      original_resume: separated_content[:resume][:text],  # 이력서 원문 추가
+      structured_resume: structured_resume,  # 구조화된 이력서 데이터
       analysis: {
         resume: resume_analysis,
         cover_letter: cover_letter_analysis,
@@ -57,6 +63,7 @@ class PdfAnalyzerService
         resume_pages: separated_content[:resume][:pages],
         cover_letter_pages: separated_content[:cover_letter][:pages],
         has_cover_letter: separated_content[:cover_letter][:text].present?,
+        has_resume: separated_content[:resume][:text].present?,
         analyzed_at: Time.current
       }
     }
@@ -66,6 +73,191 @@ class PdfAnalyzerService
   end
   
   private
+  
+  # 이력서를 구조화된 JSON 형식으로 파싱
+  def parse_resume_to_json(resume_text)
+    return nil if resume_text.blank?
+    
+    sections = {
+      personal_info: extract_personal_info(resume_text),
+      education: extract_education(resume_text),
+      experience: extract_experience(resume_text),
+      skills: extract_skills(resume_text),
+      certifications: extract_certifications(resume_text),
+      awards: extract_awards(resume_text),
+      languages: extract_languages(resume_text),
+      activities: extract_activities(resume_text)
+    }
+    
+    # 빈 섹션 제거
+    sections.delete_if { |_, v| v.nil? || (v.is_a?(Array) && v.empty?) || (v.is_a?(Hash) && v.empty?) }
+    
+    {
+      sections: sections,
+      extracted_at: Time.current
+    }
+  end
+  
+  # 개인정보 추출
+  def extract_personal_info(text)
+    info = {}
+    
+    # 이름 패턴
+    name_match = text.match(/(?:이름|성명|Name)\s*[:：]?\s*([가-힣A-Za-z\s]+)/i)
+    info[:name] = name_match[1].strip if name_match
+    
+    # 생년월일 패턴
+    birth_match = text.match(/(?:생년월일|생일|Birth)\s*[:：]?\s*(\d{2,4}[.\-\/]\d{1,2}[.\-\/]\d{1,2})/i)
+    info[:birth_date] = birth_match[1] if birth_match
+    
+    # 이메일 패턴
+    email_match = text.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i)
+    info[:email] = email_match[1] if email_match
+    
+    # 전화번호 패턴
+    phone_match = text.match(/(?:전화|연락처|Phone|Mobile|휴대폰)\s*[:：]?\s*([\d\-\s]+)/i)
+    info[:phone] = phone_match[1].strip if phone_match
+    
+    info.empty? ? nil : info
+  end
+  
+  # 학력 추출
+  def extract_education(text)
+    education = []
+    
+    # 대학교 패턴
+    university_pattern = /([가-힣]+(?:대학교|대학))\s*([가-힣]+(?:학과|학부|전공))?\s*(?:\()?(\d{4}[.\s]?\d{1,2})?.*?(?:~|-)?\s*(\d{4}[.\s]?\d{1,2})?/
+    
+    text.scan(university_pattern) do |school, major, start_date, end_date|
+      edu_item = {
+        school: school,
+        major: major,
+        start_date: start_date,
+        end_date: end_date || "재학중"
+      }.compact
+      
+      education << edu_item unless edu_item[:school].nil?
+    end
+    
+    education
+  end
+  
+  # 경력사항 추출
+  def extract_experience(text)
+    experiences = []
+    
+    # 경력 섹션 찾기
+    if text.match(/(?:경력|Experience|Work|직장|근무)/i)
+      # 회사명과 기간 패턴
+      exp_pattern = /([가-힣A-Za-z\s]+(?:회사|기업|Corporation|Corp|Inc|Ltd))\s*\n?\s*(\d{4}[.\s]?\d{1,2})?.*?(?:~|-)?\s*(\d{4}[.\s]?\d{1,2})?/
+      
+      text.scan(exp_pattern) do |company, start_date, end_date|
+        exp_item = {
+          company: company.strip,
+          start_date: start_date,
+          end_date: end_date || "재직중"
+        }.compact
+        
+        experiences << exp_item unless exp_item[:company].nil?
+      end
+    end
+    
+    experiences
+  end
+  
+  # 기술/스킬 추출
+  def extract_skills(text)
+    skills = []
+    
+    # 기술 스택 패턴
+    if skill_section = text.match(/(?:기술|스킬|Skill|보유기술|활용가능).*?\n(.*?)(?:\n\n|$)/im)
+      skill_text = skill_section[1]
+      # 콤마, 슬래시, 줄바꿈으로 구분된 스킬들
+      skills = skill_text.split(/[,\/\n]/).map(&:strip).reject(&:empty?)
+    end
+    
+    skills
+  end
+  
+  # 자격증 추출
+  def extract_certifications(text)
+    certs = []
+    
+    # 자격증 패턴
+    cert_pattern = /([가-힣A-Za-z\s]+(?:자격증|Certificate|License|인증|급))\s*(?:\()?(\d{4}[.\s]?\d{1,2})?/
+    
+    text.scan(cert_pattern) do |cert_name, date|
+      cert_item = {
+        name: cert_name.strip,
+        date: date
+      }.compact
+      
+      certs << cert_item unless cert_item[:name].nil?
+    end
+    
+    certs
+  end
+  
+  # 수상경력 추출
+  def extract_awards(text)
+    awards = []
+    
+    if text.match(/(?:수상|Award|상장|표창)/i)
+      award_pattern = /([가-힣A-Za-z\s]+(?:상|Award|Prize))\s*(?:\()?(\d{4}[.\s]?\d{1,2})?/
+      
+      text.scan(award_pattern) do |award_name, date|
+        award_item = {
+          name: award_name.strip,
+          date: date
+        }.compact
+        
+        awards << award_item unless award_item[:name].nil?
+      end
+    end
+    
+    awards
+  end
+  
+  # 어학능력 추출
+  def extract_languages(text)
+    languages = []
+    
+    # TOEIC, TOEFL 등 점수 패턴
+    if toeic = text.match(/TOEIC\s*[:：]?\s*(\d{3,4})/i)
+      languages << { name: "TOEIC", score: toeic[1] }
+    end
+    
+    if toefl = text.match(/TOEFL\s*[:：]?\s*(\d{2,3})/i)
+      languages << { name: "TOEFL", score: toefl[1] }
+    end
+    
+    if opic = text.match(/OPIc\s*[:：]?\s*([A-Z][A-Z0-9]*)/i)
+      languages << { name: "OPIc", level: opic[1] }
+    end
+    
+    languages
+  end
+  
+  # 대외활동 추출
+  def extract_activities(text)
+    activities = []
+    
+    if text.match(/(?:대외활동|Activity|활동|봉사|동아리)/i)
+      activity_pattern = /([가-힣A-Za-z\s]+(?:활동|봉사|동아리|프로젝트))\s*(?:\()?(\d{4}[.\s]?\d{1,2})?.*?(?:~|-)?\s*(\d{4}[.\s]?\d{1,2})?/
+      
+      text.scan(activity_pattern) do |activity_name, start_date, end_date|
+        activity_item = {
+          name: activity_name.strip,
+          start_date: start_date,
+          end_date: end_date
+        }.compact
+        
+        activities << activity_item unless activity_item[:name].nil?
+      end
+    end
+    
+    activities
+  end
   
   def extract_text_from_pdf
     reader = PDF::Reader.new(@file_path)

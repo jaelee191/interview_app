@@ -37,8 +37,14 @@
 
   <!-- Main Content -->
   <div class="max-w-4xl mx-auto px-4 py-8">
+    <% if flash[:alert] %>
+      <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p class="text-red-800"><%= flash[:alert] %></p>
+      </div>
+    <% end %>
+    
     <!-- Form -->
-    <%= form_with(model: @cover_letter, url: analyze_advanced_cover_letters_path, local: true, class: "bg-white rounded-2xl shadow-sm border border-gray-100 p-8") do |form| %>
+    <%= form_with model: @cover_letter, url: analyze_advanced_cover_letters_path, local: true, html: { class: "bg-white rounded-2xl shadow-sm border border-gray-100 p-8", enctype: "multipart/form-data" } do |form| %>
       <% if @cover_letter.errors.any? %>
         <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
           <p class="text-red-800 font-medium mb-2">다음 오류를 확인해주세요:</p>
@@ -104,13 +110,13 @@
         
         <!-- Tab Buttons -->
         <div class="flex rounded-lg bg-gray-100 p-1 mb-6">
-          <button type="button" id="text-tab" class="flex-1 py-2 px-4 rounded-md bg-white text-emerald-600 font-medium transition-all duration-200">
-            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-            </svg>
-            텍스트 직접 입력
-          </button>
-          <button type="button" id="pdf-tab" class="flex-1 py-2 px-4 rounded-md text-gray-600 hover:text-gray-800 font-medium transition-all duration-200">
+                      <button type="button" id="text-tab" class="flex-1 py-2 px-4 rounded-md text-gray-600 hover:text-gray-800 font-medium transition-all duration-200">
+              <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              텍스트 직접 입력
+            </button>
+            <button type="button" id="pdf-tab" class="flex-1 py-2 px-4 rounded-md bg-white text-emerald-600 font-medium transition-all duration-200">
             <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
             </svg>
@@ -119,7 +125,7 @@
         </div>
 
         <!-- Text Input Panel -->
-        <div id="text-panel" class="space-y-4">
+        <div id="text-panel" class="space-y-4 hidden">
           <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
             <p class="text-sm text-emerald-800">
               <strong>💡 Tip:</strong> 각 문항별로 구분해서 입력하시면 더 정확한 분석이 가능합니다.
@@ -127,9 +133,9 @@
           </div>
           
           <div>
-            <%= form.label :content, "자기소개서 내용", class: "block text-sm font-medium text-gray-700 mb-2" %>
-            <div class="relative">
-              <%= form.text_area :content, 
+                            <%= form.label :content, "자기소개서 내용", class: "block text-sm font-medium text-gray-700 mb-2" %>
+                <div class="relative">
+                                <%= form.text_area :content,
                   rows: 15,
                   placeholder: "자기소개서 내용을 붙여넣기 하세요.\n\n예시:\n1. 지원동기\n저는 고객 중심적 사고를 바탕으로...\n\n2. 성장과정\n대학 시절 다양한 프로젝트를 통해...\n\n3. 장점 및 단점\n저의 가장 큰 강점은...",
                   class: "w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-400 focus:border-transparent resize-none font-mono text-sm" %>
@@ -141,7 +147,7 @@
         </div>
 
         <!-- PDF Upload Panel -->
-        <div id="pdf-panel" class="hidden space-y-4">
+        <div id="pdf-panel" class="space-y-4">
           <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
             <p class="text-sm text-blue-800">
               <strong>📄 지원 형식:</strong> PDF 파일 (최대 10MB)<br>
@@ -185,7 +191,14 @@
                 <p class="mb-2 text-sm text-gray-700"><span class="font-semibold">클릭하여 파일 선택</span> 또는 드래그 앤 드롭</p>
                 <p class="text-xs text-gray-500">PDF 파일만 가능 (최대 10MB)</p>
               </div>
-              <input id="pdf-upload" type="file" class="hidden" accept=".pdf" />
+              <input id="pdf-upload" type="file" class="hidden" accept=".pdf" onchange="handleFileUpload(this)" />
+              <!-- PDF 데이터를 위한 숨겨진 필드 -->
+              <%= hidden_field_tag 'cover_letter[pdf_content]', '', id: 'pdf-content-hidden' %>
+              
+              <!-- 업로드 상태 표시 -->
+              <div id="upload-status" class="hidden mt-4 p-3 rounded-lg border">
+                <span id="upload-status-text">파일 업로드 상태</span>
+              </div>
             </label>
           </div>
           
@@ -265,9 +278,10 @@
 
       <!-- Submit Button -->
       <div class="mt-8 flex flex-col items-center">
-        <%= form.submit "AI 심층 분석 시작하기", 
-            id: "submit-btn",
-            class: "px-8 py-4 bg-emerald-400 hover:bg-emerald-500 text-white font-semibold rounded-full transition-all transform hover:scale-105 shadow-lg cursor-pointer text-lg" %>
+        <button type="submit" id="submit-btn" 
+            class="px-8 py-4 bg-emerald-400 hover:bg-emerald-500 text-white font-semibold rounded-full transition-all transform hover:scale-105 shadow-lg cursor-pointer text-lg">
+            AI 심층 분석 시작하기
+        </button>
         <p class="text-xs text-gray-500 mt-3">분석 시간: 약 20-30초</p>
       </div>
     <% end %>
@@ -294,47 +308,501 @@
 </div>
 
 <script>
-  document.addEventListener('turbo:load', () => {
-    // Tab switching
+  // 탭 전환 함수들을 전역에서 정의
+  function switchToTextTab() {
     const textTab = document.getElementById('text-tab');
     const pdfTab = document.getElementById('pdf-tab');
     const textPanel = document.getElementById('text-panel');
     const pdfPanel = document.getElementById('pdf-panel');
     const contentTextarea = document.querySelector('textarea[name="cover_letter[content]"]');
     
-    if (textTab && pdfTab) {
-      textTab.addEventListener('click', () => {
-        textTab.classList.add('bg-white', 'text-emerald-600');
-        textTab.classList.remove('text-gray-600');
-        pdfTab.classList.remove('bg-white', 'text-emerald-600');
-        pdfTab.classList.add('text-gray-600');
-        textPanel.classList.remove('hidden');
-        pdfPanel.classList.add('hidden');
-        
-        // Enable text input
-        if (contentTextarea) {
-          contentTextarea.removeAttribute('disabled');
-        }
-      });
+    if (textTab && pdfTab && textPanel && pdfPanel) {
+      textTab.classList.add('bg-white', 'text-emerald-600');
+      textTab.classList.remove('text-gray-600');
+      pdfTab.classList.remove('bg-white', 'text-emerald-600');
+      pdfTab.classList.add('text-gray-600');
+      textPanel.classList.remove('hidden');
+      pdfPanel.classList.add('hidden');
       
-      pdfTab.addEventListener('click', () => {
-        pdfTab.classList.add('bg-white', 'text-emerald-600');
-        pdfTab.classList.remove('text-gray-600');
-        textTab.classList.remove('bg-white', 'text-emerald-600');
-        textTab.classList.add('text-gray-600');
-        pdfPanel.classList.remove('hidden');
-        textPanel.classList.add('hidden');
-        
-        // Clear and disable text input when PDF is selected
-        if (contentTextarea) {
-          contentTextarea.value = '';
-          contentTextarea.setAttribute('disabled', 'true');
+      // Enable text input
+      if (contentTextarea) {
+        contentTextarea.removeAttribute('disabled');
+      }
+      console.log('텍스트 탭으로 전환됨');
+    }
+  }
+  
+  function switchToPdfTab() {
+    const textTab = document.getElementById('text-tab');
+    const pdfTab = document.getElementById('pdf-tab');
+    const textPanel = document.getElementById('text-panel');
+    const pdfPanel = document.getElementById('pdf-panel');
+    const contentTextarea = document.querySelector('textarea[name="cover_letter[content]"]');
+    
+    if (textTab && pdfTab && textPanel && pdfPanel) {
+      pdfTab.classList.add('bg-white', 'text-emerald-600');
+      pdfTab.classList.remove('text-gray-600');
+      textTab.classList.remove('bg-white', 'text-emerald-600');
+      textTab.classList.add('text-gray-600');
+      pdfPanel.classList.remove('hidden');
+      textPanel.classList.add('hidden');
+      
+      // PDF 탭 선택 시 content 필드에 기본값 설정 (validation 우회)
+      if (contentTextarea) {
+        if (contentTextarea.value.trim() === '') {
+          contentTextarea.value = 'PDF 파일 업로드 모드';
+        }
+        if (typeof updateCount === 'function') {
           updateCount();
         }
-      });
+      }
+      console.log('PDF 탭으로 전환됨');
+    }
+  }
+
+  function initializeTabs() {
+    const textTab = document.getElementById('text-tab');
+    const pdfTab = document.getElementById('pdf-tab');
+    
+    console.log('탭 초기화 시작');
+    console.log('textTab:', textTab);
+    console.log('pdfTab:', pdfTab);
+    
+    if (textTab && pdfTab) {
+      // 이전 이벤트 리스너 제거
+      textTab.removeEventListener('click', switchToTextTab);
+      pdfTab.removeEventListener('click', switchToPdfTab);
+      
+      // 새 이벤트 리스너 추가
+      textTab.addEventListener('click', switchToTextTab);
+      pdfTab.addEventListener('click', switchToPdfTab);
+      
+      console.log('탭 이벤트 리스너 등록 완료');
+    } else {
+      console.error('탭 요소를 찾을 수 없습니다');
+    }
+  }
+
+  // 간단한 파일 업로드 처리 함수
+  function handleFileUpload(input) {
+    const file = input.files[0];
+    if (file) {
+      console.log('📁 파일 선택됨:', file.name, file.size, file.type);
+      
+      // PDF 파일 검증
+      if (file.type !== 'application/pdf') {
+        alert('❌ PDF 파일만 업로드 가능합니다.');
+        input.value = '';
+        return;
+      }
+      
+      // 파일 크기 검증 (10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert('❌ 파일 크기는 10MB 이하여야 합니다.');
+        input.value = '';
+        return;
+      }
+      
+      // FileReader로 PDF 파일 읽기
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        console.log('📖 PDF 파일 읽기 완료');
+        
+        // hidden field에 PDF 데이터 저장
+        const pdfContentField = document.getElementById('pdf-content-hidden');
+        if (pdfContentField) {
+          pdfContentField.value = e.target.result;
+          console.log('💾 PDF 데이터 저장 완료:', e.target.result.length, 'characters');
+        }
+        
+        // content 필드에 임시 값 설정
+        const textareaEl = document.getElementById('cover_letter_content') || document.querySelector('textarea[name="cover_letter[content]"]');
+        if (textareaEl) {
+          textareaEl.value = `PDF 파일 업로드: ${file.name}`;
+          console.log('📝 Content 필드 설정 완료');
+        }
+        
+        // UI 업데이트
+        updateUploadUI(file);
+      };
+      
+      reader.readAsDataURL(file);
+    }
+  }
+  
+  // UI 업데이트 함수
+  function updateUploadUI(file) {
+    const uploadLabel = document.getElementById('pdf-upload-label');
+    const pdfInfo = document.getElementById('pdf-info');
+    const pdfFilename = document.getElementById('pdf-filename');
+    const pdfSize = document.getElementById('pdf-size');
+    
+    // 업로드 영역 스타일 변경
+    if (uploadLabel) {
+      uploadLabel.classList.remove('border-emerald-300', 'bg-emerald-50');
+      uploadLabel.classList.add('border-green-400', 'bg-green-50');
     }
     
+    // 파일 정보 표시
+    if (pdfInfo) {
+      pdfInfo.classList.remove('hidden');
+    }
+    
+    if (pdfFilename) {
+      pdfFilename.textContent = file.name;
+    }
+    
+    if (pdfSize) {
+      pdfSize.textContent = file.size > 1024 * 1024 ? 
+        `${(file.size / (1024 * 1024)).toFixed(1)} MB` : 
+        `${(file.size / 1024).toFixed(1)} KB`;
+    }
+    
+    console.log('✅ 파일 업로드 UI 업데이트 완료');
+  }
+
+  // 기본 상태 체크 함수
+  function updateStatus() {
+    const currentTimeEl = document.getElementById('current-time');
+    const jsStatusEl = document.getElementById('js-status');
+    
+    if (currentTimeEl) {
+      currentTimeEl.textContent = new Date().toLocaleTimeString();
+    }
+    
+    if (jsStatusEl) {
+      jsStatusEl.textContent = 'JavaScript 작동중 ✅';
+      jsStatusEl.style.color = 'green';
+    }
+    
+    console.log('상태 업데이트 완료:', new Date().toLocaleTimeString());
+  }
+
+  // PDF 업로드 초기화 함수 정의
+  function initializePdfUpload() {
+    console.log('🔄 PDF 업로드 초기화 시작');
+    
+    const pdfUpload = document.getElementById('pdf-upload');
+    const pdfInfo = document.getElementById('pdf-info');
+    const pdfFilename = document.getElementById('pdf-filename');
+    const pdfSize = document.getElementById('pdf-size');
+    const removePdf = document.getElementById('remove-pdf');
+    const uploadProgress = document.getElementById('upload-progress');
+    const uploadSuccess = document.getElementById('upload-success');
+    const uploadLabel = document.getElementById('pdf-upload-label');
+    const uploadStatus = document.getElementById('upload-status');
+    const uploadStatusText = document.getElementById('upload-status-text');
+    let selectedFile = null;
+    
+    console.log('PDF 요소 체크:', {
+      pdfUpload: !!pdfUpload,
+      pdfInfo: !!pdfInfo,
+      uploadLabel: !!uploadLabel,
+      uploadStatus: !!uploadStatus
+    });
+    
+    function showUploadStatus(message, type = 'info') {
+      console.log(`📢 상태 메시지 표시: ${message} (${type})`);
+      
+      if (uploadStatus && uploadStatusText) {
+        uploadStatusText.textContent = message;
+        uploadStatus.classList.remove('hidden');
+        console.log('✅ 상태 메시지 UI 업데이트 완료');
+        
+        // 기존 클래스 제거
+        uploadStatus.classList.remove('bg-green-50', 'border-green-200', 'text-green-800');
+        uploadStatus.classList.remove('bg-red-50', 'border-red-200', 'text-red-800');
+        uploadStatus.classList.remove('bg-blue-50', 'border-blue-200', 'text-blue-800');
+        
+        // 타입별 스타일 설정
+        if (type === 'success') {
+          uploadStatus.classList.add('bg-green-50', 'border-green-200', 'text-green-800');
+        } else if (type === 'error') {
+          uploadStatus.classList.add('bg-red-50', 'border-red-200', 'text-red-800');
+        } else {
+          uploadStatus.classList.add('bg-blue-50', 'border-blue-200', 'text-blue-800');
+        }
+      }
+    }
+    
+    if (pdfUpload) {
+      console.log('✅ PDF 업로드 이벤트 리스너 등록됨');
+      
+      pdfUpload.addEventListener('change', function(e) {
+        console.log('📁 파일 선택 이벤트 발생');
+        const file = e.target.files[0];
+        console.log('선택된 파일:', file);
+    
+    if (file) {
+      console.log('📄 파일 정보:', file.name, file.type, file.size);
+      
+      // PDF 파일 검증
+      if (file.type !== 'application/pdf') {
+        showUploadStatus('❌ PDF 파일만 업로드 가능합니다.', 'error');
+        this.value = '';
+        return;
+      }
+      
+      // 파일 크기 검증 (10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        showUploadStatus('❌ 파일 크기는 10MB 이하여야 합니다.', 'error');
+        this.value = '';
+        return;
+      }
+      
+      // 업로드 진행 상태 표시
+      showUploadStatus('📤 파일 업로드 중...', 'info');
+      if (uploadProgress) uploadProgress.classList.remove('hidden');
+      if (uploadSuccess) uploadSuccess.classList.add('hidden');
+      if (pdfInfo) pdfInfo.classList.add('hidden');
+      if (uploadLabel) uploadLabel.classList.add('opacity-50', 'pointer-events-none');
+      
+      selectedFile = file;
+      
+      // 파일명과 크기 표시
+      if (pdfFilename) pdfFilename.textContent = file.name;
+      if (pdfSize) {
+        pdfSize.textContent = file.size > 1024 * 1024 ? 
+          `${(file.size / (1024 * 1024)).toFixed(1)} MB` : 
+          `${(file.size / 1024).toFixed(1)} KB`;
+      }
+      
+      // 기존 PDF 데이터 제거
+      const existingInput = document.getElementById('pdf-file-data');
+      if (existingInput) {
+        existingInput.remove();
+      }
+      
+      // FileReader로 PDF 파일 읽기
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        console.log('📖 PDF 파일 읽기 완료');
+        
+        // 이미 존재하는 hidden field에 PDF 데이터 저장
+        const pdfContentField = document.getElementById('pdf-content-hidden');
+        if (pdfContentField) {
+          pdfContentField.value = e.target.result;
+          console.log('💾 PDF 데이터 폼에 저장 완료:', file.name);
+          console.log('- 데이터 크기:', e.target.result.length, 'characters');
+        } else {
+          console.error('❌ PDF content hidden field를 찾을 수 없습니다');
+        }
+        
+        // PDF 업로드 시 content 필드에 임시 값 설정 (validation 우회)
+        const textareaEl = document.getElementById('cover_letter_content') || document.querySelector('textarea[name="cover_letter[content]"]');
+        if (textareaEl) {
+          // disabled 속성 제거
+          textareaEl.removeAttribute('disabled');
+          textareaEl.value = `PDF 파일 업로드: ${file.name}`;
+          console.log('📝 Content 필드에 임시 값 설정:', textareaEl.value);
+          if (typeof updateCount === 'function') {
+            updateCount();
+          }
+        } else {
+          console.error('❌ Content textarea를 찾을 수 없습니다');
+        }
+        
+        // UI 상태 업데이트
+        console.log('🎨 UI 상태 업데이트 시작');
+        
+        if (uploadProgress) {
+          uploadProgress.classList.add('hidden');
+          console.log('✅ 업로드 진행 상태 숨김');
+        }
+        
+        if (uploadSuccess) {
+          uploadSuccess.classList.remove('hidden');
+          console.log('✅ 업로드 성공 메시지 표시');
+        }
+        
+        if (uploadLabel) {
+          uploadLabel.classList.remove('opacity-50', 'pointer-events-none');
+          uploadLabel.classList.add('border-green-400', 'bg-green-50');
+          uploadLabel.classList.remove('border-emerald-300', 'bg-emerald-50');
+          console.log('✅ 업로드 영역 스타일 변경 (초록색)');
+        }
+        
+        // 잠시 후 파일 정보 표시
+        setTimeout(() => {
+          console.log('📋 파일 정보 표시 시작');
+          
+          if (uploadSuccess) {
+            uploadSuccess.classList.add('hidden');
+            console.log('✅ 업로드 성공 메시지 숨김');
+          }
+          
+          if (pdfInfo) {
+            pdfInfo.classList.remove('hidden');
+            console.log('✅ PDF 정보 카드 표시');
+          }
+          
+          showUploadStatus(`✅ ${file.name} 업로드 완료! (${pdfSize ? pdfSize.textContent : '크기 미상'})`, 'success');
+          console.log('✅ 최종 업로드 상태 메시지 표시');
+        }, 1500);
+      };
+      
+      reader.onerror = function() {
+        console.error('❌ PDF 파일 읽기 오류');
+        showUploadStatus('❌ 파일 읽기 오류가 발생했습니다.', 'error');
+        if (uploadProgress) uploadProgress.classList.add('hidden');
+        if (uploadLabel) uploadLabel.classList.remove('opacity-50', 'pointer-events-none');
+      };
+      
+      reader.readAsDataURL(file);
+    }
+  });
+  
+  // Drag and drop 기능
+  const label = pdfUpload.parentElement;
+  
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    label.addEventListener(eventName, preventDefaults, false);
+  });
+  
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  
+  ['dragenter', 'dragover'].forEach(eventName => {
+    label.addEventListener(eventName, () => {
+      label.classList.add('bg-emerald-100');
+    }, false);
+  });
+  
+  ['dragleave', 'drop'].forEach(eventName => {
+    label.addEventListener(eventName, () => {
+      label.classList.remove('bg-emerald-100');
+    }, false);
+  });
+  
+  label.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    
+    if (files.length) {
+      pdfUpload.files = files;
+      const event = new Event('change', { bubbles: true });
+      pdfUpload.dispatchEvent(event);
+    }
+  }, false);
+}
+
+// PDF 파일 제거 기능
+if (removePdf) {
+  removePdf.addEventListener('click', function(e) {
+    e.preventDefault();
+    console.log('🗑️ PDF 파일 제거');
+    
+    // 파일 상태 초기화
+    selectedFile = null;
+    if (pdfUpload) pdfUpload.value = '';
+    
+    // UI 상태 초기화
+    if (pdfInfo) pdfInfo.classList.add('hidden');
+    if (uploadProgress) uploadProgress.classList.add('hidden');
+    if (uploadSuccess) uploadSuccess.classList.add('hidden');
+    if (uploadStatus) uploadStatus.classList.add('hidden');
+    if (pdfFilename) pdfFilename.textContent = '';
+    if (pdfSize) pdfSize.textContent = '';
+    
+    // 업로드 영역 스타일 복원
+    if (uploadLabel) {
+      uploadLabel.classList.remove('opacity-50', 'pointer-events-none');
+      uploadLabel.classList.remove('border-green-400', 'bg-green-50');
+      uploadLabel.classList.add('border-emerald-300', 'bg-emerald-50');
+    }
+    
+    // 텍스트 입력 활성화
+    if (contentTextarea) {
+      contentTextarea.removeAttribute('disabled');
+      contentTextarea.value = '';
+      if (typeof updateCount === 'function') {
+        updateCount();
+      }
+    }
+    
+    // 숨겨진 PDF 데이터 제거
+    const pdfContentField = document.getElementById('pdf-content-hidden');
+    if (pdfContentField) {
+      pdfContentField.value = '';
+      console.log('💾 PDF 데이터 제거 완료');
+    }
+  });
+}
+
+// 폼 검증 및 제출 처리
+const form = document.querySelector('form');
+const submitBtn = document.getElementById('submit-btn');
+
+if (form && submitBtn) {
+  form.addEventListener('submit', function(e) {
+    console.log('📝 폼 제출 이벤트 발생');
+    
+    const pdfDataInput = document.getElementById('pdf-content-hidden');
+    const hasPdf = pdfDataInput !== null && pdfDataInput.value && pdfDataInput.value.length > 0;
+    const hasText = contentTextarea && contentTextarea.value.trim().length > 0;
+    
+    // PDF 업로드가 있거나 기본 텍스트가 있으면 통과
+    const validSubmission = hasPdf || (hasText && !contentTextarea.value.startsWith('PDF 파일 업로드:') && !contentTextarea.value.startsWith('PDF 파일 업로드 모드'));
+    
+    console.log('📋 폼 제출 검증:', {
+      hasText: hasText,
+      hasPdf: hasPdf,
+      textLength: contentTextarea ? contentTextarea.value.length : 0,
+      pdfDataSize: pdfDataInput ? pdfDataInput.value.length : 0
+    });
+    
+    // 유효한 제출인지 확인
+    if (!validSubmission) {
+      e.preventDefault();
+      showUploadStatus('❌ 자소서 내용을 입력하거나 PDF 파일을 업로드해주세요.', 'error');
+      return false;
+    }
+    
+    // PDF가 있으면 콘솔에 정보 출력
+    if (hasPdf) {
+      console.log('✅ PDF 데이터가 폼과 함께 전송됩니다');
+      console.log('- PDF 데이터 크기:', pdfDataInput.value.length, 'characters');
+    }
+    
+    // 제출 버튼 상태 변경
+    if (hasPdf) {
+      const fileName = pdfFilename ? pdfFilename.textContent : 'PDF 파일';
+      submitBtn.textContent = `📄 ${fileName} 분석 중... (약 20-30초)`;
+    } else {
+      submitBtn.textContent = '🔍 분석 중... (약 20-30초)';
+    }
+    
+    submitBtn.classList.add('opacity-75', 'cursor-wait');
+    submitBtn.disabled = true;
+    
+    console.log('✅ 폼 제출 진행 - 서버로 전송');
+    showUploadStatus('📤 서버로 전송 중...', 'info');
+  });
+}
+
+console.log('✅ PDF 업로드 초기화 완료');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOMContentLoaded 이벤트');
+  initializeTabs();
+  updateStatus();
+  setInterval(updateStatus, 1000);
+  
+  // PDF 업로드 이벤트 리스너도 여기서 등록
+  initializePdfUpload();
+});
+  
+  document.addEventListener('turbo:load', () => {
+    console.log('turbo:load 이벤트');
+    initializeTabs();
+    updateStatus();
+    initializePdfUpload();
+    
     // Character count
+    const contentTextarea = document.getElementById('cover_letter_content');
     const charCount = document.getElementById('char-count');
     
     const updateCount = () => {
@@ -362,89 +830,180 @@
     }
     
     // PDF Upload functionality
-    const pdfUpload = document.getElementById('pdf-upload');
-    const pdfInfo = document.getElementById('pdf-info');
-    const pdfFilename = document.getElementById('pdf-filename');
-    const pdfSize = document.getElementById('pdf-size');
-    const removePdf = document.getElementById('remove-pdf');
-    const uploadProgress = document.getElementById('upload-progress');
-    const uploadSuccess = document.getElementById('upload-success');
-    const uploadLabel = document.getElementById('pdf-upload-label');
-    let selectedFile = null;
+    function initializePdfUpload() {
+      console.log('🔄 PDF 업로드 초기화 시작');
+      
+      const pdfUpload = document.getElementById('pdf-upload');
+      const pdfInfo = document.getElementById('pdf-info');
+      const pdfFilename = document.getElementById('pdf-filename');
+      const pdfSize = document.getElementById('pdf-size');
+      const removePdf = document.getElementById('remove-pdf');
+      const uploadProgress = document.getElementById('upload-progress');
+      const uploadSuccess = document.getElementById('upload-success');
+      const uploadLabel = document.getElementById('pdf-upload-label');
+      const uploadStatus = document.getElementById('upload-status');
+      const uploadStatusText = document.getElementById('upload-status-text');
+      let selectedFile = null;
     
-    if (pdfUpload) {
-      pdfUpload.addEventListener('change', function(e) {
-        const file = e.target.files[0];
+    console.log('PDF 요소 체크:', {
+      pdfUpload: !!pdfUpload,
+      pdfInfo: !!pdfInfo,
+      uploadLabel: !!uploadLabel,
+      uploadStatus: !!uploadStatus
+    });
+    
+    function showUploadStatus(message, type = 'info') {
+      console.log(`📢 상태 메시지 표시: ${message} (${type})`);
+      
+      if (uploadStatus && uploadStatusText) {
+        uploadStatusText.textContent = message;
+        uploadStatus.classList.remove('hidden');
+        console.log('✅ 상태 메시지 UI 업데이트 완료');
+        
+        // 기존 클래스 제거
+        uploadStatus.classList.remove('bg-green-50', 'border-green-200', 'text-green-800');
+        uploadStatus.classList.remove('bg-red-50', 'border-red-200', 'text-red-800');
+        uploadStatus.classList.remove('bg-blue-50', 'border-blue-200', 'text-blue-800');
+        
+        // 타입별 스타일 설정
+        if (type === 'success') {
+          uploadStatus.classList.add('bg-green-50', 'border-green-200', 'text-green-800');
+        } else if (type === 'error') {
+          uploadStatus.classList.add('bg-red-50', 'border-red-200', 'text-red-800');
+        } else {
+          uploadStatus.classList.add('bg-blue-50', 'border-blue-200', 'text-blue-800');
+        }
+      }
+    }
+    
+            if (pdfUpload) {
+          console.log('✅ PDF 업로드 이벤트 리스너 등록됨');
+          
+          pdfUpload.addEventListener('change', function(e) {
+            console.log('📁 파일 선택 이벤트 발생');
+            const file = e.target.files[0];
+            console.log('선택된 파일:', file);
         
         if (file) {
-          // Validate file type
+          console.log('📄 파일 정보:', file.name, file.type, file.size);
+          
+          // PDF 파일 검증
           if (file.type !== 'application/pdf') {
-            alert('PDF 파일만 업로드 가능합니다.');
+            showUploadStatus('❌ PDF 파일만 업로드 가능합니다.', 'error');
             this.value = '';
             return;
           }
           
-          // Validate file size (10MB)
+          // 파일 크기 검증 (10MB)
           if (file.size > 10 * 1024 * 1024) {
-            alert('파일 크기는 10MB 이하여야 합니다.');
+            showUploadStatus('❌ 파일 크기는 10MB 이하여야 합니다.', 'error');
             this.value = '';
             return;
           }
           
-          // Show upload progress
-          uploadProgress.classList.remove('hidden');
-          uploadSuccess.classList.add('hidden');
-          pdfInfo.classList.add('hidden');
-          uploadLabel.classList.add('opacity-50', 'pointer-events-none');
+          // 업로드 진행 상태 표시
+          showUploadStatus('📤 파일 업로드 중...', 'info');
+          if (uploadProgress) uploadProgress.classList.remove('hidden');
+          if (uploadSuccess) uploadSuccess.classList.add('hidden');
+          if (pdfInfo) pdfInfo.classList.add('hidden');
+          if (uploadLabel) uploadLabel.classList.add('opacity-50', 'pointer-events-none');
           
           selectedFile = file;
           
-          // Simulate upload progress (since we're reading the file)
-          setTimeout(() => {
-            pdfFilename.textContent = file.name;
+          // 파일명과 크기 표시
+          if (pdfFilename) pdfFilename.textContent = file.name;
+          if (pdfSize) {
             pdfSize.textContent = file.size > 1024 * 1024 ? 
               `${(file.size / (1024 * 1024)).toFixed(1)} MB` : 
               `${(file.size / 1024).toFixed(1)} KB`;
-            
-            // Hide progress and show success
-            uploadProgress.classList.add('hidden');
-            uploadSuccess.classList.remove('hidden');
-            
-            // Show file info after a brief delay
-            setTimeout(() => {
-              uploadSuccess.classList.add('hidden');
-              pdfInfo.classList.remove('hidden');
-              uploadLabel.classList.remove('opacity-50', 'pointer-events-none');
-            }, 2000);
-          }, 1000); // Simulate 1 second upload time
-          
-          // Clear text content when PDF is uploaded
-          if (contentTextarea) {
-            contentTextarea.value = '';
-            updateCount();
           }
           
-          // Add hidden input for file
+          // 기존 PDF 데이터 제거
           const existingInput = document.getElementById('pdf-file-data');
           if (existingInput) {
             existingInput.remove();
           }
           
-          // Create FormData for file upload
+          // FileReader로 PDF 파일 읽기
           const reader = new FileReader();
           reader.onload = function(e) {
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.id = 'pdf-file-data';
-            hiddenInput.name = 'cover_letter[pdf_content]';
-            hiddenInput.value = e.target.result;
-            document.querySelector('form').appendChild(hiddenInput);
+            console.log('📖 PDF 파일 읽기 완료');
+            
+            // 이미 존재하는 hidden field에 PDF 데이터 저장
+            const pdfContentField = document.getElementById('pdf-content-hidden');
+            if (pdfContentField) {
+              pdfContentField.value = e.target.result;
+              console.log('💾 PDF 데이터 폼에 저장 완료:', file.name);
+              console.log('- 데이터 크기:', e.target.result.length, 'characters');
+            } else {
+              console.error('❌ PDF content hidden field를 찾을 수 없습니다');
+            }
+            
+            // PDF 업로드 시 content 필드에 임시 값 설정 (validation 우회)
+            const textareaEl = document.getElementById('cover_letter_content') || document.querySelector('textarea[name="cover_letter[content]"]');
+            if (textareaEl) {
+              // disabled 속성 제거
+              textareaEl.removeAttribute('disabled');
+              textareaEl.value = `PDF 파일 업로드: ${file.name}`;
+              console.log('📝 Content 필드에 임시 값 설정:', textareaEl.value);
+              if (typeof updateCount === 'function') {
+                updateCount();
+              }
+            } else {
+              console.error('❌ Content textarea를 찾을 수 없습니다');
+            }
+            
+            // UI 상태 업데이트
+            console.log('🎨 UI 상태 업데이트 시작');
+            
+            if (uploadProgress) {
+              uploadProgress.classList.add('hidden');
+              console.log('✅ 업로드 진행 상태 숨김');
+            }
+            
+            if (uploadSuccess) {
+              uploadSuccess.classList.remove('hidden');
+              console.log('✅ 업로드 성공 메시지 표시');
+            }
+            
+            if (uploadLabel) {
+              uploadLabel.classList.remove('opacity-50', 'pointer-events-none');
+              uploadLabel.classList.add('border-green-400', 'bg-green-50');
+              uploadLabel.classList.remove('border-emerald-300', 'bg-emerald-50');
+              console.log('✅ 업로드 영역 스타일 변경 (초록색)');
+            }
+            
+            // 잠시 후 파일 정보 표시
+            setTimeout(() => {
+              console.log('📋 파일 정보 표시 시작');
+              
+              if (uploadSuccess) {
+                uploadSuccess.classList.add('hidden');
+                console.log('✅ 업로드 성공 메시지 숨김');
+              }
+              
+              if (pdfInfo) {
+                pdfInfo.classList.remove('hidden');
+                console.log('✅ PDF 정보 카드 표시');
+              }
+              
+              showUploadStatus(`✅ ${file.name} 업로드 완료! (${pdfSize ? pdfSize.textContent : '크기 미상'})`, 'success');
+              console.log('✅ 최종 업로드 상태 메시지 표시');
+            }, 1500);
           };
+          
+          reader.onerror = function() {
+            console.error('❌ PDF 파일 읽기 오류');
+            showUploadStatus('❌ 파일 읽기 오류가 발생했습니다.', 'error');
+            if (uploadProgress) uploadProgress.classList.add('hidden');
+            if (uploadLabel) uploadLabel.classList.remove('opacity-50', 'pointer-events-none');
+          };
+          
           reader.readAsDataURL(file);
         }
       });
       
-      // Drag and drop
+      // Drag and drop 기능
       const label = pdfUpload.parentElement;
       
       ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -480,51 +1039,101 @@
       }, false);
     }
     
+    // PDF 파일 제거 기능
     if (removePdf) {
       removePdf.addEventListener('click', function(e) {
         e.preventDefault();
-        selectedFile = null;
-        pdfUpload.value = '';
-        pdfInfo.classList.add('hidden');
-        uploadProgress.classList.add('hidden');
-        uploadSuccess.classList.add('hidden');
-        pdfFilename.textContent = '';
-        pdfSize.textContent = '';
-        uploadLabel.classList.remove('opacity-50', 'pointer-events-none');
+        console.log('🗑️ PDF 파일 제거');
         
-        // Re-enable text input
-        if (contentTextarea) {
-          contentTextarea.removeAttribute('disabled');
+        // 파일 상태 초기화
+        selectedFile = null;
+        if (pdfUpload) pdfUpload.value = '';
+        
+        // UI 상태 초기화
+        if (pdfInfo) pdfInfo.classList.add('hidden');
+        if (uploadProgress) uploadProgress.classList.add('hidden');
+        if (uploadSuccess) uploadSuccess.classList.add('hidden');
+        if (uploadStatus) uploadStatus.classList.add('hidden');
+        if (pdfFilename) pdfFilename.textContent = '';
+        if (pdfSize) pdfSize.textContent = '';
+        
+        // 업로드 영역 스타일 복원
+        if (uploadLabel) {
+          uploadLabel.classList.remove('opacity-50', 'pointer-events-none');
+          uploadLabel.classList.remove('border-green-400', 'bg-green-50');
+          uploadLabel.classList.add('border-emerald-300', 'bg-emerald-50');
         }
         
-        // Remove hidden input
-        const hiddenInput = document.getElementById('pdf-file-data');
-        if (hiddenInput) {
-          hiddenInput.remove();
+        // 텍스트 입력 활성화
+        if (contentTextarea) {
+          contentTextarea.removeAttribute('disabled');
+          contentTextarea.value = '';
+          if (typeof updateCount === 'function') {
+            updateCount();
+          }
+        }
+        
+        // 숨겨진 PDF 데이터 제거
+        const pdfContentField = document.getElementById('pdf-content-hidden');
+        if (pdfContentField) {
+          pdfContentField.value = '';
+          console.log('💾 PDF 데이터 제거 완료');
         }
       });
     }
     
-    // Form validation
+    // 폼 검증 및 제출 처리
     const form = document.querySelector('form');
     const submitBtn = document.getElementById('submit-btn');
     
     if (form && submitBtn) {
       form.addEventListener('submit', function(e) {
-        const hasText = contentTextarea && contentTextarea.value.trim().length > 0;
-        const hasPdf = document.getElementById('pdf-file-data') !== null;
+        console.log('📝 폼 제출 이벤트 발생');
         
-        if (!hasText && !hasPdf) {
+        const pdfDataInput = document.getElementById('pdf-content-hidden');
+        const hasPdf = pdfDataInput !== null && pdfDataInput.value && pdfDataInput.value.length > 0;
+        const hasText = contentTextarea && contentTextarea.value.trim().length > 0;
+        
+        // PDF 업로드가 있거나 기본 텍스트가 있으면 통과
+        const validSubmission = hasPdf || (hasText && !contentTextarea.value.startsWith('PDF 파일 업로드:') && !contentTextarea.value.startsWith('PDF 파일 업로드 모드'));
+        
+        console.log('📋 폼 제출 검증:', {
+          hasText: hasText,
+          hasPdf: hasPdf,
+          textLength: contentTextarea ? contentTextarea.value.length : 0,
+          pdfDataSize: pdfDataInput ? pdfDataInput.value.length : 0
+        });
+        
+        // 유효한 제출인지 확인
+        if (!validSubmission) {
           e.preventDefault();
-          alert('자소서 내용을 입력하거나 PDF 파일을 업로드해주세요.');
+          showUploadStatus('❌ 자소서 내용을 입력하거나 PDF 파일을 업로드해주세요.', 'error');
           return false;
         }
         
-        // Show loading state
-        submitBtn.value = '분석 중... (약 20-30초 소요)';
+        // PDF가 있으면 콘솔에 정보 출력
+        if (hasPdf) {
+          console.log('✅ PDF 데이터가 폼과 함께 전송됩니다');
+          console.log('- PDF 데이터 크기:', pdfDataInput.value.length, 'characters');
+        }
+        
+        // 제출 버튼 상태 변경
+        if (hasPdf) {
+          const fileName = pdfFilename ? pdfFilename.textContent : 'PDF 파일';
+          submitBtn.textContent = `📄 ${fileName} 분석 중... (약 20-30초)`;
+        } else {
+          submitBtn.textContent = '🔍 분석 중... (약 20-30초)';
+        }
+        
         submitBtn.classList.add('opacity-75', 'cursor-wait');
         submitBtn.disabled = true;
+        
+        console.log('✅ 폼 제출 진행 - 서버로 전송');
+        showUploadStatus('📤 서버로 전송 중...', 'info');
       });
     }
+    
+    console.log('✅ PDF 업로드 초기화 완료');
+  }
   });
 </script>

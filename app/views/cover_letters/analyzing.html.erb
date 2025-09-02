@@ -72,33 +72,96 @@
   // 페이지 로드 시 자동으로 분석 시작
   document.addEventListener('DOMContentLoaded', function() {
     const coverLetterId = <%= @cover_letter.id %>;
+    let checkInterval;
+    let startTime = Date.now();
     
-    // ActionCable 연결
-    const progressChannel = new AnalysisProgressChannel(coverLetterId, {
-      onStart: (data) => {
-        console.log('Analysis started:', data);
-      },
-      onStepStart: (data) => {
-        console.log('Step started:', data.step_name);
-      },
-      onStepComplete: (data) => {
-        console.log('Step completed:', data.step);
-      },
-      onComplete: (data) => {
-        console.log('Analysis completed!');
-        // 성공 사운드 재생 (옵션)
-        // playSuccessSound();
-      },
-      onError: (data) => {
-        console.error('Analysis error:', data.message);
-        // 에러 알림
-        alert('분석 중 오류가 발생했습니다: ' + data.message);
-      }
-    });
+    // 상태 업데이트 함수
+    function updateStatus(message, showProgress = false) {
+      const container = document.getElementById('analysis-progress-container');
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const elapsedText = `${Math.floor(elapsed / 60)}:${(elapsed % 60).toString().padStart(2, '0')}`;
+      
+      container.innerHTML = `
+        <div class="text-center">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">${message}</h3>
+          <p class="text-gray-600">경과 시간: ${elapsedText}</p>
+          ${showProgress ? '<div class="w-full bg-gray-200 rounded-full h-2 mt-4"><div class="bg-blue-600 h-2 rounded-full animate-pulse" style="width: 60%"></div></div>' : ''}
+        </div>
+      `;
+    }
     
-    progressChannel.connect();
+    // 완료 상태 표시
+    function showCompleted() {
+      const container = document.getElementById('analysis-progress-container');
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const elapsedText = `${Math.floor(elapsed / 60)}:${(elapsed % 60).toString().padStart(2, '0')}`;
+      
+      container.innerHTML = `
+        <div class="text-center">
+          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">분석 완료!</h3>
+          <p class="text-gray-600">총 소요 시간: ${elapsedText}</p>
+          <p class="text-blue-600 mt-2">잠시 후 결과 페이지로 이동합니다...</p>
+        </div>
+      `;
+      
+      // 2초 후 결과 페이지로 이동
+      setTimeout(() => {
+        window.location.href = '/cover_letters/' + coverLetterId;
+      }, 2000);
+    }
     
-    // 분석 Job 시작 (AJAX 요청)
+    // 에러 상태 표시
+    function showError(errorMessage) {
+      const container = document.getElementById('analysis-progress-container');
+      container.innerHTML = `
+        <div class="text-center">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">분석 중 오류 발생</h3>
+          <p class="text-gray-600 mb-4">${errorMessage}</p>
+          <button onclick="location.reload()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            다시 시도
+          </button>
+        </div>
+      `;
+    }
+    
+    // 상태 체크 함수
+    function checkAnalysisStatus() {
+      fetch(`/cover_letters/${coverLetterId}.json`)
+        .then(response => response.json())
+        .then(data => {
+          const status = data.analysis_status;
+          
+          if (status === 'completed') {
+            clearInterval(checkInterval);
+            showCompleted();
+          } else if (status === 'failed') {
+            clearInterval(checkInterval);
+            showError(data.analysis_error || '알 수 없는 오류가 발생했습니다.');
+          } else if (status === 'processing') {
+            updateStatus('AI가 자소서를 분석하고 있습니다...', true);
+          }
+        })
+        .catch(error => {
+          console.error('Status check failed:', error);
+        });
+    }
+    
+    // 분석 시작
+    updateStatus('분석을 시작합니다...');
+    
     fetch('/cover_letters/<%= @cover_letter.id %>/start_analysis', {
       method: 'POST',
       headers: {
@@ -106,24 +169,29 @@
         'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
       },
       body: JSON.stringify({
-        use_realtime: true
+        use_realtime: false
       })
     })
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        console.log('Analysis job started');
+        updateStatus('분석이 시작되었습니다...', true);
+        // 2초마다 상태 체크
+        checkInterval = setInterval(checkAnalysisStatus, 2000);
       } else {
-        console.error('Failed to start analysis:', data.error);
+        showError('분석 시작에 실패했습니다: ' + data.error);
       }
     })
     .catch(error => {
       console.error('Error starting analysis:', error);
+      showError('분석 시작 중 오류가 발생했습니다.');
     });
     
-    // 페이지 이탈 시 연결 해제
+    // 페이지 이탈 시 정리
     window.addEventListener('beforeunload', () => {
-      progressChannel.disconnect();
+      if (checkInterval) {
+        clearInterval(checkInterval);
+      }
     });
   });
 </script>

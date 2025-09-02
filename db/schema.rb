@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_31_052138) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_02_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -110,6 +110,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_31_052138) do
     t.datetime "analysis_completed_at"
     t.text "analysis_error"
     t.jsonb "advanced_analysis_json"
+    t.text "resume_content"
+    t.jsonb "resume_json"
+    t.text "resume_analysis"
+    t.text "raw_pdf_text"
     t.index ["user_id", "saved"], name: "index_cover_letters_on_user_id_and_saved"
     t.index ["user_id"], name: "index_cover_letters_on_user_id"
   end
@@ -210,6 +214,40 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_31_052138) do
     t.index ["target_concept_id"], name: "index_ontology_relationships_on_target_concept_id"
   end
 
+  create_table "payment_logs", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "order_id", null: false
+    t.string "payment_key"
+    t.integer "amount", null: false
+    t.string "status", default: "DONE", null: false
+    t.jsonb "raw_response"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_payment_logs_on_order_id", unique: true
+    t.index ["user_id"], name: "index_payment_logs_on_user_id"
+  end
+
+  create_table "referral_clicks", force: :cascade do |t|
+    t.string "code", null: false
+    t.integer "referrer_id"
+    t.string "ip"
+    t.string "user_agent"
+    t.string "landing_path"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_referral_clicks_on_code"
+    t.index ["created_at"], name: "index_referral_clicks_on_created_at"
+    t.index ["referrer_id"], name: "index_referral_clicks_on_referrer_id"
+  end
+
+  create_table "referral_reviews", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_referral_reviews_on_user_id"
+  end
+
   create_table "skill_ontologies", force: :cascade do |t|
     t.string "esco_uri"
     t.string "skill_name", null: false
@@ -264,7 +302,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_31_052138) do
     t.json "profile_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "admin", default: false
+    t.integer "analysis_credits", default: 0, null: false
+    t.integer "free_analyses_used", default: 0, null: false
+    t.string "referral_code"
+    t.integer "referrer_id"
+    t.boolean "referral_bonus_claimed", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["referral_code"], name: "index_users_on_referral_code", unique: true
+    t.index ["referrer_id"], name: "index_users_on_referrer_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
@@ -275,5 +321,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_31_052138) do
   add_foreign_key "ontology_analyses", "user_profiles"
   add_foreign_key "ontology_relationships", "ontology_concepts", column: "source_concept_id"
   add_foreign_key "ontology_relationships", "ontology_concepts", column: "target_concept_id"
+  add_foreign_key "payment_logs", "users"
+  add_foreign_key "referral_reviews", "users"
   add_foreign_key "user_profiles", "users"
 end

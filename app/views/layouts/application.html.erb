@@ -61,7 +61,7 @@
               </button>
               <div class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <%= link_to "서비스 철학", about_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
-                <%= link_to "예비합격자에게", letter_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
+                <%= link_to "서비스를 만든 이유", letter_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
                 <%= link_to "자소서 작성 가이드", guide_cover_letters_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
                 <%= link_to "성공 사례", "#", class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100" %>
               </div>
@@ -84,6 +84,7 @@
                 class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
             
             <%= link_to "요금제", pricing_path, class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
+            <%= link_to "친구 추천", referral_path, class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
           </div>
           
           <!-- Auth Buttons & Mobile Menu -->
@@ -100,7 +101,12 @@
                   <div class="px-4 py-3 border-b border-gray-100">
                     <p class="text-sm font-medium text-gray-900">마이페이지</p>
                   </div>
+                  <% if current_user&.admin? %>
+                    <%= link_to "관리자", admin_root_path, class: "block px-4 py-2.5 text-sm text-emerald-700 hover:bg-emerald-50 font-medium" %>
+                    <div class="border-t border-gray-100"></div>
+                  <% end %>
                   <%= link_to "대시보드", mypage_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
+                  <%= link_to "친구 추천", mypage_path(anchor: 'referral'), class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
                   <%= link_to "내 프로필", user_profile_path(current_user.id), class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
                   <%= link_to "저장된 채용공고", mypage_job_analyses_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
                   <%= link_to "저장된 기업분석", mypage_company_analyses_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
@@ -143,7 +149,7 @@
             </button>
             <div id="serviceSubmenu" class="hidden ml-4 mt-2 space-y-1">
               <%= link_to "서비스 철학", about_path, class: "block px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded" %>
-              <%= link_to "예비합격자에게", letter_path, class: "block px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded" %>
+              <%= link_to "서비스를 만든 이유", letter_path, class: "block px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded" %>
               <%= link_to "자소서 작성 가이드", guide_cover_letters_path, class: "block px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded" %>
               <%= link_to "성공 사례", "#", class: "block px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded" %>
             </div>
@@ -154,6 +160,7 @@
           <%= link_to "AI 자소서 작성", interactive_cover_letters_path, class: "block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" %>
           <%= link_to "심층 분석", advanced_cover_letters_path, class: "block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" %>
           <%= link_to "요금제", pricing_path, class: "block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" %>
+          <%= link_to "친구 추천", referral_path, class: "block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" %>
           
           <!-- Auth Links -->
           <div class="border-t border-gray-100 pt-2 mt-2">

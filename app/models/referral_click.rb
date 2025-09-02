@@ -1,0 +1,2 @@
+class ReferralClick < ApplicationRecord
+end

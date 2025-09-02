@@ -5,6 +5,13 @@
       <div>
         <h1 class="text-3xl font-semibold text-gray-900">마이페이지</h1>
         <p class="text-gray-600 mt-2">나의 활동 내역을 한눈에 확인하세요</p>
+        <div class="mt-3 text-sm text-gray-700">
+          <span class="font-medium text-gray-900">잔여 분석 건수</span>
+          <span class="ml-2 inline-flex items-center px-2 py-1 rounded-full bg-emerald-50 text-emerald-700">
+            <%= @analysis_credits %> 건
+          </span>
+          <span class="ml-3 text-gray-500">(무료 사용 <%= @free_analyses_used %>건)</span>
+        </div>
       </div>
       <div class="flex items-center gap-3">
         <%= link_to "계정 설정", edit_user_registration_path, 
@@ -32,6 +39,36 @@
     </div>
   </div>
   
+  <!-- 추천 리워드 섹션 -->
+  <div id="referral" class="bg-white rounded-lg border border-gray-100 p-6 mb-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-semibold text-gray-900">친구에게 추천하고 3건 보너스</h2>
+        <p class="text-sm text-gray-600 mt-1">아래 링크를 친구에게 공유하면, 가입 시 서로 3건을 받습니다.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <% referral_code = current_user.referral_code.presence || 'pending' %>
+        <% referral_link = referral_code == 'pending' ? '#' : referral_redirect_url(code: referral_code) %>
+        <input id="refLink" class="hidden md:block w-64 px-3 py-2 text-sm border border-gray-200 rounded-lg" value="<%= referral_link %>" readonly>
+        <button id="copyRef" class="px-4 py-2 text-sm font-medium text-white bg-emerald-500 rounded-lg hover:bg-emerald-600">링크 복사</button>
+      </div>
+    </div>
+    <script>
+      document.getElementById('copyRef')?.addEventListener('click', async function() {
+        const code = '<%= referral_code %>';
+        if (code === 'pending') { alert('추천 코드를 준비 중입니다. 잠시 후 다시 시도해주세요.'); return; }
+        const url = '<%= referral_redirect_url(code: referral_code) %>';
+        try {
+          await navigator.clipboard.writeText(url);
+          alert('추천 링크가 복사되었습니다!');
+        } catch (e) {
+          console.error(e);
+          alert('복사에 실패했습니다.');
+        }
+      });
+    </script>
+  </div>
+
   <!-- 최근 활동 섹션들 -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- 최근 자소서 -->

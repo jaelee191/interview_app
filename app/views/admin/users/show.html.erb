@@ -1,0 +1,93 @@
+<div class="space-y-6">
+  <!-- 사용자 헤더 -->
+  <div class="admin-card p-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center">
+          <span class="text-sm font-medium text-white"><%= @user.email.first.upcase %></span>
+        </div>
+        <div>
+          <h1 class="text-xl font-semibold text-gray-900"><%= @user.email %></h1>
+          <p class="text-sm text-gray-500 mt-1">가입일: <%= @user.created_at.strftime("%Y-%m-%d %H:%M") %></p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <% if @user.admin? %>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">관리자</span>
+        <% else %>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">일반</span>
+        <% end %>
+        <%= link_to "목록", admin_users_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50" %>
+      </div>
+    </div>
+  </div>
+
+  <% total = @cover_letters.size %>
+  <% completed = @cover_letters.count { |c| c.analysis_result.present? } %>
+  <% rewritten = @cover_letters.count { |c| c.improved_letter.present? } %>
+
+  <!-- 통계 카드 -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="admin-card p-6">
+      <p class="text-sm text-gray-600">총 자소서</p>
+      <p class="text-3xl font-bold text-gray-900 mt-2"><%= total %></p>
+    </div>
+    <div class="admin-card p-6">
+      <p class="text-sm text-gray-600">분석 완료</p>
+      <p class="text-3xl font-bold text-gray-900 mt-2"><%= completed %></p>
+    </div>
+    <div class="admin-card p-6">
+      <p class="text-sm text-gray-600">리라이트 완료</p>
+      <p class="text-3xl font-bold text-gray-900 mt-2"><%= rewritten %></p>
+    </div>
+  </div>
+
+  <!-- 최근 자소서 -->
+  <div class="admin-card overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <h3 class="text-lg font-semibold text-gray-900">최근 자소서</h3>
+      <span class="text-sm text-gray-500">최근 10개</span>
+    </div>
+    <div class="divide-y divide-gray-100">
+      <% @cover_letters.first(10).each do |letter| %>
+        <div class="px-6 py-4 flex items-center justify-between">
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-medium text-gray-900 truncate">
+              <%= letter.company_name || "미지정" %> - <%= letter.position || "미지정" %>
+            </p>
+            <p class="text-xs text-gray-500 mt-1">
+              작성: <%= letter.created_at.strftime("%Y-%m-%d %H:%M") %>
+            </p>
+          </div>
+          <div>
+            <% if letter.improved_letter.present? %>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">리라이트 완료</span>
+            <% elsif letter.analysis_result.present? %>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">분석 완료</span>
+            <% else %>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">대기</span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+      <% if @cover_letters.empty? %>
+        <div class="px-6 py-12 text-center">
+          <p class="text-sm text-gray-500">작성된 자소서가 없습니다</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- 액션 영역 -->
+  <div class="admin-card p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900">사용자 관리</h3>
+        <p class="text-sm text-gray-500 mt-1">권한 변경 및 정보 수정</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <%= link_to "정보 수정", edit_admin_user_path(@user), class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg" %>
+      </div>
+    </div>
+  </div>
+</div>

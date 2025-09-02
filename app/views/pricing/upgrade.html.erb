@@ -1,0 +1,111 @@
+<% content_for :title, "분석 건수가 부족합니다" %>
+<% content_for :head do %>
+  <script src="https://js.tosspayments.com/v2/"></script>
+<% end %>
+
+<div class="min-h-screen bg-white">
+  <section class="py-14 bg-gray-50 border-b border-gray-100">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900">분석 건수가 부족해요</h1>
+      <p class="text-gray-600 mt-3">첫 3건은 무료로 제공되며, 현재 <span class="font-semibold text-gray-900"><%= @free_used %>/3</span> 건 사용했습니다.</p>
+    </div>
+  </section>
+
+  <section class="py-14">
+    <div class="max-w-4xl mx-auto px-4 grid md:grid-cols-2 gap-6">
+      <!-- 남은 크레딧 카드 -->
+      <div class="admin-card bg-white rounded-2xl border border-gray-100 p-6">
+        <h3 class="text-base font-semibold text-gray-900">나의 현재 상태</h3>
+        <div class="mt-4 grid grid-cols-2 gap-4">
+          <div class="rounded-xl bg-emerald-50 px-4 py-4">
+            <p class="text-sm text-emerald-700">남은 유료 건수</p>
+            <p class="text-2xl font-bold text-emerald-700"><%= @analysis_credits %>건</p>
+          </div>
+          <div class="rounded-xl bg-gray-50 px-4 py-4">
+            <p class="text-sm text-gray-700">무료 사용</p>
+            <p class="text-2xl font-bold text-gray-900"><%= @free_used %>/3</p>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-3">분석 1건은 한 번의 분석 요청으로 계산됩니다.</p>
+      </div>
+
+      <!-- 10건 패키지 업셀 카드 -->
+      <div class="bg-white rounded-2xl border-2 border-emerald-500 p-6 relative">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+          <span class="bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-medium">가장 인기</span>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900">10건 패키지</h3>
+        <p class="text-gray-600 text-sm mt-1">필요할 때마다 사용하는 합리적 선택</p>
+        <div class="mt-4">
+          <span class="text-3xl font-bold text-gray-900">₩20,000</span>
+          <span class="text-gray-500"> / 10건</span>
+        </div>
+        <ul class="space-y-2 mt-5 text-sm text-gray-700">
+          <li class="flex items-center"><span class="w-2 h-2 bg-emerald-500 rounded-full mr-2"></span>고급 분석 리포트</li>
+          <li class="flex items-center"><span class="w-2 h-2 bg-emerald-500 rounded-full mr-2"></span>분석 결과 저장 & 비교</li>
+          <li class="flex items-center"><span class="w-2 h-2 bg-emerald-500 rounded-full mr-2"></span>구매 후 12개월 내 사용</li>
+        </ul>
+        <button id="buyPackBtn" class="w-full mt-6 py-3 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold">10건 패키지 구매</button>
+        <p class="text-xs text-gray-500 mt-3">무료 3건을 모두 사용하면 자동으로 이 화면이 표시됩니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="pb-20">
+    <div class="max-w-3xl mx-auto px-4">
+      <div class="rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 p-6 border border-gray-100">
+        <h4 class="text-base font-semibold text-gray-900">왜 10건 패키지가 좋을까요?</h4>
+        <div class="mt-4 grid md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <p class="font-medium text-gray-900">합리적인 가격</p>
+            <p class="text-gray-600 mt-1">건당 약 2,000원으로 고급 분석 리포트를 받아보세요.</p>
+          </div>
+          <div>
+            <p class="font-medium text-gray-900">집중 지원</p>
+            <p class="text-gray-600 mt-1">분석 결과 저장과 비교 기능으로 완성도를 높일 수 있어요.</p>
+          </div>
+          <div>
+            <p class="font-medium text-gray-900">유연한 사용</p>
+            <p class="text-gray-600 mt-1">구매 후 12개월 내 원하는 시점에 사용 가능합니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  document.getElementById('buyPackBtn')?.addEventListener('click', async function() {
+    try {
+      const prep = await fetch('/pricing/purchase_pack', { method: 'POST', headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content } });
+      const data = await prep.json();
+      if (!data.success) { alert('결제 준비 실패'); return; }
+
+      const clientKey = '<%= (ENV["TOSS_CLIENT_KEY"].presence || Rails.application.credentials.dig(:toss, :client_key)).to_s %>';
+      if (!clientKey) {
+        const mock = await fetch('/pricing/mock_success', { method: 'POST', headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content } });
+        const r = await mock.json();
+        if (r.success) { alert('개발모드: 10건 지급 완료. 잔여: ' + r.credits + '건'); location.href = '/mypage'; }
+        else { alert('개발모드 모의 승인 실패'); }
+        return;
+      }
+
+      const tossPayments = TossPayments(clientKey);
+      const base = window.location.origin;
+      await tossPayments.requestPayment('CARD', {
+        amount: data.amount,
+        orderId: data.orderId,
+        orderName: data.orderName,
+        successUrl: base + '/pricing/success',
+        failUrl: base + '/pricing/fail',
+        customerEmail: data.customerEmail,
+        customerName: data.customerName
+      });
+    } catch (e) {
+      console.error(e);
+      alert('결제 진행 중 오류가 발생했습니다');
+    }
+  });
+</script>
+
+

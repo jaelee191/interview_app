@@ -1,0 +1,60 @@
+<div class="max-w-7xl mx-auto px-6 py-8">
+  <h1 class="text-2xl font-semibold text-gray-900 mb-6">레퍼럴 현황</h1>
+
+  <form class="mb-4 flex items-end gap-3" method="get">
+    <div>
+      <label class="block text-xs text-gray-500 mb-1">시작일</label>
+      <input type="date" name="since" value="<%= @since.to_date %>" class="border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+    </div>
+    <div>
+      <label class="block text-xs text-gray-500 mb-1">종료일</label>
+      <input type="date" name="until" value="<%= @until.to_date %>" class="border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+    </div>
+    <button class="h-10 px-4 rounded-lg bg-emerald-500 text-white text-sm">필터 적용</button>
+    <%= link_to "CSV 내보내기", admin_referrals_path(request.query_parameters.merge(format: :csv)), class: "h-10 px-4 rounded-lg bg-gray-900 text-white text-sm inline-flex items-center" %>
+  </form>
+
+  <div class="bg-white rounded-lg border border-gray-100 p-4 mb-6">
+    <h2 class="text-base font-semibold text-gray-900 mb-3">Top Referrers</h2>
+    <ul class="grid md:grid-cols-2 gap-3 text-sm">
+      <% @top_referrers.each do |(referrer_id, count)| %>
+        <% user = User.find_by(id: referrer_id) %>
+        <li class="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">
+          <span class="text-gray-700"><%= user&.email || '탈퇴/미상' %></span>
+          <span class="font-medium text-gray-900"><%= count %> 명</span>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-100">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">가입일</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">사용자</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">추천인</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">보상지급</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100 bg-white">
+        <% @referred_users.each do |u| %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3 text-sm text-gray-700"><%= u.created_at.strftime('%Y-%m-%d %H:%M') %></td>
+            <td class="px-4 py-3 text-sm text-gray-700"><%= u.email %></td>
+            <td class="px-4 py-3 text-sm text-gray-700"><%= User.find_by(id: u.referrer_id)&.email %></td>
+            <td class="px-4 py-3 text-xs">
+              <% if u.referral_bonus_claimed %>
+                <span class="px-2 py-1 rounded-full bg-emerald-50 text-emerald-700">지급</span>
+              <% else %>
+                <span class="px-2 py-1 rounded-full bg-gray-100 text-gray-600">미지급</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+

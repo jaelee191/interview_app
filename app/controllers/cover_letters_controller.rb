@@ -1,7 +1,6 @@
 require "base64"
 require "tempfile"
 class CoverLettersController < ApplicationController
-
   before_action :set_cover_letter, only: [ :show, :destroy ]
   skip_before_action :verify_authenticity_token, only: [ :start_interactive, :send_message, :save_interactive, :analyze_job_posting, :analyze_advanced, :start_analysis ]
 
@@ -710,52 +709,70 @@ class CoverLettersController < ApplicationController
   # 실시간 분석 시작 (AJAX)
   def start_analysis
     @cover_letter = CoverLetter.find(params[:id])
-    
+
     # 분석 상태 초기화
     @cover_letter.update(
-      analysis_status: 'processing',
+      analysis_status: "processing",
       analysis_started_at: Time.current
     )
-    
+
     # 백그라운드 Job 실행
     use_realtime = params[:use_realtime] != false
     CoverLetterAnalysisJob.perform_later(@cover_letter.id, use_realtime: use_realtime)
-    
-    render json: { 
-      success: true, 
-      message: '분석이 시작되었습니다',
-      cover_letter_id: @cover_letter.id 
+
+    render json: {
+      success: true,
+      message: "\uBD84\uC11D\uC774 \uC2DC\uC791\uB418\uC5C8\uC2B5\uB2C8\uB2E4",
+      cover_letter_id: @cover_letter.id
     }
   rescue => e
-    render json: { 
-      success: false, 
-      error: e.message 
+    render json: {
+      success: false,
+      error: e.message
     }, status: :unprocessable_entity
   end
-  
-  
+
+
   # 분석 진행 페이지
   def analyzing
     @cover_letter = CoverLetter.find(params[:id])
-    
+
     # 이미 분석 완료된 경우 결과 페이지로 리다이렉트
-    if @cover_letter.analysis_status == 'completed' && 
+    if @cover_letter.analysis_status == "completed" &&
        (@cover_letter.analysis_result.present? || @cover_letter.advanced_analysis.present?)
       redirect_to @cover_letter
     end
   end
-  
-  def analyze_advanced
+
+    def analyze_advanced
+    if request.get?
+      # GET 요청: advanced 페이지로 리다이렉트
+      redirect_to advanced_cover_letters_path, status: :moved_permanently
+      return
+    end
+
+    Rails.logger.info "=== analyze_advanced 액션 시작 ==="
+    Rails.logger.info "Params: #{params.inspect}"
+
+    # POST 요청이고 파라미터가 없으면 advanced 페이지로 리다이렉트
+    if params[:cover_letter].blank?
+      redirect_to advanced_cover_letters_path, alert: "잘못된 접근입니다."
+      return
+    end
+
     # pdf_content는 DB 필드가 아니므로 별도로 처리
-    permitted_params = params.require(:cover_letter).permit(:title, :content, :company_name, :position, :user_name)
+    permitted_params = params.require(:cover_letter).permit(:title, :content, :company_name, :position, :user_name, :pdf_content)
     @cover_letter = CoverLetter.new(permitted_params)
 
     # PDF 처리
     pdf_analysis = nil
-    if params[:cover_letter][:pdf_content].present?
+    pdf_content = params[:cover_letter][:pdf_content]
+
+    # PDF 콘텐츠가 실제로 있는지 확인 (빈 문자열이 아닌지)
+    if pdf_content.present? && pdf_content.length > 100  # Base64 데이터는 최소한 100자 이상
       begin
         # Base64 디코딩
-        pdf_data = params[:cover_letter][:pdf_content]
+        pdf_data = pdf_content
         pdf_data = pdf_data.sub(/^data:application\/pdf;base64,/, "")
 
         # 임시 파일로 저장
@@ -767,44 +784,74 @@ class CoverLettersController < ApplicationController
         # PDF 분석
         pdf_service = PdfAnalyzerService.new(temp_file.path)
         pdf_analysis = pdf_service.analyze_resume
-        
+
         Rails.logger.info "PDF 분석 결과: #{pdf_analysis.keys}"
 
         # 분석 결과를 자소서에 추가 (에러가 있어도 처리)
         if pdf_analysis && !pdf_analysis[:error]
-          # PDF에서 자소서가 있는지 확인
+          # 원본 PDF 텍스트 저장
+          if pdf_analysis[:raw_pdf_text].present?
+            @cover_letter.raw_pdf_text = pdf_analysis[:raw_pdf_text].to_s
+              .encode("UTF-8", invalid: :replace, undef: :replace, replace: "")
+              .gsub(/\x00/, "")
+            Rails.logger.info "원본 PDF 텍스트 저장: #{@cover_letter.raw_pdf_text.length} 문자"
+          end
+
+          # PDF에서 이력서와 자소서 확인
           has_cover_letter = pdf_analysis[:metadata] && pdf_analysis[:metadata][:has_cover_letter]
+          has_resume = pdf_analysis[:metadata] && pdf_analysis[:metadata][:has_resume]
           original_cover_letter = pdf_analysis[:original_cover_letter]
-          
+          original_resume = pdf_analysis[:original_resume]
+          structured_resume = pdf_analysis[:structured_resume]
+
+          # 이력서 데이터 저장
+          if has_resume && original_resume.present?
+            Rails.logger.info "PDF에서 이력서 발견, 이력서 데이터 저장"
+            @cover_letter.resume_content = original_resume.to_s
+              .encode("UTF-8", invalid: :replace, undef: :replace, replace: "")
+              .gsub(/\x00/, "")
+
+            # 구조화된 이력서 데이터 저장
+            if structured_resume.present?
+              @cover_letter.resume_json = structured_resume
+              Rails.logger.info "구조화된 이력서 데이터 저장: #{structured_resume[:sections].keys.join(', ')}"
+            end
+
+            # 이력서 분석 결과 저장
+            if pdf_analysis[:analysis] && pdf_analysis[:analysis][:resume]
+              @cover_letter.resume_analysis = pdf_analysis[:analysis][:resume]
+            end
+          end
+
           if has_cover_letter && original_cover_letter.present?
             # 자소서가 있으면 자소서 텍스트를 사용
             Rails.logger.info "PDF에서 자소서 발견, 자소서 텍스트 사용"
             safe_cover_letter = original_cover_letter.to_s
-              .encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
-              .gsub(/\x00/, '')
+              .encode("UTF-8", invalid: :replace, undef: :replace, replace: "")
+              .gsub(/\x00/, "")
               .gsub(/[\r\n]+/, "\n")
-            
+
             # 기존 content가 비어있으면 자소서로 대체, 있으면 병합
             if @cover_letter.content.blank?
               @cover_letter.content = safe_cover_letter
             else
               safe_content = @cover_letter.content.to_s
-                .encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
-                .gsub(/\x00/, '')
+                .encode("UTF-8", invalid: :replace, undef: :replace, replace: "")
+                .gsub(/\x00/, "")
               @cover_letter.content = "#{safe_content}\n\n--- 자기소개서 ---\n#{safe_cover_letter}"
             end
           else
             # 자소서가 없으면 이력서 정보만 사용
             Rails.logger.info "PDF에 자소서 없음, 이력서 정보만 사용"
             safe_pdf_text = pdf_analysis[:extracted_text].to_s
-              .encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
-              .gsub(/\x00/, '')
+              .encode("UTF-8", invalid: :replace, undef: :replace, replace: "")
+              .gsub(/\x00/, "")
               .gsub(/[\r\n]+/, "\n")[0..2000]
-            
+
             safe_content = @cover_letter.content.to_s
-              .encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
-              .gsub(/\x00/, '')
-            
+              .encode("UTF-8", invalid: :replace, undef: :replace, replace: "")
+              .gsub(/\x00/, "")
+
             enhanced_content = "#{safe_content}\n\n--- PDF 분석 내용 ---\n#{safe_pdf_text}"
             @cover_letter.content = enhanced_content
           end
@@ -828,7 +875,7 @@ class CoverLettersController < ApplicationController
         }
         @cover_letter.update(deep_analysis_data: deep_analysis_data)
       end
-      
+
       # 분석 Job 시작 (개발 환경에서는 동기 실행)
       if Rails.env.development?
         # 백그라운드에서 실행
@@ -840,16 +887,18 @@ class CoverLettersController < ApplicationController
       else
         CoverLetterAnalysisJob.perform_later(@cover_letter.id, use_realtime: true)
       end
-      
+
       # 분석 상태 업데이트
       @cover_letter.update(
-        analysis_status: 'in_progress',
+        analysis_status: "in_progress",
         analysis_started_at: Time.current
       )
-      
+
       # 실시간 진행 상황 표시 페이지로 리다이렉트
       redirect_to analyzing_cover_letter_path(@cover_letter)
     else
+      Rails.logger.error "Cover Letter save failed: #{@cover_letter.errors.full_messages.join(', ')}"
+      flash.now[:alert] = "저장 실패: #{@cover_letter.errors.full_messages.join(', ')}"
       render :advanced
     end
   end
@@ -910,8 +959,8 @@ class CoverLettersController < ApplicationController
     @cover_letter = CoverLetter.find(params[:id])
 
     # 리라이트 모드 파라미터 받기 (기본값: preserve)
-    rewrite_mode = params[:rewrite_mode] || 'preserve'
-    
+    rewrite_mode = params[:rewrite_mode] || "preserve"
+
     # 서비스 초기화
     service = AdvancedCoverLetterService.new
 
@@ -931,14 +980,14 @@ class CoverLettersController < ApplicationController
       # 결과와 메트릭스 저장
       # deep_analysis_data에 메트릭스 저장 (rewrite_metrics 컬럼이 없으므로)
       deep_data = @cover_letter.deep_analysis_data || {}
-      deep_data['rewrite_metrics'] = {
+      deep_data["rewrite_metrics"] = {
         improvements: result[:metrics],
         before: result[:before_metrics],
         after: result[:after_metrics],
         suggestions: result[:suggestions],
         optimization_type: result[:optimization_type]
       }
-      
+
       @cover_letter.update(
         improved_letter: result[:rewritten_letter],
         improved_letter_saved_at: Time.current,
@@ -1068,6 +1117,22 @@ class CoverLettersController < ApplicationController
     @cover_letter = CoverLetter.new(cover_letter_params)
 
     if @cover_letter.save
+      # 건수 차감 로직: 로그인 사용자만 대상
+      if current_user
+        # 무료 3건 소진 전이면 free_analyses_used 증가, 아니면 credits 차감
+        if current_user.free_analyses_used < 3
+          current_user.increment!(:free_analyses_used)
+        else
+          # 보유 크레딧이 있으면 1건 차감, 없으면 저장 후 알림
+          if current_user.analysis_credits > 0
+            current_user.decrement!(:analysis_credits)
+          else
+            # 크레딧 부족 - 업셀 페이지로 리다이렉트
+            redirect_to pricing_upgrade_path, alert: "분석 건수가 부족합니다. 10건 패키지를 구매해 주세요."
+            return
+          end
+        end
+      end
       # 분석 유형에 따라 서비스 선택
       if params[:analysis_type] == "advanced"
         # 3단계 고급 분석
@@ -1109,6 +1174,20 @@ class CoverLettersController < ApplicationController
 
   def show
     @analysis_sections = parse_analysis(@cover_letter.analysis_result) if @cover_letter.analysis_result
+
+    respond_to do |format|
+      format.html
+      format.json {
+        render json: {
+          id: @cover_letter.id,
+          analysis_status: @cover_letter.analysis_status,
+          analysis_error: @cover_letter.analysis_error,
+          analysis_completed_at: @cover_letter.analysis_completed_at,
+          advanced_analysis: @cover_letter.advanced_analysis.present?,
+          advanced_analysis_json: @cover_letter.advanced_analysis_json.present?
+        }
+      }
+    end
   end
 
   def destroy
@@ -1122,18 +1201,18 @@ class CoverLettersController < ApplicationController
 
   def save_analysis
     @cover_letter = CoverLetter.find(params[:id])
-    
+
     if current_user
       # 개선된 자소서가 있으면 저장 시간도 함께 기록
       update_params = { user_id: current_user.id, saved: true }
       if @cover_letter.advanced_analysis.present?
         update_params[:improved_letter_saved_at] = Time.current
       end
-      
+
       @cover_letter.update(update_params)
-      
+
       # 리라이트 결과 페이지에서 저장한 경우
-      if request.referer&.include?('rewrite_result')
+      if request.referer&.include?("rewrite_result")
         redirect_to rewrite_result_cover_letter_path(@cover_letter), notice: "개선된 자소서가 저장되었습니다."
       else
         redirect_to @cover_letter, notice: "분석 결과가 저장되었습니다."
@@ -1145,7 +1224,7 @@ class CoverLettersController < ApplicationController
 
   def unsave_analysis
     @cover_letter = CoverLetter.find(params[:id])
-    
+
     if current_user && @cover_letter.user_id == current_user.id
       @cover_letter.update(saved: false)
       redirect_to @cover_letter, notice: "저장이 취소되었습니다."

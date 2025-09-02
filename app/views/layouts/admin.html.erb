@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html class="h-full">
+  <head>
+    <title>관리자 - Jachui</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload", media: "all" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload", media: "all" %>
+    <%= stylesheet_link_tag "modern", "data-turbo-track": "reload", media: "all" %>
+    <%= javascript_importmap_tags %>
+    
+    <style>
+      :root {
+        --primary-emerald: #10b981;
+        --primary-emerald-600: #059669;
+        --surface: #ffffff;
+        --surface-muted: #f9fafb;
+        --border: #f3f4f6;
+        --text: #111827;
+        --text-muted: #6b7280;
+      }
+      .admin-card { background: var(--surface); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(17,24,39,0.04); transition: box-shadow .2s ease, transform .2s ease; }
+      .admin-card:hover { box-shadow: 0 6px 16px rgba(17,24,39,0.08); transform: translateY(-1px); }
+      .admin-nav-item { border-radius: 10px; }
+      .admin-nav-item:hover { background: #f3f4f6; }
+      .admin-nav-item.active { background: #ecfdf5; color: #065f46; }
+    </style>
+  </head>
+
+  <body class="h-full bg-gray-50 font-[Pretendard] text-gray-900">
+    <div class="flex min-h-screen">
+      <!-- 사이드바: 화이트 베이스 + 얇은 보더 -->
+      <aside class="w-64 bg-white border-r border-gray-100">
+        <div class="h-full flex flex-col">
+          <!-- 로고 -->
+          <div class="px-6 py-5 border-b border-gray-100">
+            <%= link_to admin_root_path, class: "flex items-center gap-2" do %>
+              <span class="text-xl font-semibold">jachui</span>
+              <span class="px-2 py-0.5 text-xs font-medium bg-gray-900 text-white rounded">ADMIN</span>
+            <% end %>
+          </div>
+
+          <!-- 네비게이션 -->
+          <nav class="flex-1 px-4 py-6 space-y-1">
+            <%= link_to admin_root_path, class: "admin-nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium #{current_page?(admin_root_path) ? 'active' : 'text-gray-700'}" do %>
+              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+              대시보드
+            <% end %>
+            <%= link_to admin_users_path, class: "admin-nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium #{current_page?(admin_users_path) ? 'active' : 'text-gray-700'}" do %>
+              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+              사용자 관리
+            <% end %>
+            <%= link_to admin_cover_letters_path, class: "admin-nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium #{current_page?(admin_cover_letters_path) ? 'active' : 'text-gray-700'}" do %>
+              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              자소서 관리
+            <% end %>
+            <%= link_to admin_analytics_path, class: "admin-nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium #{current_page?(admin_analytics_path) ? 'active' : 'text-gray-700'}" do %>
+              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+              통계 분석
+            <% end %>
+
+            <%= link_to admin_payments_path, class: "admin-nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium #{current_page?(admin_payments_path) ? 'active' : 'text-gray-700'}" do %>
+              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h10M7 19h10M6 6h12a2 2 0 012 2v0a2 2 0 01-2 2H6a2 2 0 01-2-2v0a2 2 0 012-2z"></path></svg>
+              결제 현황
+            <% end %>
+
+            <%= link_to admin_referrals_path, class: "admin-nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium #{current_page?(admin_referrals_path) ? 'active' : 'text-gray-700'}" do %>
+              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8M11 17H3m0 0V9m0 8l8-8"></path></svg>
+              레퍼럴 현황
+            <% end %>
+
+            <div class="pt-5">
+              <div class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">시스템</div>
+            </div>
+            <%= link_to admin_settings_path, class: "admin-nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium #{current_page?(admin_settings_path) ? 'active' : 'text-gray-700'}" do %>
+              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              설정
+            <% end %>
+          </nav>
+
+          <!-- 하단 사용자 정보 -->
+          <div class="border-t border-gray-100 p-4">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center"><span class="text-xs font-medium text-white">A</span></div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">관리자</p>
+                <p class="text-xs text-gray-500"><%= current_user&.email %></p>
+              </div>
+              <%= link_to root_path, class: "text-gray-400 hover:text-gray-600" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- 메인 콘텐츠: 메인과 동일한 컨테이너 폭 -->
+      <main class="flex-1 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

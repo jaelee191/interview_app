@@ -13,7 +13,7 @@ Rails.application.routes.draw do
       post "update_inline"
     end
   end
-  
+
   # Mypage routes
   get "mypage", to: "mypage#index"
   get "mypage/cover_letters", to: "mypage#cover_letters"
@@ -22,6 +22,27 @@ Rails.application.routes.draw do
 
   # Pricing page
   get "pricing", to: "pricing#index"
+  get "pricing/upgrade", to: "pricing#upgrade"
+  get "referral", to: "referral#landing"
+  post "referral/reviews", to: "referral#create_review"
+  get "r/:code", to: "referrals#show", as: :referral_redirect
+  post "pricing/purchase_pack", to: "pricing#purchase_pack"
+  post "pricing/confirm", to: "pricing#confirm"
+  get  "pricing/success", to: "pricing#success"
+  get  "pricing/fail",    to: "pricing#fail"
+  post "pricing/mock_success", to: "pricing#mock_success"
+
+  # Admin routes
+  namespace :admin do
+    root to: "dashboard#index"
+    resources :dashboard, only: [ :index ]
+    resources :users, only: [ :index, :show, :edit, :update ]
+    resources :cover_letters, only: [ :index, :show, :destroy ]
+    resources :payments, only: [ :index, :show ]
+    get "referrals", to: "referrals#index"
+    resource :analytics, only: [ :show ]
+    resource :settings, only: [ :show ]
+  end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -52,7 +73,7 @@ Rails.application.routes.draw do
   resources :articles, only: [ :index, :show ]
 
   # Cover Letters routes for AI analysis
-  resources :cover_letters, only: [ :index, :new, :create, :show, :destroy ] do
+  resources :cover_letters, only: [ :index, :new, :create, :destroy ] do
     collection do
       get "interactive"
       post "start_interactive"
@@ -66,6 +87,7 @@ Rails.application.routes.draw do
       post "analyze_text"
       post "generate_final"
       get "advanced"
+      get "analyze_advanced"
       post "analyze_advanced"
       # GPT-5 심층 분석 - 사용하지 않음
       # get 'deep_analysis'
@@ -107,4 +129,7 @@ Rails.application.routes.draw do
       post "start_analysis"
     end
   end
+
+  # Show route 별도 정의 (collection routes와 충돌 방지)
+  get "cover_letters/:id", to: "cover_letters#show", as: "cover_letter_show", constraints: { id: /\d+/ }
 end
