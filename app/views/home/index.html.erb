@@ -1,9 +1,9 @@
 <!-- Hero Section -->
 <section class="min-h-screen flex items-center bg-white">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center">
       <!-- Main Heading -->
-      <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-gray-900 leading-tight">
+      <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-gray-900 leading-tight">
         당신의 이야기가<br>
         <span class="text-emerald-500">합격의 열쇠</span>입니다
       </h1>
@@ -14,11 +14,16 @@
       </p>
       
       <!-- CTA Buttons -->
-      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-        <%= link_to "시작하기", job_posting_cover_letters_path, 
-            class: "px-8 py-4 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors font-medium text-lg" %>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <% if user_signed_in? %>
+          <%= link_to "시작하기", interactive_cover_letters_path, 
+              class: "px-8 py-4 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors font-medium text-lg" %>
+        <% else %>
+          <%= link_to "시작하기", new_user_registration_path, 
+              class: "px-8 py-4 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors font-medium text-lg" %>
+        <% end %>
         
-        <%= link_to "서비스 둘러보기", about_path, 
+        <%= link_to "서비스 둘러보기", letter_path, 
             class: "px-8 py-4 bg-white border border-gray-200 text-gray-700 rounded-full hover:bg-gray-50 transition-colors font-medium text-lg" %>
       </div>
       
@@ -225,8 +230,13 @@
       </p>
       
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <%= link_to "지금 시작하기", job_posting_cover_letters_path, 
-            class: "px-8 py-4 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors font-medium text-lg" %>
+        <% if user_signed_in? %>
+          <%= link_to "지금 시작하기", interactive_cover_letters_path, 
+              class: "px-8 py-4 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors font-medium text-lg" %>
+        <% else %>
+          <%= link_to "지금 시작하기", new_user_registration_path, 
+              class: "px-8 py-4 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors font-medium text-lg" %>
+        <% end %>
         
         <%= link_to "예비합격자에게 드리는 글", letter_path, 
             class: "px-8 py-4 bg-white border border-gray-200 text-gray-700 rounded-full hover:bg-gray-50 transition-colors font-medium text-lg" %>

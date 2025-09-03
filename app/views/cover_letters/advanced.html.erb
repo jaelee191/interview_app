@@ -5,7 +5,7 @@
     <div class="max-w-4xl mx-auto px-4">
       <div class="text-center">
         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          <span class="text-emerald-500">AI 자소서 심층 분석</span>
+          내 자소서의 <span class="text-emerald-500">숨은 강점</span>을 찾아드립니다
         </h1>
         <p class="text-lg text-gray-600 mb-2">
           15년 경력 HR 전문가의 디테일한 피드백
@@ -280,9 +280,20 @@
       <div class="mt-8 flex flex-col items-center">
         <button type="submit" id="submit-btn" 
             class="px-8 py-4 bg-emerald-400 hover:bg-emerald-500 text-white font-semibold rounded-full transition-all transform hover:scale-105 shadow-lg cursor-pointer text-lg">
-            AI 심층 분석 시작하기
+            심층 분석 시작하기
         </button>
         <p class="text-xs text-gray-500 mt-3">분석 시간: 약 20-30초</p>
+        
+        <!-- Loading Message -->
+        <div id="loading-message" class="hidden mt-6 text-center">
+          <div class="inline-flex items-center px-6 py-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+            <svg class="animate-spin h-5 w-5 mr-3 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-emerald-700 font-medium">자소서 분석 페이지로 연결됩니다. 잠시만 기다려주세요...</span>
+          </div>
+        </div>
       </div>
     <% end %>
 
@@ -764,6 +775,12 @@ if (form && submitBtn) {
     if (hasPdf) {
       console.log('✅ PDF 데이터가 폼과 함께 전송됩니다');
       console.log('- PDF 데이터 크기:', pdfDataInput.value.length, 'characters');
+    }
+    
+    // 로딩 메시지 표시
+    const loadingMessage = document.getElementById('loading-message');
+    if (loadingMessage) {
+      loadingMessage.classList.remove('hidden');
     }
     
     // 제출 버튼 상태 변경

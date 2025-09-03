@@ -58,3 +58,4 @@ print("PDF 파일이 생성되었습니다: test_cover_letter.pdf")
 print(f"파일 경로: {os.path.abspath('test_cover_letter.pdf')}")
 print(f"파일 크기: {os.path.getsize('test_cover_letter.pdf')} bytes")
 
+

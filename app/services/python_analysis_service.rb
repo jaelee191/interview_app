@@ -2,7 +2,13 @@ class PythonAnalysisService
   include ActiveModel::Model
   include ActiveModel::Attributes
 
-  attribute :python_env_path, :string, default: Rails.root.join("python_analysis_env/bin/python").to_s
+  attribute :python_env_path, :string, default: -> { 
+    if Rails.env.production? && File.exist?("/rails/venv/bin/python")
+      "/rails/venv/bin/python"  # Docker 환경
+    else
+      Rails.root.join("python_analysis_env/bin/python").to_s  # 개발 환경
+    end
+  }
   attribute :scripts_path, :string, default: Rails.root.join("python_analysis").to_s
 
   def initialize(attributes = {})
