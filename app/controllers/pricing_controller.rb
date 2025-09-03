@@ -4,6 +4,12 @@ class PricingController < ApplicationController
   def index
   end
 
+  # 결제 수단 선택형 체크아웃 (테스트 UI)
+  def checkout
+    @amount = (params[:amount] || 20000).to_i
+    @order_id = "UI-#{SecureRandom.hex(6)}"
+  end
+
   # 무료 3건 소진 시 업셀 페이지
   def upgrade
     @analysis_credits = current_user&.analysis_credits.to_i
@@ -33,32 +39,76 @@ class PricingController < ApplicationController
     order_id    = params[:orderId]
     amount      = params[:amount].to_i
 
+    Rails.logger.info "[TossPayments] Confirm request - paymentKey: #{payment_key}, orderId: #{order_id}, amount: #{amount}"
+
     unless payment_key && order_id && amount == 20000
+      Rails.logger.error "[TossPayments] Invalid payment info - amount: #{amount}"
       render json: { success: false, error: "유효하지 않은 결제 정보" }, status: 422 and return
     end
 
     # 토스 승인 요청
     begin
+      secret_key = ENV["TOSS_SECRET_KEY"].presence || Rails.application.credentials.dig(:toss, :secret_key)
+      
+      unless secret_key
+        Rails.logger.error "[TossPayments] Secret key not found"
+        render json: { success: false, error: "결제 설정 오류" }, status: 500 and return
+      end
+      
+      # 시크릿 키 뒤에 콜론(:) 추가 후 base64 인코딩
+      auth_header = "Basic #{Base64.strict_encode64("#{secret_key}:")}"
+      
       uri = URI("https://api.tosspayments.com/v1/payments/confirm")
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
+      
       req = Net::HTTP::Post.new(uri)
-      req["Authorization"] = "Basic #{Base64.strict_encode64(ENV["TOSS_SECRET_KEY"].to_s + ":")}"
+      req["Authorization"] = auth_header
       req["Content-Type"] = "application/json"
-      req.body = { paymentKey: payment_key, orderId: order_id, amount: amount }.to_json
+      
+      request_body = { 
+        paymentKey: payment_key, 
+        orderId: order_id, 
+        amount: amount 
+      }
+      
+      req.body = request_body.to_json
+      
+      Rails.logger.info "[TossPayments] Sending confirm request to Toss API"
+      Rails.logger.debug "[TossPayments] Request body: #{request_body.to_json}"
+      
       res = http.request(req)
-
+      
+      Rails.logger.info "[TossPayments] Response code: #{res.code}"
+      Rails.logger.info "[TossPayments] Response body: #{res.body}"
+      
       if res.code.to_i.between?(200, 299)
         # 결제 성공 → 10건 적립
         current_user.increment!(:analysis_credits, 10)
+        
+        # 결제 로그 저장
+        PaymentLog.create!(
+          user: current_user,
+          order_id: order_id,
+          payment_key: payment_key,
+          amount: amount,
+          status: "DONE"
+        )
+        
+        Rails.logger.info "[TossPayments] Payment confirmed successfully for user #{current_user.id}"
         render json: { success: true, credits: current_user.analysis_credits }
       else
-        Rails.logger.error "Toss confirm failed: #{res.code} #{res.body}"
-        render json: { success: false, error: "결제 승인에 실패했습니다" }, status: 422
+        error_data = JSON.parse(res.body) rescue { "message" => res.body }
+        error_code = error_data["code"] || "UNKNOWN"
+        error_message = error_data["message"] || "결제 승인에 실패했습니다"
+        
+        Rails.logger.error "[TossPayments] Confirm failed - Code: #{error_code}, Message: #{error_message}"
+        render json: { success: false, error: error_message, code: error_code }, status: 422
       end
     rescue => e
-      Rails.logger.error "Toss confirm error: #{e.message}"
-      render json: { success: false, error: e.message }, status: 500
+      Rails.logger.error "[TossPayments] Confirm error: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      render json: { success: false, error: "결제 처리 중 오류가 발생했습니다" }, status: 500
     end
   end
 
@@ -96,23 +146,32 @@ class PricingController < ApplicationController
 
   def request_approval(payment_key, order_id, amount)
     return { ok: false, error: "\uC798\uBABB\uB41C \uC694\uCCAD" } unless payment_key && order_id && amount == 20000
+    
+    secret_key = ENV["TOSS_SECRET_KEY"].presence || Rails.application.credentials.dig(:toss, :secret_key)
+    return { ok: false, error: "\uACB0\uC81C \uC124\uC815 \uC624\uB958" } unless secret_key
+    
     uri = URI("https://api.tosspayments.com/v1/payments/confirm")
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
+    
     req = Net::HTTP::Post.new(uri)
-    secret_key = ENV["TOSS_SECRET_KEY"].presence || Rails.application.credentials.dig(:toss, :secret_key)
-    req["Authorization"] = "Basic #{Base64.strict_encode64(secret_key.to_s + ':')}"
+    # 시크릿 키 뒤에 콜론(:) 추가 후 base64 인코딩
+    req["Authorization"] = "Basic #{Base64.strict_encode64("#{secret_key}:")}"
     req["Content-Type"]  = "application/json"
     req.body = { paymentKey: payment_key, orderId: order_id, amount: amount }.to_json
+    
+    Rails.logger.info "[TossPayments] Sending approval request"
     res = http.request(req)
+    
     if res.code.to_i.between?(200, 299)
       { ok: true }
     else
-      Rails.logger.error "Toss confirm failed: #{res.code} #{res.body}"
-      { ok: false, error: res.body }
+      error_data = JSON.parse(res.body) rescue { "message" => res.body }
+      Rails.logger.error "[TossPayments] Approval failed: #{res.code} #{res.body}"
+      { ok: false, error: error_data["message"] || res.body }
     end
   rescue => e
-    Rails.logger.error "Toss confirm error: #{e.message}"
+    Rails.logger.error "[TossPayments] Approval error: #{e.message}"
     { ok: false, error: e.message }
   end
 end

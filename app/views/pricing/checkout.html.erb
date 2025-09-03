@@ -1,0 +1,109 @@
+<% content_for :head do %>
+  <script src="https://js.tosspayments.com/v2/standard"></script>
+<% end %>
+
+<div class="min-h-screen bg-white">
+  <section class="py-10">
+    <div class="max-w-2xl mx-auto px-4">
+      <h1 class="text-2xl font-bold text-gray-900 mb-6">결제 수단 선택</h1>
+
+      <div class="mb-4 text-amber-700 bg-amber-50 border border-amber-100 px-4 py-3 rounded-lg text-sm">
+        테스트 환경 - 실제로 결제되지 않습니다.
+      </div>
+
+      <!-- 결제 수단 카드 -->
+      <div class="grid grid-cols-3 gap-3">
+        <button data-method="ACCOUNT_TRANSFER" class="h-14 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-sm font-medium">계좌이체</button>
+        <button data-method="CARD" class="h-14 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-sm font-medium">신용·체크카드</button>
+        <button data-method="TOSSPAY" class="h-14 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-sm font-medium">toss pay</button>
+        <button data-method="PAYCO" class="h-14 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-sm font-medium">PAYCO</button>
+        <button data-method="KAKAOPAY" class="h-14 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-sm font-medium">kakao pay</button>
+        <button data-method="NAVERPAY" class="h-14 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-sm font-medium">N pay</button>
+        <button data-method="MOBILE_PHONE" class="h-14 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-sm font-medium">휴대폰</button>
+      </div>
+
+      <div class="mt-6">
+        <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+          <input id="agree" type="checkbox" class="w-4 h-4 rounded border-gray-300" checked>
+          [필수] 결제 서비스 이용 약관, 개인정보 처리 동의
+        </label>
+      </div>
+
+      <div class="mt-6">
+        <button id="payBtn" class="w-full h-12 rounded-lg bg-emerald-500 text-white font-semibold disabled:opacity-50">₩<%= number_with_delimiter(@amount) %> 결제하기</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  (function(){
+    const methodButtons = Array.from(document.querySelectorAll('[data-method]'));
+    let selected = 'CARD';
+    methodButtons.forEach(btn => btn.addEventListener('click', () => {
+      methodButtons.forEach(b => b.classList.remove('ring-2','ring-emerald-500'));
+      btn.classList.add('ring-2','ring-emerald-500');
+      selected = btn.dataset.method;
+    }));
+
+    document.getElementById('payBtn')?.addEventListener('click', async () => {
+      if(!document.getElementById('agree').checked){ alert('약관에 동의해 주세요.'); return; }
+
+      // 결제 준비
+      const prep = await fetch('/pricing/purchase_pack', { method: 'POST', headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content } });
+      const data = await prep.json();
+      if(!data.success){ alert('결제 준비 실패'); return; }
+
+      const clientKey = '<%= ENV["TOSS_CLIENT_KEY"] || Rails.application.credentials.dig(:toss, :client_key) || "" %>';
+      if(!clientKey || clientKey === ''){ 
+        alert('결제 설정이 누락되었습니다.'); 
+        return; 
+      }
+
+      const tossPayments = TossPayments(clientKey);
+      // v2에서는 payment 인스턴스를 생성해야 합니다
+      const payment = tossPayments.payment({ 
+        customerKey: TossPayments.ANONYMOUS  // 비회원 결제
+      });
+      
+      const base = window.location.origin;
+      const payload = {
+        amount: {
+          value: data.amount,
+          currency: 'KRW'
+        },
+        orderId: data.orderId,
+        orderName: data.orderName,
+        successUrl: base + '/pricing/success',
+        failUrl: base + '/pricing/fail',
+        customerEmail: data.customerEmail,
+        customerName: data.customerName,
+        method: selected
+      };
+      
+      // 카드 결제 옵션
+      if(selected === 'CARD') {
+        payload.card = {
+          useEscrow: false,
+          flowMode: 'DEFAULT',
+          useCardPoint: false,
+          useAppCardOnly: false
+        };
+      }
+      
+      // 간편결제 프로바이더 설정
+      if(selected === 'NAVERPAY' || selected === 'KAKAOPAY' || selected === 'TOSSPAY' || selected === 'PAYCO') {
+        payload.easyPay = { provider: selected };
+      }
+
+      try {
+        await payment.requestPayment(payload);
+      } catch(e){
+        console.error(e);
+        alert('결제창 호출 중 오류가 발생했습니다.');
+      }
+    });
+  })();
+</script>
+
+

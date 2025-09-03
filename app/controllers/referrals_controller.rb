@@ -14,6 +14,13 @@ class ReferralsController < ApplicationController
         landing_path: request.path
       )
     end
-    redirect_to root_path, notice: "추천 링크를 통해 방문하셨습니다."
+    
+    # 이미 로그인한 사용자는 추천 링크 사용 불가
+    if user_signed_in?
+      redirect_to root_path, alert: "이미 로그인된 사용자는 추천 링크를 사용할 수 없습니다."
+    else
+      # 비로그인 사용자를 추천 전용 랜딩 페이지로 이동
+      redirect_to referral_path, notice: "추천 링크를 통해 방문하셨습니다. 회원가입 시 특별 혜택이 제공됩니다!"
+    end
   end
 end

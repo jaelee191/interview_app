@@ -1,6 +1,6 @@
 <% content_for :title, "분석 건수가 부족합니다" %>
 <% content_for :head do %>
-  <script src="https://js.tosspayments.com/v2/"></script>
+  <script src="https://js.tosspayments.com/v2/standard"></script>
 <% end %>
 
 <div class="min-h-screen bg-white">
@@ -12,41 +12,110 @@
   </section>
 
   <section class="py-14">
-    <div class="max-w-4xl mx-auto px-4 grid md:grid-cols-2 gap-6">
-      <!-- 남은 크레딧 카드 -->
-      <div class="admin-card bg-white rounded-2xl border border-gray-100 p-6">
-        <h3 class="text-base font-semibold text-gray-900">나의 현재 상태</h3>
-        <div class="mt-4 grid grid-cols-2 gap-4">
-          <div class="rounded-xl bg-emerald-50 px-4 py-4">
-            <p class="text-sm text-emerald-700">남은 유료 건수</p>
-            <p class="text-2xl font-bold text-emerald-700"><%= @analysis_credits %>건</p>
+    <div class="max-w-5xl mx-auto px-4">
+      <!-- 상단: 나의 현재 상태 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-8">
+        <h3 class="text-base font-semibold text-gray-900 mb-4">나의 현재 상태</h3>
+        <div class="grid grid-cols-2 gap-6 max-w-md">
+          <div>
+            <p class="text-sm text-gray-600 mb-1">남은 유료 건수</p>
+            <p class="text-3xl font-bold text-emerald-600"><%= @analysis_credits %>건</p>
           </div>
-          <div class="rounded-xl bg-gray-50 px-4 py-4">
-            <p class="text-sm text-gray-700">무료 사용</p>
-            <p class="text-2xl font-bold text-gray-900"><%= @free_used %>/3</p>
+          <div>
+            <p class="text-sm text-gray-600 mb-1">무료 사용</p>
+            <p class="text-3xl font-bold text-gray-900"><%= @free_used %>/3</p>
           </div>
         </div>
-        <p class="text-xs text-gray-500 mt-3">분석 1건은 한 번의 분석 요청으로 계산됩니다.</p>
+        <p class="text-xs text-gray-500 mt-4">분석 1건은 한 번의 분석 요청으로 계산됩니다.</p>
       </div>
 
-      <!-- 10건 패키지 업셀 카드 -->
-      <div class="bg-white rounded-2xl border-2 border-emerald-500 p-6 relative">
-        <div class="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span class="bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-medium">가장 인기</span>
+      <!-- 하단: 10건 패키지와 친구 추천 나란히 -->
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- 10건 패키지 카드 -->
+        <div class="bg-white rounded-2xl border-2 border-emerald-500 p-6 relative">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+            <span class="bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-medium">가장 인기</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900">10건 패키지</h3>
+          <p class="text-sm text-gray-600 mt-2">필요할 때마다 사용하는 합리적 선택</p>
+          
+          <div class="mt-6">
+            <div class="flex items-baseline">
+              <span class="text-4xl font-bold text-gray-900">₩20,000</span>
+              <span class="text-gray-500 ml-2">/ 10건</span>
+            </div>
+          </div>
+          
+          <ul class="space-y-2 mt-6 text-sm">
+            <li class="flex items-center text-gray-700">
+              <svg class="w-4 h-4 text-emerald-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              고급 분석 리포트
+            </li>
+            <li class="flex items-center text-gray-700">
+              <svg class="w-4 h-4 text-emerald-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              분석 결과 저장 & 비교
+            </li>
+            <li class="flex items-center text-gray-700">
+              <svg class="w-4 h-4 text-emerald-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              구매 후 12개월 내 사용
+            </li>
+          </ul>
+          
+          <button id="buyPackBtn" class="w-full mt-8 py-3 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium transition-colors">
+            10건 패키지 구매
+          </button>
+          
+          <p class="text-xs text-gray-500 text-center mt-4">무료 3건을 모두 사용하면 자동으로 이 화면이 표시됩니다.</p>
         </div>
-        <h3 class="text-lg font-semibold text-gray-900">10건 패키지</h3>
-        <p class="text-gray-600 text-sm mt-1">필요할 때마다 사용하는 합리적 선택</p>
-        <div class="mt-4">
-          <span class="text-3xl font-bold text-gray-900">₩20,000</span>
-          <span class="text-gray-500"> / 10건</span>
+
+        <!-- 친구 추천 카드 -->
+        <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl border border-purple-200 p-6">
+          <div class="flex items-center mb-4">
+            <svg class="w-6 h-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+            <span class="text-sm font-medium text-purple-600">무료 획득</span>
+          </div>
+          
+          <h3 class="text-xl font-bold text-gray-900">친구 추천으로도 크레딧을 받을 수 있어요!</h3>
+          <p class="text-sm text-gray-600 mt-2">
+            친구 1명이 가입할 때마다 <span class="font-bold text-purple-700">3건의 분석 크레딧</span>을 추가로 받습니다.
+          </p>
+          
+          <div class="bg-white rounded-lg p-4 mt-6">
+            <ul class="space-y-2 text-sm text-gray-700">
+              <li class="flex items-center">
+                <span class="text-purple-600 mr-2">•</span>
+                친구 3명 추천 = 9건 크레딧 획득
+              </li>
+              <li class="flex items-center">
+                <span class="text-purple-600 mr-2">•</span>
+                친구 5명 추천 = 15건 크레딧 획득
+              </li>
+              <li class="flex items-center">
+                <span class="text-purple-600 mr-2">•</span>
+                추천 횟수 제한 없음
+              </li>
+            </ul>
+          </div>
+          
+          <div class="space-y-3 mt-8">
+            <% if current_user %>
+              <%= link_to mypage_path, class: "block w-full py-3 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-medium text-center transition-colors" do %>
+                내 추천 링크 확인하기
+              <% end %>
+            <% end %>
+            <%= link_to referral_path, class: "block w-full py-3 rounded-full border border-purple-300 hover:bg-purple-50 text-purple-700 font-medium text-center transition-colors" do %>
+              추천 프로그램 알아보기
+            <% end %>
+          </div>
         </div>
-        <ul class="space-y-2 mt-5 text-sm text-gray-700">
-          <li class="flex items-center"><span class="w-2 h-2 bg-emerald-500 rounded-full mr-2"></span>고급 분석 리포트</li>
-          <li class="flex items-center"><span class="w-2 h-2 bg-emerald-500 rounded-full mr-2"></span>분석 결과 저장 & 비교</li>
-          <li class="flex items-center"><span class="w-2 h-2 bg-emerald-500 rounded-full mr-2"></span>구매 후 12개월 내 사용</li>
-        </ul>
-        <button id="buyPackBtn" class="w-full mt-6 py-3 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold">10건 패키지 구매</button>
-        <p class="text-xs text-gray-500 mt-3">무료 3건을 모두 사용하면 자동으로 이 화면이 표시됩니다.</p>
       </div>
     </div>
   </section>
@@ -82,7 +151,7 @@
       if (!data.success) { alert('결제 준비 실패'); return; }
 
       const clientKey = '<%= (ENV["TOSS_CLIENT_KEY"].presence || Rails.application.credentials.dig(:toss, :client_key)).to_s %>';
-      if (!clientKey) {
+      if (!clientKey || clientKey === '') {
         const mock = await fetch('/pricing/mock_success', { method: 'POST', headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content } });
         const r = await mock.json();
         if (r.success) { alert('개발모드: 10건 지급 완료. 잔여: ' + r.credits + '건'); location.href = '/mypage'; }
@@ -90,20 +159,40 @@
         return;
       }
 
+      // SDK v2 초기화
       const tossPayments = TossPayments(clientKey);
+      const payment = tossPayments.payment({ 
+        customerKey: TossPayments.ANONYMOUS 
+      });
+      
       const base = window.location.origin;
-      await tossPayments.requestPayment('CARD', {
-        amount: data.amount,
+      
+      // SDK v2 결제 요청 형식
+      await payment.requestPayment({
+        method: 'CARD',
+        amount: {
+          value: data.amount,
+          currency: 'KRW'
+        },
         orderId: data.orderId,
         orderName: data.orderName,
         successUrl: base + '/pricing/success',
         failUrl: base + '/pricing/fail',
         customerEmail: data.customerEmail,
-        customerName: data.customerName
+        customerName: data.customerName,
+        card: {
+          useEscrow: false,
+          useCardPoint: false,
+          useAppCardOnly: false
+        }
       });
     } catch (e) {
-      console.error(e);
-      alert('결제 진행 중 오류가 발생했습니다');
+      console.error('Payment error:', e);
+      if (e.message) {
+        alert('결제 오류: ' + e.message);
+      } else {
+        alert('결제 진행 중 오류가 발생했습니다');
+      }
     }
   });
 </script>

@@ -22,6 +22,7 @@ Rails.application.routes.draw do
 
   # Pricing page
   get "pricing", to: "pricing#index"
+  get "pricing/checkout", to: "pricing#checkout"
   get "pricing/upgrade", to: "pricing#upgrade"
   get "referral", to: "referral#landing"
   post "referral/reviews", to: "referral#create_review"
