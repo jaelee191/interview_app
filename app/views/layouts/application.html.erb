@@ -35,17 +35,20 @@
         --border-color: #f3f4f6;
       }
     </style>
+    
+    <%= yield :extra_css %>
   </head>
 
   <body class="h-full bg-gray-50 font-[Pretendard]">
     <!-- Modern Navigation -->
     <nav class="fixed top-0 w-full bg-white border-b border-gray-100 z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-14">
+        <div class="flex justify-between items-center h-16">
           <!-- Logo -->
           <div class="flex items-center">
-            <%= link_to root_path, class: "flex items-center space-x-2 group" do %>
+            <%= link_to root_path, class: "flex flex-col items-start group" do %>
               <span class="text-xl font-semibold text-gray-900">jachui</span>
+              <span class="text-xs text-gray-500">스토리 기반 자소서 작성 플랫폼</span>
             <% end %>
           </div>
           
@@ -75,16 +78,19 @@
             <%= link_to "기업 분석", company_analysis_cover_letters_path,
                 class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
             
-            <!-- AI 자소서 작성 -->
-            <%= link_to "AI 자소서 작성", interactive_cover_letters_path, 
+            <!-- 나만의 스토리 찾기 -->
+            <%= link_to "나만의 스토리 찾기", interactive_cover_letters_path, 
                 class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
             
-            <!-- 심층 분석 -->
-            <%= link_to "심층 분석", advanced_cover_letters_path, 
+            <!-- 내 자소서 분석하기 -->
+            <%= link_to "내 자소서 분석하기", advanced_cover_letters_path, 
                 class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
             
-            <%= link_to "요금제", pricing_path, class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
-            <%= link_to "친구 추천", referral_path, class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
+            <% if user_signed_in? %>
+              <%= link_to "무료 크레딧 받기", referral_index_path, class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
+            <% else %>
+              <%= link_to "무료 크레딧 받기", referral_path, class: "text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium" %>
+            <% end %>
           </div>
           
           <!-- Auth Buttons & Mobile Menu -->
@@ -106,7 +112,8 @@
                     <div class="border-t border-gray-100"></div>
                   <% end %>
                   <%= link_to "대시보드", mypage_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
-                  <%= link_to "친구 추천", mypage_path(anchor: 'referral'), class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
+                  <%= link_to "친구 추천", referral_index_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
+                  <%= link_to "요금제", pricing_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
                   <%= link_to "내 프로필", user_profile_path(current_user.id), class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
                   <%= link_to "저장된 채용공고", mypage_job_analyses_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
                   <%= link_to "저장된 기업분석", mypage_company_analyses_path, class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" %>
@@ -137,7 +144,7 @@
     
     <!-- Mobile Menu (비로그인 사용자용) -->
     <% unless defined?(current_user) && current_user %>
-      <div id="mobileMenu" class="hidden md:hidden fixed top-14 left-0 w-full bg-white border-b border-gray-100 shadow-lg z-40">
+      <div id="mobileMenu" class="hidden md:hidden fixed top-16 left-0 w-full bg-white border-b border-gray-100 shadow-lg z-40">
         <div class="px-4 py-4 space-y-2">
           <!-- 서비스 소개 섹션 -->
           <div>

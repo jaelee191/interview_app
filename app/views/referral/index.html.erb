@@ -1,0 +1,257 @@
+<%= content_for :extra_css do %>
+  <style>
+    .emerald-accent { color: #10B981; }
+    .emerald-bg { background-color: #10B981; }
+    .emerald-bg-light { background-color: #D1FAE5; }
+    .emerald-border { border-color: #10B981; }
+  </style>
+<% end %>
+
+<div class="min-h-screen bg-gray-50">
+  <!-- Hero Section -->
+  <div class="bg-white border-b border-gray-100">
+    <div class="max-w-4xl mx-auto px-4 py-16">
+      <div class="text-center">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+          친구 추천으로 <span class="emerald-accent">무료 크레딧</span> 받기
+        </h1>
+        <p class="text-gray-600 text-lg">
+          친구를 초대하고 서로에게 도움이 되는 선물을 주세요
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <!-- Referral Link Section -->
+    <div class="bg-white rounded-xl shadow-sm p-8 mb-8">
+      <h2 class="font-semibold text-gray-900 mb-6 text-lg">나의 추천 링크</h2>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            공유 링크
+          </label>
+          <div class="flex gap-3">
+            <input type="text" 
+                   id="referralLink" 
+                   value="<%= @referral_url %>" 
+                   readonly 
+                   class="flex-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+            <button onclick="copyReferralLink()" 
+                    class="px-6 py-3 emerald-bg hover:bg-emerald-600 text-white rounded-lg font-medium transition-colors">
+              복사
+            </button>
+          </div>
+          <p class="text-sm text-gray-500 mt-2">
+            이 링크로 가입한 친구마다 3건의 크레딧을 받습니다
+          </p>
+        </div>
+
+        <!-- Share Buttons -->
+        <div class="pt-4">
+          <p class="text-sm font-medium text-gray-700 mb-3">공유하기</p>
+          <div class="flex gap-3">
+            <button onclick="shareKakao()" 
+                    class="flex-1 py-3 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              카카오톡
+            </button>
+            <button onclick="shareUrl()" 
+                    class="flex-1 py-3 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              링크 공유
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="bg-white rounded-xl shadow-sm p-8 mb-8">
+      <h2 class="font-semibold text-gray-900 mb-6 text-lg">이용 방법</h2>
+      
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="text-center">
+          <div class="w-12 h-12 emerald-bg-light rounded-full flex items-center justify-center mx-auto mb-3">
+            <span class="font-bold emerald-accent text-lg">1</span>
+          </div>
+          <h3 class="font-medium text-gray-900 mb-1">링크 공유</h3>
+          <p class="text-sm text-gray-600">추천 링크를 친구에게 전달합니다</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-12 h-12 emerald-bg-light rounded-full flex items-center justify-center mx-auto mb-3">
+            <span class="font-bold emerald-accent text-lg">2</span>
+          </div>
+          <h3 class="font-medium text-gray-900 mb-1">친구 가입</h3>
+          <p class="text-sm text-gray-600">친구가 링크로 회원가입을 완료합니다</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-12 h-12 emerald-bg-light rounded-full flex items-center justify-center mx-auto mb-3">
+            <span class="font-bold emerald-accent text-lg">3</span>
+          </div>
+          <h3 class="font-medium text-gray-900 mb-1">크레딧 지급</h3>
+          <p class="text-sm text-gray-600">양쪽 모두 3건의 크레딧을 받습니다</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benefits -->
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+      <div class="bg-white rounded-xl shadow-sm p-6">
+        <h3 class="font-semibold text-gray-900 mb-4">친구가 받는 혜택</h3>
+        <ul class="space-y-3 text-sm text-gray-600">
+          <li class="flex items-start">
+            <span class="emerald-accent mr-2 mt-0.5">✓</span>
+            <span>회원가입 시 무료 3건 분석</span>
+          </li>
+          <li class="flex items-start">
+            <span class="emerald-accent mr-2 mt-0.5">✓</span>
+            <span>AI 기반 자소서 심층 분석</span>
+          </li>
+          <li class="flex items-start">
+            <span class="emerald-accent mr-2 mt-0.5">✓</span>
+            <span>채용공고 & 기업 분석</span>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm p-6">
+        <h3 class="font-semibold text-gray-900 mb-4">나의 혜택</h3>
+        <ul class="space-y-3 text-sm text-gray-600">
+          <li class="flex items-start">
+            <span class="emerald-accent mr-2 mt-0.5">✓</span>
+            <span>친구당 3건 크레딧 즉시 지급</span>
+          </li>
+          <li class="flex items-start">
+            <span class="emerald-accent mr-2 mt-0.5">✓</span>
+            <span>무제한 추천 가능</span>
+          </li>
+          <li class="flex items-start">
+            <span class="emerald-accent mr-2 mt-0.5">✓</span>
+            <span>크레딧 영구 보관</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Recent Referrals -->
+    <% if @recent_referrals.any? %>
+    <div class="bg-white rounded-xl shadow-sm p-8 mb-8">
+      <h2 class="font-semibold text-gray-900 mb-6 text-lg">최근 추천 현황</h2>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="border-b border-gray-100">
+            <tr>
+              <th class="text-left text-sm font-medium text-gray-700 pb-3">날짜</th>
+              <th class="text-left text-sm font-medium text-gray-700 pb-3">친구</th>
+              <th class="text-right text-sm font-medium text-gray-700 pb-3">크레딧</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-50">
+            <% @recent_referrals.each do |referral| %>
+            <tr>
+              <td class="py-3 text-sm text-gray-600">
+                <%= referral.created_at.in_time_zone('Seoul').strftime('%m/%d') %>
+              </td>
+              <td class="py-3 text-sm text-gray-900">
+                <%= referral.email.split('@').first[0..2] + '***' %>
+              </td>
+              <td class="py-3 text-sm font-medium text-right emerald-accent">
+                +3
+              </td>
+            </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% end %>
+
+    <!-- FAQ -->
+    <div class="bg-white rounded-xl shadow-sm p-8">
+      <h2 class="font-semibold text-gray-900 mb-6 text-lg">자주 묻는 질문</h2>
+      
+      <div class="space-y-4">
+        <details class="group">
+          <summary class="cursor-pointer list-none flex justify-between items-center font-medium text-gray-900 py-3 border-b border-gray-100 hover:text-emerald-600 transition-colors">
+            추천 횟수에 제한이 있나요?
+            <span class="transition group-open:rotate-180 text-gray-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </span>
+          </summary>
+          <p class="pt-3 text-sm text-gray-600">
+            아니요. 추천 횟수는 무제한입니다. 원하는 만큼 친구를 초대하세요.
+          </p>
+        </details>
+
+        <details class="group">
+          <summary class="cursor-pointer list-none flex justify-between items-center font-medium text-gray-900 py-3 border-b border-gray-100 hover:text-emerald-600 transition-colors">
+            크레딧은 언제 지급되나요?
+            <span class="transition group-open:rotate-180 text-gray-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </span>
+          </summary>
+          <p class="pt-3 text-sm text-gray-600">
+            친구가 회원가입을 완료하면 즉시 3건의 크레딧이 자동 지급됩니다.
+          </p>
+        </details>
+
+        <details class="group">
+          <summary class="cursor-pointer list-none flex justify-between items-center font-medium text-gray-900 py-3 hover:text-emerald-600 transition-colors">
+            크레딧 유효기간이 있나요?
+            <span class="transition group-open:rotate-180 text-gray-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </span>
+          </summary>
+          <p class="pt-3 text-sm text-gray-600">
+            추천으로 받은 크레딧은 유효기간 없이 영구 사용 가능합니다.
+          </p>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function copyReferralLink() {
+    const input = document.getElementById('referralLink');
+    input.select();
+    document.execCommand('copy');
+    
+    // 버튼 피드백
+    const button = event.target;
+    const originalText = button.textContent;
+    button.textContent = '복사됨!';
+    setTimeout(() => {
+      button.textContent = originalText;
+    }, 2000);
+  }
+
+  function shareKakao() {
+    const url = document.getElementById('referralLink').value;
+    const text = 'AI 자소서 분석 서비스를 추천합니다. 지금 가입하면 무료 3건!';
+    window.open(`https://story.kakao.com/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`);
+  }
+
+  function shareUrl() {
+    const url = document.getElementById('referralLink').value;
+    if (navigator.share) {
+      navigator.share({
+        title: '자소서 도우미 추천',
+        text: 'AI 자소서 분석 서비스를 추천합니다.',
+        url: url
+      });
+    } else {
+      copyReferralLink();
+    }
+  }
+</script>

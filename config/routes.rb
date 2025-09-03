@@ -25,7 +25,8 @@ Rails.application.routes.draw do
   get "pricing/checkout", to: "pricing#checkout"
   get "pricing/upgrade", to: "pricing#upgrade"
   get "referral", to: "referral#landing"
-  post "referral/reviews", to: "referral#create_review"
+  get "referral/index", to: "referral#index", as: :referral_index
+  post "referral/reviews", to: "referral#create_review", as: :create_review_referral
   get "r/:code", to: "referrals#show", as: :referral_redirect
   post "pricing/purchase_pack", to: "pricing#purchase_pack"
   post "pricing/confirm", to: "pricing#confirm"
