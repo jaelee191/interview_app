@@ -48,8 +48,11 @@ RUN bundle install && \
 RUN python3 -m venv /rails/venv
 ENV PATH="/rails/venv/bin:$PATH"
 COPY requirements_python.txt ./
-RUN pip install --no-cache-dir -r requirements_python.txt && \
-    playwright install chromium --with-deps
+# Install Python packages (playwright is optional, comment out if not needed)
+RUN /rails/venv/bin/pip install --no-cache-dir -r requirements_python.txt
+# Uncomment below lines if you need playwright for web scraping
+# RUN /rails/venv/bin/pip install --no-cache-dir playwright && \
+#     /rails/venv/bin/python -m playwright install chromium --with-deps
 
 # Copy application code
 COPY . .
