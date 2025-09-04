@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
-  # Devise routes
-  devise_for :users
+  # Devise routes with Omniauth
+  devise_for :users, controllers: { 
+    omniauth_callbacks: 'users/omniauth_callbacks' 
+  }
 
   # User Profiles routes
   resources :user_profiles, only: [ :show, :edit, :update ] do
@@ -24,6 +26,10 @@ Rails.application.routes.draw do
   get "pricing", to: "pricing#index"
   get "pricing/checkout", to: "pricing#checkout"
   get "pricing/upgrade", to: "pricing#upgrade"
+  
+  # Legal pages
+  get "terms", to: "legal#terms"
+  get "privacy", to: "legal#privacy"
   get "referral", to: "referral#landing"
   get "referral/index", to: "referral#index", as: :referral_index
   post "referral/reviews", to: "referral#create_review", as: :create_review_referral

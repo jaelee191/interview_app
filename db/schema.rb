@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_02_160000) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_04_110458) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -308,6 +308,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_02_160000) do
     t.string "referral_code"
     t.integer "referrer_id"
     t.boolean "referral_bonus_claimed", default: false, null: false
+    t.string "provider"
+    t.string "uid"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["referral_code"], name: "index_users_on_referral_code", unique: true
     t.index ["referrer_id"], name: "index_users_on_referrer_id"

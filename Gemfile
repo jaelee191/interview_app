@@ -46,6 +46,11 @@ gem "thruster", require: false
 gem "devise", "~> 4.9"
 gem "kaminari", "~> 1.2"  # Pagination
 
+# OAuth/Social Login
+gem 'omniauth'
+gem 'omniauth-naver'
+gem 'omniauth-rails_csrf_protection'
+
 # 뉴스 크롤링을 위한 gem
 gem "nokogiri"      # HTML/XML 파싱
 gem "httparty"      # HTTP 요청

@@ -91,13 +91,15 @@
           <span class="ml-2">Google</span>
         </button>
 
-        <button type="button" class="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+        <%= link_to user_naver_omniauth_authorize_path, method: :post, 
+            data: { turbo: false },
+            class: "w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition" do %>
           <svg class="w-5 h-5" viewBox="0 0 24 24">
             <path fill="#03C75A" d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.346 15.713c0 .898-.731 1.63-1.63 1.63H8.284c-.898 0-1.63-.732-1.63-1.63V8.281c0-.898.732-1.63 1.63-1.63h7.432c.899 0 1.63.732 1.63 1.63v7.432z"/>
             <path fill="#fff" d="M15.716 7.651H8.284c-.449 0-.815.366-.815.815v7.432c0 .449.366.815.815.815h7.432c.449 0 .815-.366.815-.815V8.466c0-.449-.366-.815-.815-.815zm-3.716 7.48h-1.5V9.37L8.37 13.5h1.5l1.13-2.38 1 2.1V15.13z"/>
           </svg>
           <span class="ml-2">Naver</span>
-        </button>
+        <% end %>
       </div>
 
       <!-- Sign Up Link -->

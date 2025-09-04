@@ -28,6 +28,7 @@ class PricingController < ApplicationController
       orderId: order_id,
       orderName: order_name,
       amount: amount,
+      customerKey: "USER_#{current_user.id}",
       customerEmail: current_user.email,
       customerName: current_user.user_profile&.name || current_user.email.split("@").first
     }

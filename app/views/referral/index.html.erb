@@ -170,6 +170,287 @@
     </div>
     <% end %>
 
+    <!-- Pricing Section with TossPayments Integration -->
+    <% content_for :head do %>
+      <script src="https://js.tosspayments.com/v2/standard"></script>
+    <% end %>
+    
+    <div class="bg-gradient-to-br from-emerald-50 to-white rounded-xl shadow-sm p-8 mb-8">
+      <h2 class="font-semibold text-gray-900 mb-6 text-lg text-center">요금제 안내</h2>
+      <p class="text-center text-gray-600 mb-8">추천으로 받은 크레딧이 부족하다면 합리적인 요금제를 이용해보세요</p>
+      
+      <div class="grid md:grid-cols-3 gap-6">
+        <!-- Free Plan -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 relative">
+          <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+            <span class="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full font-medium">무료</span>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2 mt-2">무료</h3>
+          <div class="mb-4">
+            <span class="text-3xl font-bold text-gray-900">₩0</span>
+            <span class="text-gray-500">/ 3건</span>
+          </div>
+          <ul class="space-y-3 mb-6 text-sm text-gray-600">
+            <li class="flex items-center">
+              <svg class="w-4 h-4 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              자소서 분석 3건 무료
+            </li>
+            <li class="flex items-center">
+              <svg class="w-4 h-4 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              기본 AI 분석
+            </li>
+            <li class="flex items-center">
+              <svg class="w-4 h-4 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              채용공고 텍스트/URL 분석
+            </li>
+          </ul>
+          <button class="w-full py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium" disabled>
+            바로 시작하기
+          </button>
+        </div>
+
+        <!-- 10-Pack Plan -->
+        <div class="bg-white rounded-xl p-6 border-2 border-emerald-500 relative transform scale-105 shadow-lg">
+          <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+            <span class="bg-emerald-500 text-white text-xs px-3 py-1 rounded-full font-medium">가장 인기</span>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2 mt-2">10건 패키지</h3>
+          <div class="mb-4">
+            <span class="text-3xl font-bold text-gray-900">₩20,000</span>
+            <span class="text-gray-500">/ 10건</span>
+          </div>
+          <p class="text-xs text-gray-500 mb-4">건당 약 ₩2,000</p>
+          <ul class="space-y-3 mb-6 text-sm text-gray-600">
+            <li class="flex items-center">
+              <svg class="w-4 h-4 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              <strong>자소서 분석 10건</strong>
+            </li>
+            <li class="flex items-center">
+              <svg class="w-4 h-4 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              고급 분석 리포트
+            </li>
+            <li class="flex items-center">
+              <svg class="w-4 h-4 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              분석 결과 저장 & 비교
+            </li>
+          </ul>
+          <button id="buy10PackBtn" class="w-full py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors text-sm font-medium">
+            10건 패키지 구매
+          </button>
+        </div>
+
+        <!-- Premium Plan -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 relative">
+          <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+            <span class="bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full font-medium">프리미엄</span>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2 mt-2">프리미엄 컨설팅</h3>
+          <div class="mb-4">
+            <span class="text-3xl font-bold text-gray-900">₩500,000</span>
+          </div>
+          <ul class="space-y-3 mb-6 text-sm text-gray-600">
+            <li class="flex items-center">
+              <svg class="w-4 h-4 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              전담 컨설턴트 1:1 코칭(온라인)
+            </li>
+            <li class="flex items-center">
+              <svg class="w-4 h-4 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              자소서 완성까지 무제한 피드백
+            </li>
+            <li class="flex items-center">
+              <svg class="w-4 h-4 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              기업·직무 맞춤 전략 수립
+            </li>
+          </ul>
+          <button class="w-full py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium">
+            프리미엄 상담 신청
+          </button>
+        </div>
+      </div>
+
+      <!-- Special Offer -->
+      <div class="mt-8 bg-gradient-to-r from-emerald-50 to-blue-50 rounded-lg p-6 text-center">
+        <p class="text-sm font-medium text-gray-700 mb-2">🎉 특별 혜택</p>
+        <p class="text-gray-600 text-sm">친구 추천으로 받은 크레딧과 함께 사용 가능!</p>
+        <p class="text-xs text-gray-500 mt-2">추천 크레딧을 먼저 사용 후 구매 크레딧이 차감됩니다</p>
+      </div>
+    </div>
+    
+    <!-- Purchase Confirm Modal -->
+    <div id="purchaseModal" class="fixed inset-0 z-50 hidden">
+      <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm"></div>
+      <div class="relative mx-auto max-w-md w-[90%] md:w-full top-28">
+        <div class="bg-white rounded-2xl shadow-xl ring-1 ring-gray-900/5 overflow-hidden">
+          <div class="px-6 py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-semibold">결제 확인</h3>
+              <button id="modalClose" class="p-1.5 rounded-full hover:bg-white/10 focus:outline-none">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="px-6 py-6 space-y-2">
+            <p class="text-sm text-gray-600">아래 내용으로 결제를 진행할까요?</p>
+            <div class="mt-3 grid grid-cols-1 gap-3">
+              <div class="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3">
+                <span class="text-sm text-gray-600">상품</span>
+                <span id="modalProduct" class="text-sm font-medium text-gray-900">-</span>
+              </div>
+              <div class="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3">
+                <span class="text-sm text-gray-600">결제금액</span>
+                <span class="text-sm font-bold text-gray-900"><span id="modalAmount">-</span>원</span>
+              </div>
+            </div>
+          </div>
+          <div class="px-6 pb-6">
+            <div class="flex gap-2">
+              <button id="modalCancel" class="flex-1 h-11 rounded-full border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-colors">취소</button>
+              <button id="modalConfirm" class="flex-1 h-11 rounded-full bg-emerald-500 text-white font-semibold hover:bg-emerald-600 transition-colors shadow-sm">결제 진행</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const buy10Btn = document.getElementById('buy10PackBtn');
+        const modal = document.getElementById('purchaseModal');
+        const modalClose = document.getElementById('modalClose');
+        const modalCancel = document.getElementById('modalCancel');
+        const modalConfirm = document.getElementById('modalConfirm');
+        const productEl = document.getElementById('modalProduct');
+        const amountEl = document.getElementById('modalAmount');
+        
+        if (!buy10Btn) {
+          console.error('Buy button not found');
+          return;
+        }
+        
+        const csrf = () => document.querySelector('meta[name="csrf-token"]')?.content;
+        const open = () => {
+          console.log('Opening modal');
+          modal?.classList.remove('hidden');
+        };
+        const close = () => {
+          console.log('Closing modal');
+          modal?.classList.add('hidden');
+        };
+        
+        let pendingOrder = null;
+        
+        buy10Btn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          console.log('Buy button clicked');
+          
+          try {
+            const response = await fetch('/pricing/purchase_pack', { 
+              method: 'POST', 
+              headers: { 
+                'X-CSRF-Token': csrf(),
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              credentials: 'same-origin'
+            });
+            
+            console.log('Response status:', response.status);
+            
+            if (!response.ok) {
+              if (response.status === 401) {
+                alert('로그인이 필요합니다.');
+                window.location.href = '/users/sign_in';
+                return;
+              }
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Response data:', data);
+            
+            if (!data.success) { 
+              alert('결제 준비에 실패했습니다. 잠시 후 다시 시도해주세요.'); 
+              return; 
+            }
+            
+            pendingOrder = data;
+            productEl.textContent = data.orderName;
+            amountEl.textContent = data.amount.toLocaleString();
+            modal.dataset.orderId = data.orderId;
+            modal.dataset.amount = String(data.amount);
+            open();
+          } catch (e) {
+            console.error('Error:', e);
+            alert('오류가 발생했습니다: ' + e.message);
+          }
+        });
+        
+        modalClose?.addEventListener('click', close);
+        modalCancel?.addEventListener('click', close);
+        
+        modalConfirm?.addEventListener('click', async () => {
+          if (!pendingOrder) {
+            console.error('No pending order');
+            return;
+          }
+          
+          console.log('Confirm payment clicked');
+          close();
+          
+          try {
+            // Initialize TossPayments
+            const clientKey = '<%= ENV['TOSS_CLIENT_KEY'] || 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq' %>';
+            console.log('Using client key:', clientKey.substring(0, 10) + '...');
+            
+            const tossPayments = TossPayments(clientKey);
+            const payment = tossPayments.payment({
+              customerKey: pendingOrder.customerKey
+            });
+            
+            console.log('Requesting payment with:', {
+              orderId: pendingOrder.orderId,
+              orderName: pendingOrder.orderName,
+              amount: pendingOrder.amount
+            });
+            
+            // Request payment
+            await payment.requestPayment({
+              method: 'CARD',
+              amount: {
+                value: pendingOrder.amount,
+                currency: 'KRW',
+              },
+              orderId: pendingOrder.orderId,
+              orderName: pendingOrder.orderName,
+              successUrl: window.location.origin + '/pricing/success',
+              failUrl: window.location.origin + '/pricing/fail',
+            });
+          } catch (error) {
+            console.error('Payment error:', error);
+            alert('결제 요청 중 오류가 발생했습니다: ' + error.message);
+          }
+        });
+      });
+    </script>
+
     <!-- FAQ -->
     <div class="bg-white rounded-xl shadow-sm p-8">
       <h2 class="font-semibold text-gray-900 mb-6 text-lg">자주 묻는 질문</h2>
